@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:lang="http://www.springframework.org/schema/lang"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+           http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-2.0.xsd">
+
+    <!-- Have the IoC container verify that required dependencies are in fact injected. -->
+    <bean class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor"/>
+
+    <!-- Configure a message source that will load the resource bundles based upon
+         the identified basenames.  The basenames should be configured relative to the root of the classpath
+         the installer will execute in.-->
+    <bean id="commonInstallerMessageSource"
+          class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <!-- return the resource code as the message if a message isn't found -->
+        <property name="basenames">
+            <list>
+                <value>classpath:commoninstaller</value>
+				<value>classpath:i18n/installer_plugin</value>
+				<value>classpath:i18n/release</value>
+				<value>classpath:i18n/installer_custom</value>
+            </list>
+        </property>
+        <property name="cacheSeconds" value="-1"/>
+    </bean>
+
+	<!-- The main localizer for the installer.  Currently only handles localized exceptions from the installer itself,
+	     as no code from the banner applications is executed by the installer.  If this changes, a delegating
+	     localizer will need to be added to handle both exception heirarchies -->
+    <bean id="localizer" class="com.sungardhe.commoncomponents.installer.LocalizerImpl">
+        <property name="messageSource">
+            <ref bean="commonInstallerMessageSource"/>
+        </property>
+    </bean>
+
+
+    <bean id="installerHome" class="com.sungardhe.commoncomponents.installer.InstallerHome">
+        <property name="homeDir" value="${homeDir}"/>
+    </bean>
+
+    <bean id="progressLoggingListener" class="com.sungardhe.commoncomponents.installer.ProgressLoggingListener">
+        <property name="localizer" ref="localizer"/>
+        <property name="logPrinter" ref="logPrinter"/>
+    </bean>
+
+    <bean id="feedbackListener" class="com.sungardhe.commoncomponents.installer.FeedbackListener">
+        <property name="logPrinter" ref="logPrinter"/>
+        <property name="localizer" ref="localizer"/>
+    </bean>
+
+    <bean id="optionParser" class="com.sungardhe.commoncomponents.installer.ui.OptionParser">
+        <property name="localizer" ref="localizer"/>
+    </bean>
+
+
+    <bean id="uiHelper" class="com.sungardhe.commoncomponents.installer.ui.UIHelperImpl">
+        <property name="localizer" ref="localizer"/>
+        <property name="titleResourceCode" value="application.name"/>
+        <property name="versionValueResourceCode" value="application.version"/>
+        <property name="buildNumberValueResourceCode" value="application.build.number"/>
+        <property name="buildDateValueResourceCode" value="application.build.time"/>
+    </bean>
+
+
+    <bean id="actionRunner" class="com.sungardhe.commoncomponents.installer.ActionRunner">
+        <property name="installerHome" ref="installerHome"/>
+        <property name="localizer" ref="localizer"/>
+        <property name="logPrinter" ref="logPrinter"/>
+
+        <property name="listeners">
+            <list>
+                <ref bean="progressLoggingListener"/>
+                <ref bean="feedbackListener"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="abstractInstaller"
+        class="com.sungardhe.commoncomponents.installer.ui.CommandLineInstaller" abstract="true" autowire="no">
+        <property name="actionRunner" ref="actionRunner"/>
+        <property name="localizer" ref="localizer"/>
+        <property name="uiHelper" ref="uiHelper"/>
+        <property name="optionParser" ref="optionParser"/>
+        <property name="propertyStore" ref="propertyStore"/>
+    </bean>
+
+</beans>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:lang="http://www.springframework.org/schema/lang"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+           http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-2.0.xsd">
+
+    <import resource="common-base-context.xml"/>
+    <import resource="common-base-actions-context.xml"/>
+
+    <!-- Contains configuration specific to the main installer, including the property store to use,
+         the log file, and the available install targets -->
+
+    <bean id="propertyStore" class="com.sungardhe.commoncomponents.installer.PropertyStoreImpl">
+        <property name="propertyFile" value="${homeDir}/installer-store.properties"/>
+    </bean>
+
+    <bean id="logPrinter" class="com.sungardhe.commoncomponents.installer.LogPrinter">
+        <property name="logFile" value="${homeDir}/logs/installer.log"/>
+    </bean>
+
+    <bean id="installer" parent="abstractInstaller">
+        <property name="steps">
+            <list>
+                <ref bean="namedsequence.InstallHome"/>
+            </list>
+        </property>
+    </bean>
+
+<!--=========================== Installer targets ===========================-->
+
+
+    <bean id="namedsequence.InstallHome" class="com.sungardhe.commoncomponents.installer.NamedSequence">
+        <property name="nameResourceCode" value="installer.sequence.InstallHome.name"/>
+        <property name="descriptionResourceCode" value="installer.sequence.InstallHome.description"/>
+        <property name="steps">
+            <list>
+                <ref bean="action.InstallHome"/>
+            </list>
+        </property>
+    </bean>
+
+    <lang:groovy id="action.InstallHome"
+                 script-source="classpath:com/sungardhe/banner/installer/actions/InstallHome.groovy">
+		<lang:property name="home" ref="resource.ModuleHome"/>
+    </lang:groovy>
+
+    <bean id="resource.ModuleHome"
+          class="com.sungardhe.commoncomponents.installer.StringResource">
+        <property name="editor" ref="resourceEditor.ModuleHome"/>
+    </bean>
+
+
+    <bean id="resourceEditor.ModuleHome"
+          class="com.sungardhe.commoncomponents.installer.StringResourceEditor">
+        <property name="promptResourceCode" value="installer.message.promptModuleHome"/>
+        <property name="localizer" ref="localizer"/>
+		<property name="propertyStore" ref="propertyStore"/>
+		<property name="responseKey" value="resource.ModuleHome.default"/>
+    </bean>
+
+<!--===================== import customizations =============================-->
+
+    <import resource="installer-project-context.xml"/>
+
+</beans>
