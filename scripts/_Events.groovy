@@ -57,16 +57,8 @@ eventPackagePluginEnd = { pluginName ->
 			        mavenCentral()
 			        mavenRepo "http://repository.jboss.org/maven2/"
 			        mavenRepo "http://repository.codehaus.org"
-
-			        // uncomment the below to enable remote dependency resolution
-			        // from public Maven repositories
-			        //mavenLocal()
-			        //mavenCentral()
-			        //mavenRepo "http://snapshots.repository.codehaus.org"
-			        //mavenRepo "http://repository.codehaus.org"
-			        //mavenRepo "http://download.java.net/maven/2/"
-			        //mavenRepo "http://repository.jboss.com/maven2/"
 			    }
+			    
 			    dependencies {
 					runtime( 'sungardhe:installerframework:1.0.1' ) {
 						export = false
@@ -112,47 +104,54 @@ eventPackagePluginEnd = { pluginName ->
 	            println "Error: There was an error resolving dependencies"
 	            exit 1
 	        }
+					
+			def templateZip  = "$projectWorkDir/template.zip"
+			def stagingDir   = "$projectWorkDir/staging"
+			def installerDir = "$stagingDir/installer"
 			
-
-			pluginZip = new File( "${basedir}/grails-${pluginName}-${plugin.version}.zip" )
-		
-			def templateZip = new File("${projectWorkDir}/template.zip")
-			def stagingDir = new File("${projectWorkDir}/staging")
-			def installerDir = new File( stagingDir, "installer")
-			ant.delete(dir:stagingDir)
-			ant.mkdir(dir:stagingDir)
-			def libDir = new File( installerDir, "lib")
-			ant.mkdir(dir:libDir)
-			ant.copy(todir:libDir, overwrite:true, preservelastmodified:true) {
+			ant.delete( dir:"$stagingDir" )
+			ant.mkdir(  dir:"$stagingDir" )
+			
+			def libDir = "$installerDir/lib"
+			ant.mkdir( dir:"$libDir" )
+			ant.copy( todir:"$libDir", overwrite:true, preservelastmodified:true ) {
 		        if (report) {
 					report.allArtifactsReports.each() {
 						def file = it.localFile
-			            fileset(dir:file.parentFile, includes:file.name)
+			            fileset( dir:file.parentFile, includes:file.name )
 					}
 		        }
 			}
-			ant.mkdir(dir:"${stagingDir}/instance/i18n")
-			ant.mkdir(dir:"${stagingDir}/instance/css")
-			ant.mkdir(dir:"${stagingDir}/instance/js")						
-			ant.mkdir(dir:"${stagingDir}/instance/config")
-			File instanceProperties = new File( "${stagingDir}/instance/config/instance.properties" )
+			def instanceDir = "$stagingDir/instance"
+			
+			ant.mkdir( dir:"$instanceDir/i18n" )
+			ant.mkdir( dir:"$instanceDir/css" )
+			ant.mkdir( dir:"$instanceDir/js" )						
+			ant.mkdir( dir:"$instanceDir/config" )
+			
+			ant.echo "XXXXXXXXXXXXX "
+			
+			File instanceProperties = new File( "$instanceDir/config/instance.properties" )
 			instanceProperties << "global.config.dir="
 
-			def installerSourceDir = new File("${basedir}/src/installer")
-			ant.copy(todir:installerDir) {
-				fileset(dir:installerSourceDir, excludes:"apache-ant*")
+			def installerSourceDir = "${basedir}/src/installer"
+			ant.copy( todir:installerDir ) {
+				fileset( dir:installerSourceDir, excludes:"apache-ant*" )
 			}
 		
-			ant.unzip(src:"${basedir}/src/installer/apache-ant-1.8.2-bin.zip", dest:installerDir)
+			ant.unzip( src:"${basedir}/src/installer/apache-ant-1.8.2-bin.zip", dest:installerDir )
 		
-		    ant.zip(destfile:templateZip) {
-				fileset(dir:stagingDir)
+		    ant.zip( destfile:templateZip ) {
+				fileset( dir:stagingDir )
 			}
 		
-			ant.zip(destfile:pluginZip, update:true, basedir:"${projectWorkDir}", includes:"template.zip")
-			ant.delete(dir:stagingDir)
-			ant.delete(file:templateZip)
+			ant.zip( destfile:"${basedir}/grails-${pluginName}-${plugin.version}.zip", 
+			         update:true, basedir:"${projectWorkDir}", includes:"template.zip")
+			         
+			ant.delete( dir:stagingDir )
+			ant.delete( file:templateZip )
 		} catch (Throwable t) {
+		    ant.echo "XXXXXX Caught $t"
 			t.printStackTrace()
 			throw t;
 		}

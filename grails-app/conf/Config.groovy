@@ -1,12 +1,17 @@
+/*******************************************************************************
+ © 2011 SunGard Higher Education.  All Rights Reserved.
+
+ CONFIDENTIAL BUSINESS INFORMATION
+
+ THIS PROGRAM IS PROPRIETARY INFORMATION OF SUNGARD HIGHER EDUCATION
+ AND IS NOT TO BE COPIED, REPRODUCED, LENT, OR DISPOSED OF,
+ NOR USED FOR ANY PURPOSE OTHER THAN THAT WHICH IT IS SPECIFICALLY PROVIDED
+ WITHOUT THE WRITTEN PERMISSION OF THE SAID COMPANY
+ ****************************************************************************** */
+ 
 // configuration for plugin testing - will not be included in the plugin zip
  
 log4j = {
-    // Example of changing the log pattern for the default console
-    // appender:
-    //
-    //appenders {
-    //    console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
-    //}
 
     error  'org.codehaus.groovy.grails.web.servlet',  //  controllers
            'org.codehaus.groovy.grails.web.pages', //  GSP

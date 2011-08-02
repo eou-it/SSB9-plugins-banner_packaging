@@ -1,3 +1,7 @@
+
+
+// NOTE: This file is NOT used, but is left in tact with default settings. 
+
 dataSource {
     pooled = true
     driverClassName = "org.hsqldb.jdbcDriver"
@@ -9,23 +13,20 @@ hibernate {
     cache.use_query_cache = true
     cache.provider_class = 'net.sf.ehcache.hibernate.EhCacheProvider'
 }
-// environment specific settings
+
 environments {
     development {
         dataSource {
-            dbCreate = "create-drop" // one of 'create', 'create-drop','update'
             url = "jdbc:hsqldb:mem:devDB"
         }
     }
     test {
         dataSource {
-            dbCreate = "update"
             url = "jdbc:hsqldb:mem:testDb"
         }
     }
     production {
         dataSource {
-            dbCreate = "update"
             url = "jdbc:hsqldb:file:prodDb;shutdown=true"
         }
     }

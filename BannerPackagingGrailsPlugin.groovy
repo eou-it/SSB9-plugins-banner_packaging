@@ -7,7 +7,7 @@
  AND IS NOT TO BE COPIED, REPRODUCED, LENT, OR DISPOSED OF,
  NOR USED FOR ANY PURPOSE OTHER THAN THAT WHICH IT IS SPECIFICALLY PROVIDED
  WITHOUT THE WRITTEN PERMISSION OF THE SAID COMPANY
- *******************************************************************************/
+ ****************************************************************************** */
  
 
 /** 
@@ -19,7 +19,7 @@ class BannerPackagingGrailsPlugin {
     // however it is not being picked up.  Consequently, a pom.xml file is added to the root directory with the correct groupId
     // and will be removed when the maven-publisher plugin correctly sets the groupId based on the following field.
 	def groupID = "sungardhe"
-    def version = "0.0.1"
+    def version = "0.0.1.1"
 
     def grailsVersion  = "1.3.5 > *"
     def dependsOn      = [:]

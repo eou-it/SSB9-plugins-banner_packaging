@@ -19,10 +19,10 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.sungardhe</groupId>
-  <artifactId>banner-installer</artifactId>
-  <version>0.0.1</version>
+  <artifactId>banner-packaging</artifactId>
+  <version>0.0.1.1</version>
   <packaging>zip</packaging>
-  <description>Common Installer for Banner Modules</description>
+  <description>Plugin providing common packaging and installation for Banner 9 Modules. </description>
   <distributionManagement>
     <snapshotRepository>
       <id>snapshots</id>
