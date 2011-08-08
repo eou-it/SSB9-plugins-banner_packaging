@@ -1,10 +1,4 @@
-import org.codehaus.groovy.grails.plugins.GrailsPluginUtils
-import groovy.xml.StreamingMarkupBuilder
-import grails.util.Environment
-import org.apache.ivy.core.report.ArtifactDownloadReport
-import org.codehaus.groovy.grails.resolve.IvyDependencyManager
 /** *****************************************************************************
-
  © 2011 SunGard Higher Education.  All Rights Reserved.
 
  CONFIDENTIAL BUSINESS INFORMATION
@@ -14,6 +8,12 @@ import org.codehaus.groovy.grails.resolve.IvyDependencyManager
  NOR USED FOR ANY PURPOSE OTHER THAN THAT WHICH IT IS SPECIFICALLY PROVIDED
  WITHOUT THE WRITTEN PERMISSION OF THE SAID COMPANY
  ****************************************************************************** */
+
+import groovy.xml.StreamingMarkupBuilder
+
+import grails.util.Environment
+
+import org.apache.ivy.core.report.ArtifactDownloadReport
 import org.apache.ivy.core.event.EventManager
 import org.apache.ivy.core.module.descriptor.Configuration
 import org.apache.ivy.core.module.descriptor.DefaultModuleDescriptor
@@ -31,10 +31,15 @@ import org.apache.ivy.plugins.resolver.IBiblioResolver
 import org.apache.ivy.util.DefaultMessageLogger
 import org.apache.ivy.util.Message
 
+import org.codehaus.groovy.grails.plugins.GrailsPluginUtils
+import org.codehaus.groovy.grails.resolve.IvyDependencyManager
+
+
 eventPackagePluginEnd = { pluginName ->
+    
 	if (pluginName == "${metadata.'app.name'}") {
 		try {
-			IvyDependencyManager dm = new IvyDependencyManager( "test", "0.1" )
+			IvyDependencyManager dm = new IvyDependencyManager( "$pluginName", "${plugin.version}" )
 			
 			dm.parseDependencies( 
 			{
@@ -128,8 +133,6 @@ eventPackagePluginEnd = { pluginName ->
 			ant.mkdir( dir:"$instanceDir/css" )
 			ant.mkdir( dir:"$instanceDir/js" )						
 			ant.mkdir( dir:"$instanceDir/config" )
-			
-			ant.echo "XXXXXXXXXXXXX "
 			
 			File instanceProperties = new File( "$instanceDir/config/instance.properties" )
 			instanceProperties << "global.config.dir="
