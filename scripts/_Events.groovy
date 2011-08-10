@@ -135,7 +135,7 @@ eventPackagePluginEnd = { pluginName ->
 			ant.mkdir( dir:"$instanceDir/config" )
 			
 			File instanceProperties = new File( "$instanceDir/config/instance.properties" )
-			instanceProperties << "global.config.dir="
+			instanceProperties << "shared.config.dir="
 
 			def installerSourceDir = "${basedir}/src/installer"
 			ant.copy( todir:installerDir ) {
@@ -154,7 +154,7 @@ eventPackagePluginEnd = { pluginName ->
 			ant.delete( dir:stagingDir )
 			ant.delete( file:templateZip )
 		} catch (Throwable t) {
-		    ant.echo "XXXXXX Caught $t"
+		    ant.echo "Caught $t"
 			t.printStackTrace()
 			throw t;
 		}

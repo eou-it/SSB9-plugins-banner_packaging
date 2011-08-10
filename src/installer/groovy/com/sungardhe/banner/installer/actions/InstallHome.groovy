@@ -23,22 +23,39 @@ import java.text.*
 public class InstallHome extends DefaultAction {
 	
 	private StringResource home
+	private StringResource sharedConfigHome
 	private File currentDir
+
 
     public String getNameResourceCode() {
         "installer.action.InstallHome.name"
     }
+    
 
     @Required
-    public void setHome(StringResource home) {
+    public void setHome( StringResource home ) {
         this.home = home
-        addRequiredResource(this.home)
+        addRequiredResource( this.home )
     }
+    
+
+    @Required
+    public void setSharedConfigHome( StringResource sharedConfigHome ) {
+        this.sharedConfigHome = sharedConfigHome
+        addRequiredResource( this.sharedConfigHome )
+    }
+    
 
     public void execute() throws ActionRunnerException {
+        
 		File homeDir = resolveFile( home.getValue() )
 		if (!homeDir.exists()) {
 			mkdir( homeDir )
+		}
+                
+		File sharedConfigDir = resolveFile( sharedConfigHome.getValue() )
+		if (!sharedConfigDir.exists()) {
+			mkdir( sharedConfigDir )
 		}
 		
 		this.currentDir = resolveFile( "${home.getValue()}/current" )
@@ -50,12 +67,11 @@ public class InstallHome extends DefaultAction {
 			mkdir( currentDir )			
 		}
 
-
 		File source = new File( ".." )
 		if (!source.exists()) return
 		
-		FileSet sources = newFileSet();
-        sources.setDir( source );
+		FileSet sources = newFileSet()
+        sources.setDir( source )
 		sources.setExcludes( "installer/installer-store.properties" )
 		sources.setExcludes( "installer/systool.jar" )
 		sources.setExcludes( "installer/installerenabled" )
@@ -67,11 +83,26 @@ public class InstallHome extends DefaultAction {
         copy.setOverwrite( true )
 		copy.addFileset( sources )
 		
-        runTask( copy )
+        runTask( copy ) 
+                
+        def instanceProps = new Properties() 
+        String instancePropertiesFileName = "$currentDir/instance/config/instance.properties".toString()
+        def instancePropertiesFile = new File( instancePropertiesFileName )
+        
+        instancePropertiesFile.withInputStream { stream -> instanceProps.load( stream ) }
+        instanceProps['shared.config.dir'] = "${sharedConfigHome.getValue()}".toString()
+        instanceProps.store( new FileOutputStream( instancePropertiesFileName ), '' )          
+		
+		File sharedConfig = resolveFile( "${sharedConfigHome.getValue()}/banner_configuration.groovy" )
+		if (!sharedConfig.exists()) {
+		    def example = resolveFile( "${home.getValue()}/current/config/banner_configuration.example" )  
+            new File( "${sharedConfigHome.getValue()}/banner_configuration.groovy" ).write( example?.text )
+		}	    
     }
 
 
 //---------------------------- private methods ---------------------------------
+
 
 	private void backupCurrent( File homeDir ) {
 		File currentDir = resolveFile( "${homeDir}/current" )
@@ -91,6 +122,7 @@ public class InstallHome extends DefaultAction {
 		runTask( zip )
 	}
 	
+	
 	private void clearCurrent( File homeDir ) {
 		File currentDir = resolveFile( "${homeDir}/current" )
 		
@@ -103,6 +135,7 @@ public class InstallHome extends DefaultAction {
         deleteTask.addFileset( fs )
         runTask( deleteTask )
 	}
+	
 	
 	private Properties getReleaseProperties() {
 		Properties p = new Properties()

@@ -43,7 +43,8 @@
 
     <lang:groovy id="action.InstallHome"
                  script-source="classpath:com/sungardhe/banner/installer/actions/InstallHome.groovy">
-		<lang:property name="home" ref="resource.ModuleHome"/>
+        <lang:property name="home" ref="resource.ModuleHome"/>
+        <lang:property name="sharedConfigHome" ref="resource.SharedConfigurationHome"/>
     </lang:groovy>
 
     <bean id="resource.ModuleHome"
@@ -51,13 +52,25 @@
         <property name="editor" ref="resourceEditor.ModuleHome"/>
     </bean>
 
-
     <bean id="resourceEditor.ModuleHome"
           class="com.sungardhe.commoncomponents.installer.StringResourceEditor">
         <property name="promptResourceCode" value="installer.message.promptModuleHome"/>
         <property name="localizer" ref="localizer"/>
 		<property name="propertyStore" ref="propertyStore"/>
 		<property name="responseKey" value="resource.ModuleHome.default"/>
+    </bean>
+
+    <bean id="resource.SharedConfigurationHome"
+          class="com.sungardhe.commoncomponents.installer.StringResource">
+        <property name="editor" ref="resourceEditor.SharedConfigurationHome"/>
+    </bean>
+
+    <bean id="resourceEditor.SharedConfigurationHome"
+          class="com.sungardhe.commoncomponents.installer.StringResourceEditor">
+        <property name="promptResourceCode" value="installer.message.promptSharedConfigurationHome"/>
+        <property name="localizer" ref="localizer"/>
+		<property name="propertyStore" ref="propertyStore"/>
+		<property name="responseKey" value="resource.SharedConfigurationHome.default"/>
     </bean>
 
 <!--===================== import customizations =============================-->

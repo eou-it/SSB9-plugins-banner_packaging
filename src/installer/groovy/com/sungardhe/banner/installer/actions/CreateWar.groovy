@@ -59,7 +59,7 @@ public class CreateWar extends DefaultAction {
 
     private void updateWAR() throws ActionRunnerException {	
 		String globalConfigDirName = getInstanceProperties().getProperty( "global.config.dir" )
-		if (globalConfigDirName.trim().size() == 0) {
+		if (globalConfigDirName?.trim().size() == 0) {
 			throw new RuntimeException( "Global config dir not set" )
 		}
 		File globalConfigDir = resolveFile( globalConfigDirName )

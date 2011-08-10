@@ -56,6 +56,11 @@ target( default:"Package Release" ) {
 	ant.copy( todir:"${stagingDir}/webapp" ) {
 		fileset( dir:"${basedir}/target", includes:"*.war" )
 	}
+	
+	ant.mkdir( dir:"${stagingDir}/config" )
+	ant.copy( todir:"${stagingDir}/config" ) {
+		fileset( dir:"${basedir}/", includes:"*_configuration.example" )
+	}
 
 	ant.zip( destfile:installerZip ) {
 		fileset( dir:stagingDir )
