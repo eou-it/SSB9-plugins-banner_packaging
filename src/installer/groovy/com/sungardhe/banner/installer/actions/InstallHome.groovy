@@ -97,7 +97,14 @@ public class InstallHome extends DefaultAction {
 		if (!sharedConfig.exists()) {
 		    def example = resolveFile( "${home.getValue()}/current/config/banner_configuration.example" )  
             new File( "${sharedConfigHome.getValue()}/banner_configuration.groovy" ).write( example?.text )
-		}	    
+		}
+		
+		def releaseProps = getReleaseProperties()
+		File instanceConfig = resolveFile( "${home.getValue()}/current/instance/${releaseProps['application.name']}_configuration.groovy" )
+		if (!instanceConfig.exists()) {
+		    def example = resolveFile( "${home.getValue()}/current/config/${releaseProps['application.name']}_configuration.example" )  
+            new File( "${home.getValue()}/current/instance/config/${releaseProps['application.name']}_configuration.groovy" ).write( example?.text )
+		}	    			    
     }
 
 

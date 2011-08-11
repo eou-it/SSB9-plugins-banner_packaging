@@ -58,20 +58,20 @@ public class CreateWar extends DefaultAction {
 
 
     private void updateWAR() throws ActionRunnerException {	
-		String globalConfigDirName = getInstanceProperties().getProperty( "global.config.dir" )
-		if (globalConfigDirName?.trim().size() == 0) {
-			throw new RuntimeException( "Global config dir not set" )
+		String sharedConfigDirName = getInstanceProperties().getProperty( "shared.config.dir" )
+		if (sharedConfigDirName?.trim()?.size() == 0) {
+			throw new RuntimeException( "Shared config dir not set" )
 		}
-		File globalConfigDir = resolveFile( globalConfigDirName )
-		if (!globalConfigDir.exists()) {
-			throw new RuntimeException( "Global config dir: ${globalConfigDirName} does not exist" )
+		File sharedConfigDir = resolveFile( sharedConfigDirName )
+		if (!sharedConfigDir.exists()) {
+			throw new RuntimeException( "Shared config dir: ${sharedConfigDirName} does not exist" )
 		}
 	
 		File templateWar = getTemplate()
 	
 		def warName = templateWar.getName()
 		def warFile = resolveFile( "${FileStructure.DIST_DIR}/${warName}" )
-		updateProgress( new CreatingEarMessage( warFile.getName() ) );
+		updateProgress( new CreatingEarMessage( warFile.getName() ) )
         deleteFile( warFile, true );
 
         Expand unwar = (Expand) newTask( Tasks.UNWAR )
@@ -82,7 +82,7 @@ public class CreateWar extends DefaultAction {
 		updateI18N( stagingWarDir )
 		updateCSS( stagingWarDir )
 		updateJS( stagingWarDir )
-		updateStaging( stagingWarDir, "WEB-INF/classes", globalConfigDir.getAbsolutePath() )
+		updateStaging( stagingWarDir, "WEB-INF/classes", sharedConfigDir.getAbsolutePath() )
 		updateStaging( stagingWarDir, "WEB-INF/classes", FileStructure.INSTANCE_CONFIG_DIR )
 				
         War war = (War) newTask( Tasks.WAR );
@@ -95,141 +95,24 @@ public class CreateWar extends DefaultAction {
         fs.createExclude().setName( "**WEB-INF/web.xml" );
         war.addFileset( fs );
         runTask( war );
-
-        /*Copy copy = (Copy) newTask( Tasks.COPY );
-        copy.setForce( true );
-        copy.setFile( resolveFile( FileStructure.CONFIG_DATABASE_PROPERTIES ) );
-        copy.setTodir( resolveFile( stagingWarDir.getAbsolutePath() + "/WEB-INF/classes" ) );
-        copy.setOverwrite( true );
-        runTask( copy );
-
-        //generate the webapp location properties
-        GenerateWebAppLocationProperties genAppLoc = new GenerateWebAppLocationProperties();
-        readyTask( genAppLoc );
-        genAppLoc.setConfigDir( resolveFile( FileStructure.CONFIG_DIR ) );
-        genAppLoc.setOutputDir( resolveFile( stagingWarDir.getAbsolutePath() + "/WEB-INF/config" ) );
-        runTask( genAppLoc );
-
-        copy = (Copy) newTask( Tasks.COPY );
-        copy.setForce( true );
-        copy.setFile( resolveFile( FileStructure.SECURITY_JAR ) );
-        copy.setTodir( resolveFile( stagingWarDir.getAbsolutePath() + "/WEB-INF/lib" ) );
-        copy.setOverwrite( true );
-        runTask( copy );
-
-        FileSet locales = newFileSet();
-        locales.setDir( resolveFile( FileStructure.LOCALE_DIR ) );
-        copy = (Copy) newTask( Tasks.COPY );
-        copy.setForce( true );
-        copy.setTodir( resolveFile( stagingWarDir.getAbsolutePath() + "/WEB-INF/classes/resources/locale" ) );
-        copy.addFileset( locales );
-        copy.setOverwrite( true );
-        runTask( copy );
-
-        FileSet extLocales = newFileSet();
-        extLocales.setDir( resolveFile( FileStructure.EXT_LOCALE_DIR ) );
-        copy = (Copy) newTask( Tasks.COPY );
-        copy.setForce( true );
-        copy.setTodir( resolveFile( stagingWarDir.getAbsolutePath() + "/WEB-INF/classes/resources/locale" ) );
-        copy.addFileset( extLocales );
-        copy.setOverwrite( true );
-        runTask( copy );
-
-        //update WEB-INF
-        copy = (Copy) newTask( Tasks.COPY );
-        copy.setForce( true );
-        copy.setTodir( resolveFile( stagingWarDir.getAbsolutePath() + "/WEB-INF" ) );
-        FileSet webInf = newFileSet();
-        webInf.setDir( resolveFile( FileStructure.RESOURCES_DIR + "/WEB-INF" ) );
-        webInf.setIncludes( "*" );
-        copy.addFileset( webInf );
-        runTask( copy );
-
-        //update spring configs
-        deleteDir( resolveFile( stagingWarDir.getAbsolutePath() + "/WEB-INF/spring" ) );
-        copy = (Copy) newTask( Tasks.COPY );
-        copy.setForce( true );
-        copy.setTodir( resolveFile( stagingWarDir.getAbsolutePath() + "/WEB-INF/spring" ) );
-        FileSet springConfigs = newFileSet();
-        springConfigs.setDir( resolveFile( FileStructure.RESOURCES_DIR + "/spring" ) );
-        springConfigs.createInclude().setName( "*" );
-        springConfigs.createInclude().setName( "services/**" );
-        springConfigs.createInclude().setName( "remoting/**" );
-        springConfigs.createInclude().setName( "uimediators/**" );
-        springConfigs.createInclude().setName( "importers/**" );
-        copy.addFileset( springConfigs );
-        runTask( copy );
-
-        //process templates
-        XmlTemplateProcessorTask processorTask = new XmlTemplateProcessorTask();
-        readyTask( processorTask );
-        processorTask.setConfigDir( resolveFile( FileStructure.CONFIG_DIR ) );
-        processorTask.setTargetDir( resolveFile( stagingWarDir.getAbsolutePath() + "/WEB-INF" ) );
-        runTask( processorTask );
-
-        GenerateCASProperties cas = new GenerateCASProperties();
-        readyTask( cas );
-        cas.setOutputDir( resolveFile( stagingWarDir.getAbsolutePath() + "/WEB-INF/classes" ) );
-        cas.setConfigDir( resolveFile( FileStructure.CONFIG_DIR ) );
-        runTask( cas );
-
-        installHelp();
-
-        updateSWF();
-
-        //If installing to weblogic, we need to remove JAXB classes and use those built in to weblogic
-        if (config.getAdvanced().getApplicationServer().getType().equals( com.sungardhe.relate.config.ApplicationServer.Type.Enum.forString( "weblogic" ))) {
-            Delete deleteTask = (Delete) newTask( Tasks.DELETE );
-            FileSet fs = newFileSet();
-            fs.setDir( resolveFile( stagingWarDir.getAbsoluteFile() + "/WEB-INF/lib" ) );
-            fs.createInclude().setName( "jaxb-api-2.0.jar" );
-            fs.createInclude().setName( "jaxb-impl-2.0.1.jar" );
-            fs.createInclude().setName( "jaxb-xjc-2.0.1.jar" );
-            fs.createInclude().setName( "jaxrpc.jar" );
-            fs.createInclude().setName( "jsr173_1.0_api.jar" );
-            fs.createInclude().setName( "jsr173_api.jar" );
-            fs.createInclude().setName( "stax-api-1.0.1.jar" );
-            fs.createInclude().setName( "xmlbeans-qname.jar" );
-            deleteTask.addFileset( fs );
-            runTask( deleteTask );
-        }
-
-        File warPatchesDir = resolveFile( FileStructure.WAR_PATCH_CLASS_DIR );
-        if (warPatchesDir.exists()) {
-            FileSet warPatches = newFileSet();
-            warPatches.setDir( warPatchesDir );
-            copy = (Copy) newTask( Tasks.COPY );
-            copy.setForce( true );
-            copy.setTodir( stagingWarDir );
-            copy.addFileset( warPatches );
-            copy.setOverwrite( true );
-            runTask( copy );
-        }*/
-
-        /*
-        SimpleDateFormat format = new SimpleDateFormat( "MM-dd-yyyy hh:mm aa" );
-        String timeStamp = format.format( new Date() );
-        UpdatePropertyFileTask update = new UpdatePropertyFileTask();
-        readyTask( update );
-        update.setPropertyFile( resolveFile( _stagingWAR.getAbsolutePath() + "/WEB-INF/classes/deployment.properties" ) );
-        update.setName( "deployment.message" );
-        update.setValue( "Build Date: " + timeStamp );
-        runTask( update );*/
-
     }
+
 
 	private void updateI18N( File stagingDir ) {
 		updateStaging( stagingDir, "WEB-INF/grails-app/i18n", FileStructure.I18N_DIR )
 		updateStaging( stagingDir, "WEB-INF/grails-app/i18n", FileStructure.INSTANCE_I18N_DIR )
 	}
+
 	
 	private void updateCSS( File stagingDir ) {
 		updateStaging( stagingDir, "css", FileStructure.INSTANCE_CSS_DIR )
 	}
+
 	
 	private void updateJS( File stagingDir )  {
 		updateStaging( stagingDir, "js", FileStructure.INSTANCE_JS_DIR )
 	}
+
 	
 	/**
 	 * Copies (recursively) a source directory (relative to the installer home) to
