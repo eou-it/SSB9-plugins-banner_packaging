@@ -8,8 +8,12 @@
  NOR USED FOR ANY PURPOSE OTHER THAN THAT WHICH IT IS SPECIFICALLY PROVIDED
  WITHOUT THE WRITTEN PERMISSION OF THE SAID COMPANY
  *******************************************************************************/
+
+//import grails.util.BuildScope
+
 import org.apache.ivy.core.report.ArtifactDownloadReport
 import org.codehaus.groovy.grails.resolve.IvyDependencyManager
+
 
 /**
  * Gant script for creating a release package for a banner module.
@@ -17,17 +21,14 @@ import org.codehaus.groovy.grails.resolve.IvyDependencyManager
  * to manage product homes and to re-generate the war file with 
  * environment specific configuration and overrides (localization message bundles, CSS, JavaScript).
  **/
- 
-//scriptScope = BuildScope.WAR
 scriptEnv = "production"
- 
+  
 includeTargets << grailsScript( "_GrailsPackage" )
 includeTargets << grailsScript( "_GrailsWar" )
 
 target( default:"Package Release" ) {
-    
-//	depends( checkVersion,createConfig,war )
 	depends( checkVersion, createConfig, war )
+    
     event( "PackageReleaseStart", [] )
 
 	File templateZip = getTemplateHomeZip()
@@ -40,7 +41,7 @@ target( default:"Package Release" ) {
 	ant.mkdir( dir:stagingDir )
 	ant.unzip( src:templateZip, dest:stagingDir )
 	
-	File customDir = new File( "${basedir}/src/installer")	
+	File customDir = new File( "${basedir}/src/installer" )	
 	if (customDir.exists()) {
 		ant.copy( todir:"${stagingDir}/installer", overwrite:true ) {
 			fileset( dir:"${customDir}", includes:"**/*" )
@@ -52,6 +53,7 @@ target( default:"Package Release" ) {
 		fileset( dir:"${basedir}/grails-app/i18n", includes:"**/*" )
 	}
 	insertVersion( new File( "${stagingDir}/i18n/release.properties") )
+	
 	ant.mkdir( dir:"${stagingDir}/webapp" )
 	ant.copy( todir:"${stagingDir}/webapp" ) {
 		fileset( dir:"${basedir}/target", includes:"*.war" )
@@ -60,6 +62,11 @@ target( default:"Package Release" ) {
 	ant.mkdir( dir:"${stagingDir}/config" )
 	ant.copy( todir:"${stagingDir}/config" ) {
 		fileset( dir:"${basedir}/", includes:"*_configuration.example" )
+	}
+	
+	ant.mkdir( dir:"${stagingDir}/lib" )
+	ant.copy( todir:"${stagingDir}/lib" ) {
+		fileset( dir:"${basedir}/target", includes:"ojdbc6.jar" )
 	}
 
 	ant.zip( destfile:installerZip ) {
@@ -83,7 +90,7 @@ private void insertVersion( File target ) {
     def appName    = "${metadata.'app.name'}"
     def appVersion = "${metadata.'app.version'}"
     
-//    def config = new ConfigSlurper().parse( new File( "${basedir}/grails-app/conf/Config.groovy" ).toURL() )
+     // def config = new ConfigSlurper().parse( new File( "${basedir}/grails-app/conf/Config.groovy" ).toURL() )
     def uuid = config.build.number.uuid
     def url  = config.build.number.base.url + uuid 
     

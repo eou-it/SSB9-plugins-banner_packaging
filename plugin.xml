@@ -2,7 +2,7 @@
   <author>SunGard Higher Education</author>
   <authorEmail>horizon-support@sungardhe.com</authorEmail>
   <title>Banner Packaging Framework Plugin</title>
-  <description>This plugin adds a build-release Grails target that creates a release package containing an installer.</description>
+  <description>This plugin adds a package-release Grails target that creates a release package containing an installer.</description>
   <resources>
     <resource>BuildConfig</resource>
     <resource>Config</resource>

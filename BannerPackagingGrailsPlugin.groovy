@@ -30,7 +30,7 @@ class BannerPackagingGrailsPlugin {
     def author      = "SunGard Higher Education"
     def authorEmail = "horizon-support@sungardhe.com"
     def title       = "Banner Packaging Framework Plugin"
-    def description = '''This plugin adds a build-release Grails target that creates a release package containing an installer.'''.stripMargin() 
+    def description = '''This plugin adds a package-release Grails target that creates a release package containing an installer.'''.stripMargin() 
 
     // URL to the plugin's documentation
     def documentation = ""

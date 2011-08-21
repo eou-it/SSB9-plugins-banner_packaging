@@ -98,9 +98,6 @@ eventPackagePluginEnd = { pluginName ->
 					runtime( 'commons-logging:commons-logging:1.1.1') {
 						export = false
 					}
-					runtime( 'com.oracle:ojdbc6:11.1.0.6' ) {
-						export = false
-					}
 			    }
 			} )
 		
@@ -153,12 +150,13 @@ eventPackagePluginEnd = { pluginName ->
 			         
 			ant.delete( dir:stagingDir )
 			ant.delete( file:templateZip )
-		} catch (Throwable t) {
+		} 
+		catch (Throwable t) {
 		    ant.echo "Caught $t"
 			t.printStackTrace()
 			throw t;
 		}
 	}
-	
+		
 }
 

@@ -48,11 +48,13 @@ public class InstallHome extends DefaultAction {
 
     public void execute() throws ActionRunnerException {
         
+        println "\n"
 		File homeDir = resolveFile( home.getValue() )
 		if (!homeDir.exists()) {
 			mkdir( homeDir )
 		}
                 
+        println "\n"
 		File sharedConfigDir = resolveFile( sharedConfigHome.getValue() )
 		if (!sharedConfigDir.exists()) {
 			mkdir( sharedConfigDir )
