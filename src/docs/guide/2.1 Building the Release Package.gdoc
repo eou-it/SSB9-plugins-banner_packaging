@@ -1,0 +1,14 @@
+
+This plugin adds a 'package-release' grails target that will generate a new release package zip file.  This zip file will contain both the solution as well as the installer.  
+
+Usage:
+{code}
+grails package-release
+{code}
+
+The release package zip file will be created within the 'target' directory of the project. 
+
+
+\\
+\\
+\\

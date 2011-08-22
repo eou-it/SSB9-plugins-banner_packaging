@@ -1,0 +1,80 @@
+
+
+The following steps illustrate installing the solution into a product (aka 'deployment') home:
+
+
+h4. Extract the release package into a temporary location
+{code}
+10:18 $ rm -rf temp/
+10:18 $ mkdir temp
+10:18 $ cd temp/
+10:18 temp $ cp /Users/bart/working/horizon/banner_on_grails/release-banner_on_grails-0.2.0.zip .
+10:19 temp $ unzip release-banner_on_grails-0.2.0.zip 
+Archive:  release-banner_on_grails-0.2.0.zip
+   creating: config/
+   creating: i18n/
+   creating: installer/
+   creating: installer/apache-ant-1.8.2/
+   ... lengthy logging removed ...
+{code}
+
+
+h4. Prepare the installer
+_Note: You may need, depending upon your system, to ensure the 'ant' file is executable (e.g., 'chmod +x ant')_
+{code}
+10:22 temp $ cd installer
+10:27 temp/installer $ ant
+Buildfile: /Users/bart/working/horizon/product_homes/catalog_schedule_deployment/temp/installer/build.xml
+
+_checkInstallerMarker:
+
+jar:
+    [mkdir] Created dir: /Users/bart/working/horizon/product_homes/catalog_schedule_deployment/temp/installer/staging.dir
+     [copy] Copying 16 files to /Users/bart/working/horizon/product_homes/catalog_schedule_deployment/temp/installer/staging.dir/i18n
+     [copy] Copying 1 file to /Users/bart/working/horizon/product_homes/catalog_schedule_deployment/temp/installer/staging.dir/i18n
+     [copy] Copying 4 files to /Users/bart/working/horizon/product_homes/catalog_schedule_deployment/temp/installer/staging.dir
+      [jar] Building jar: /Users/bart/working/horizon/product_homes/catalog_schedule_deployment/temp/installer/systool.jar
+   [delete] Deleting directory /Users/bart/working/horizon/product_homes/catalog_schedule_deployment/temp/installer/staging.dir
+
+create.installer.script:
+    [mkdir] Created dir: /Users/bart/working/horizon/product_homes/catalog_schedule_deployment/temp/installer/logs
+    [touch] Creating /Users/bart/working/horizon/product_homes/catalog_schedule_deployment/temp/installer/logs/installer.log
+
+create.systool.script:
+
+create.scripts:
+
+create-spring-properties:
+[propertyfile] Creating new property file: /Users/bart/working/horizon/product_homes/catalog_schedule_deployment/temp/installer/spring/context.properties
+
+all:
+
+BUILD SUCCESSFUL
+Total time: 4 seconds
+{code}
+
+
+h4. Install into a 'Home'
+{code}
+10:27 temp/installer $ bin/install installHome
+
+Enter the full path to the module home. 
+The module will be installed within the 'current' subdirectory within this home, 
+   and the previous release will be archived.
+ ==> []: /Users/bart/working/horizon/product_homes/catalog_schedule_deployment
+
+Enter the full path to the 'shared configuration' home.  
+Banner 9 modules configured to refer to this home will share the configuration specified here.
+ ==> []: /Users/bart/working/horizon/product_homes/shared_configuration
+InstallHome ... 
+
+
+
+OK
+10:30 tion-area/installer $ cd ../..
+{code} 
+
+
+\\
+\\
+\\

@@ -1,0 +1,15 @@
+ 
+h4. Version 0.0.1.4 
+
+* Initial release
+** Support creation of a release packaging containing the pre-built war file and an installer
+** Support installation into a product home, with archiving of the previous release
+** Support overwriting of CSS, javascript, and message bundles (for localization) and on-premise re-creation of the war
+
+h5. Known Issues:
+* Although the configuration files are also copied into the re-created war file, this capability is not functional.  Consequently, system properties should be used to reference external configuration (as the configuration copied into the war is not currently loaded properly). 
+
+
+\\
+\\
+\\
