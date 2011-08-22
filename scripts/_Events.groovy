@@ -154,7 +154,7 @@ eventPackagePluginEnd = { pluginName ->
 		catch (Throwable t) {
 		    ant.echo "Caught $t"
 			t.printStackTrace()
-			throw t;
+			throw t
 		}
 	}
 		

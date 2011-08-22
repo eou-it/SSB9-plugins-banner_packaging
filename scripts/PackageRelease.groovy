@@ -33,7 +33,7 @@ target( default:"Package Release" ) {
 
 	File templateZip = getTemplateHomeZip()
 
-    File installerZip = new File( "${basedir}/release-${metadata.'app.name'}-${metadata.'app.version'}.zip" )
+    File installerZip = new File( "${basedir}/target/release-${metadata.'app.name'}-${metadata.'app.version'}.zip" )
     ant.delete( file:installerZip )
 
 	def stagingDir = new File( "${projectWorkDir}/installer-staging" )
