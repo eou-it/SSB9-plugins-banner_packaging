@@ -52,8 +52,7 @@ public class CreateWar extends DefaultAction {
 		if (names.length != 1) {
 			throw new RuntimeException( "$dir must contain a single war" )
 		}
-		return new File( dir, names[0] )
-		
+		new File( dir, names[0] )		
 	}
 
 
@@ -71,7 +70,6 @@ public class CreateWar extends DefaultAction {
 	
 		def warName = templateWar.getName()
 		def warFile = resolveFile( "${FileStructure.DIST_DIR}/${warName}" )
-		updateProgress( new CreatingEarMessage( warFile.getName() ) )
         deleteFile( warFile, true );
 
         Expand unwar = (Expand) newTask( Tasks.UNWAR )
@@ -85,16 +83,17 @@ public class CreateWar extends DefaultAction {
 		updateStaging( stagingWarDir, "WEB-INF/classes", sharedConfigDir.getAbsolutePath() )
 		updateStaging( stagingWarDir, "WEB-INF/classes", FileStructure.INSTANCE_CONFIG_DIR )
 				
-        War war = (War) newTask( Tasks.WAR );
-        war.setDestFile( warFile );
-        war.setUpdate( true );
-        war.setWebxml( resolveFile( stagingWarDir.getAbsolutePath() + "/WEB-INF/web.xml" ) );
-        war.setManifest( resolveFile( stagingWarDir.getAbsolutePath() + "/META-INF/MANIFEST.MF" ) );
-        FileSet fs = newFileSet();
-        fs.setDir( stagingWarDir );
-        fs.createExclude().setName( "**WEB-INF/web.xml" );
-        war.addFileset( fs );
-        runTask( war );
+        War war = (War) newTask( Tasks.WAR )
+        war.setDestFile( warFile )
+        war.setUpdate( true )
+        war.setWebxml( resolveFile( stagingWarDir.getAbsolutePath() + "/WEB-INF/web.xml" ) )
+        war.setManifest( resolveFile( stagingWarDir.getAbsolutePath() + "/META-INF/MANIFEST.MF" ) )
+        
+        FileSet fs = newFileSet()
+        fs.setDir( stagingWarDir )
+        fs.createExclude().setName( "**WEB-INF/web.xml" )
+        war.addFileset( fs )
+        runTask( war )
     }
 
 
@@ -125,25 +124,16 @@ public class CreateWar extends DefaultAction {
 		File source = new File( sourceDir )
 		if (!source.exists()) return
 		
-		FileSet sources = newFileSet();
-        sources.setDir( source );
+		FileSet sources = newFileSet()
+        sources.setDir( source )
 		
-		Copy copy = (Copy) newTask( Tasks.COPY );
-        copy.setForce( true );
-        copy.setTodir( toDir );
-        copy.setOverwrite( true );
+		Copy copy = (Copy) newTask( Tasks.COPY )
+        copy.setForce( true )
+        copy.setTodir( toDir )
+        copy.setOverwrite( true )
 		copy.addFileset( sources )
-        runTask( copy );
+        runTask( copy )
 		
 	}
-
-
-    private class CreatingEarMessage extends ProgressMessage {
-        private static final String RESOURCE_CODE = "installer.message.creatingWar";
-
-        CreatingEarMessage( String name ) {
-            super( RESOURCE_CODE, [ name ] );
-        }
-    }
 	
 }

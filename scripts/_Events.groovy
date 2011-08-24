@@ -98,6 +98,9 @@ eventPackagePluginEnd = { pluginName ->
 					runtime( 'commons-logging:commons-logging:1.1.1') {
 						export = false
 					}
+					runtime( 'tomcat:catalina-ant:5.5.23') {
+						export = false
+					}
 			    }
 			} )
 		

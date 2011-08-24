@@ -24,12 +24,12 @@
         <property name="steps">
             <list>
                 <ref bean="namedsequence.War"/>
+                <ref bean="namedsequence.DeployTomcat"/>
             </list>
         </property>
     </bean>
 
-<!--=========================== Installer targets ===========================-->
-
+<!--=========================== 'systool' targets ===========================-->
 
     <bean id="namedsequence.War" class="com.sungardhe.commoncomponents.installer.NamedSequence">
         <property name="nameResourceCode" value="installer.sequence.War.name"/>
@@ -40,6 +40,65 @@
             </list>
         </property>
     </bean>
+    <!-- Note: CreateWar is 'built-in' - see 'common-base-actions-context.xml' -->
+    
+    <bean id="namedsequence.DeployTomcat" class="com.sungardhe.commoncomponents.installer.NamedSequence">
+        <property name="nameResourceCode" value="installer.sequence.DeployTomcat.name"/>
+        <property name="descriptionResourceCode" value="installer.sequence.DeployTomcat.description"/>
+        <property name="steps">
+            <list>
+                <ref bean="action.DeployTomcat"/>
+            </list>
+        </property>
+    </bean>
+
+    <lang:groovy id="action.DeployTomcat"
+                 script-source="classpath:com/sungardhe/banner/installer/actions/DeployTomcat.groovy">
+        <lang:property name="tomcatMgrUrl" ref="resource.tomcatMgrUrl"/>
+        <lang:property name="tomcatUser" ref="resource.tomcatUser"/>
+        <lang:property name="tomcatPassword" ref="resource.tomcatPassword"/>
+    </lang:groovy>
+
+    <bean id="resource.tomcatMgrUrl"
+          class="com.sungardhe.commoncomponents.installer.StringResource">
+        <property name="editor" ref="resourceEditor.tomcatMgrUrl"/>
+    </bean>
+
+    <bean id="resourceEditor.tomcatMgrUrl"
+          class="com.sungardhe.commoncomponents.installer.StringResourceEditor">
+        <property name="promptResourceCode" value="installer.message.promptTomcatMgrUrl"/>
+        <property name="localizer" ref="localizer"/>
+		<property name="propertyStore" ref="propertyStore"/>
+		<property name="responseKey" value="resource.tomcatMgrUrl.default"/>
+    </bean>
+    
+    <bean id="resource.tomcatUser"
+          class="com.sungardhe.commoncomponents.installer.StringResource">
+        <property name="editor" ref="resourceEditor.tomcatUser"/>
+    </bean>
+
+    <bean id="resourceEditor.tomcatUser"
+          class="com.sungardhe.commoncomponents.installer.StringResourceEditor">
+        <property name="promptResourceCode" value="installer.message.promptTomcatUser"/>
+        <property name="localizer" ref="localizer"/>
+		<property name="propertyStore" ref="propertyStore"/>
+		<property name="responseKey" value="resource.tomcatUser.default"/>
+    </bean>
+
+
+    <bean id="resource.tomcatPassword"
+          class="com.sungardhe.commoncomponents.installer.StringResource">
+        <property name="editor" ref="resourceEditor.tomcatPassword"/>
+    </bean>
+
+    <bean id="resourceEditor.tomcatPassword"
+          class="com.sungardhe.commoncomponents.installer.StringResourceEditor">
+        <property name="promptResourceCode" value="installer.message.promptTomcatPassword"/> 
+        <property name="localizer" ref="localizer"/>
+		<property name="propertyStore" ref="propertyStore"/>
+		<property name="responseKey" value=""/>
+    </bean>
+
 
 <!--===================== import customizations =============================-->
 

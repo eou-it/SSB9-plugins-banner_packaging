@@ -8,7 +8,8 @@
  NOR USED FOR ANY PURPOSE OTHER THAN THAT WHICH IT IS SPECIFICALLY PROVIDED
  WITHOUT THE WRITTEN PERMISSION OF THE SAID COMPANY
  ****************************************************************************** */
- 
+
+import com.sungardhe.banner.configuration.BannerDependencyService 
 
 /** 
  * Plugin class for the banner-packaging plugin.
@@ -19,7 +20,7 @@ class BannerPackagingGrailsPlugin {
     // however it is not being picked up.  Consequently, a pom.xml file is added to the root directory with the correct groupId
     // and will be removed when the maven-publisher plugin correctly sets the groupId based on the following field.
 	def groupID = "sungardhe"
-    def version = "0.0.1.3"
+    def version = "0.0.1.4"
     
     def scopes = [ excludes:'war' ]
 
@@ -32,12 +33,15 @@ class BannerPackagingGrailsPlugin {
     def title       = "Banner Packaging Framework Plugin"
     def description = '''This plugin adds a package-release Grails target that creates a release package containing an installer.'''.stripMargin() 
 
-    // URL to the plugin's documentation
     def documentation = ""
 
     def doWithWebDescriptor = { xml -> }
 
-    def doWithSpring = { }
+    def doWithSpring = { 
+        bannerDependencyService( BannerDependencyService ) { bean ->
+            bean.initMethod = 'init'
+        }    
+    }
 
     def doWithDynamicMethods = { ctx -> }
 

@@ -22,12 +22,29 @@ import com.sungardhe.banner.installer.*
 abstract
 public class DefaultAction extends Action {
 
-
-	protected Properties getInstanceProperties() {
-		File f = resolveFile( FileStructure.LOCAL_INSTANCE_PROPERTIES )
+			
+	protected Properties getProperties( String filePath ) {
+		File f = resolveFile( filePath )
 		Properties p = new Properties()
 		p.load( new FileInputStream( f ) )
 		p
+	}
+
+
+	protected Properties getInstanceProperties() {
+		getProperties( FileStructure.LOCAL_INSTANCE_PROPERTIES )
+	}
+	
+	
+	protected String getBanner() {
+	   '''
+       |    ______                                    ____  
+       |   (____  \\                                  / __ \\ 
+       |    ____)  ) ____ ____  ____   ____  ____   ( (__) )
+       |   |  __  ( / _  |  _ \\|  _ \\ / _  )/ ___)   \\__  / 
+       |   | |__)  | ( | | | | | | | ( (/ /| |         / /  
+       |   |______/ \\_||_|_| |_|_| |_|\\____)_|        /_/
+        '''.stripMargin()
 	}
 	
 }

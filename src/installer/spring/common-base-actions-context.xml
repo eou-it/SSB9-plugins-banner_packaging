@@ -6,50 +6,8 @@
            http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
            http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-2.0.xsd">
 
-    <!-- ============================= Anonymous sequences ================================== -->
+    <!-- ============================= Base Actions ================================== -->
 
-<!--
-    <bean id="sequence.Ear" class="com.sungardhe.commoncomponents.installer.Sequence">
-        <property name="steps">
-            <list>
-                <ref bean="sequence.PrepareAndApply"/>
-                <ref bean="action.CreateEar"/>
-            </list>
-        </property>
-    </bean>
--->
-<!--
-    <bean id="resource.DbAPILoadConfirmation" class="com.sungardhe.commoncomponents.installer.BooleanResource">
-        <property name="editor" ref="resourceEditor.DbAPILoadConfirmation"/>
-        <property name="validator" ref="resourceValidator.DbAPILoadConfirmation"/>
-    </bean>
-
-
-    <bean id="resourceEditor.DbAPILoadConfirmation"
-          class="com.sungardhe.commoncomponents.installer.BooleanResourceEditor">
-        <property name="promptResourceCode" value="installer.message.promptLoadDBApiConfirm"/>
-        <property name="localizer" ref="localizer"/>
-        <property name="propertyStore" ref="propertyStore"/>
-    </bean>
-
-    <lang:groovy id="resourceValidator.DbAPILoadConfirmation">
-        <lang:inline-script>
-            package com.sungardhe.relate.installer.actions;
-            import com.sungardhe.commoncomponents.installer.*;
-            class DbAPILoadConfirmationValidator implements ResourceValidator {
-            public boolean supports( Class clazz ) {
-            return clazz.equals( BooleanResource.class );
-            }
-            public void validate( Object o ) {
-            BooleanResource r = (BooleanResource) o;
-            if (r.getValue() == null) {
-            throw new ResourceValidationException( "installer.message.dbLoadAPINotSetException" );
-            }
-            }
-            }
-        </lang:inline-script>
-    </lang:groovy>
--->
     <lang:groovy id="action.CreateWar"
                  script-source="classpath:com/sungardhe/banner/installer/actions/CreateWar.groovy">
     </lang:groovy>

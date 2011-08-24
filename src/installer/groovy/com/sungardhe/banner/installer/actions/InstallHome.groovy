@@ -10,7 +10,7 @@
  *******************************************************************************/
 package com.sungardhe.banner.installer.actions
 
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Required
 import com.sungardhe.commoncomponents.installer.*
 import org.apache.tools.ant.taskdefs.*
 import org.apache.tools.ant.types.*
@@ -18,13 +18,13 @@ import com.sungardhe.banner.installer.*
 import java.text.*
 
 /**
- * Installer action for assembling a deployable ear from a template.
+ * Installer action for updating a product home.
  **/
 public class InstallHome extends DefaultAction {
 	
 	private StringResource home
 	private StringResource sharedConfigHome
-	private File currentDir
+	private File           currentDir
 
 
     public String getNameResourceCode() {
@@ -46,9 +46,10 @@ public class InstallHome extends DefaultAction {
     }
     
 
-    public void execute() throws ActionRunnerException {
-        
+    public void execute() throws ActionRunnerException { 
+
         println "\n"
+        println "${getBanner()}"  
 		File homeDir = resolveFile( home.getValue() )
 		if (!homeDir.exists()) {
 			mkdir( homeDir )
@@ -106,7 +107,7 @@ public class InstallHome extends DefaultAction {
 		if (!instanceConfig.exists()) {
 		    def example = resolveFile( "${home.getValue()}/current/config/${releaseProps['application.name']}_configuration.example" )  
             new File( "${home.getValue()}/current/instance/config/${releaseProps['application.name']}_configuration.groovy" ).write( example?.text )
-		}	    			    
+		}
     }
 
 
@@ -154,3 +155,4 @@ public class InstallHome extends DefaultAction {
 	}
 
 }
+
