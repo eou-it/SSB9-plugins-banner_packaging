@@ -1,4 +1,17 @@
 
+Banner 9 web applications are modular and are installed independently from each other (albeit they may share 'common' configuration). Since this plugin provides a common structure for release packages as well as a common installer, the product home directory structures are also the same across Banner 9 modules. 
+
+It is +highly recommended+ that product homes for Banner 9 modules used in a particular environment be placed in sibling directories.  As an example, the following directory structure shows two product homes and a shared_configuration directory that all support a common 'TEST' environment.  
+{code}
+banner9_product_homes_TEST
+    |--> catalog_schedule_TEST 
+    |--> events_home_TEST 
+    |--> shared_configuration_TEST    
+{code}
+
+Note the names of the homes is not dictated, and must be input when prompted to do so by the installer. 
+
+
 
 The following steps illustrate installing the solution into a product (aka 'deployment') home:
 
@@ -56,23 +69,69 @@ Total time: 4 seconds
 
 h4. Install into a 'Home'
 {code}
-10:27 temp/installer $ bin/install installHome
+18:27 tion-area/installer $ bin/install home
 
 Enter the full path to the module home. 
-The module will be installed within the 'current' subdirectory within this home, 
+   The module will be installed within the 'current' subdirectory within this home, 
    and the previous release will be archived.
- ==> []: /Users/bart/working/horizon/product_homes/catalog_schedule_deployment
+
+ ==> []: /Users/chardt/working/horizon/product_homes/catalog_schedule_deployment
 
 Enter the full path to the 'shared configuration' home.  
-Banner 9 modules configured to refer to this home will share the configuration specified here.
- ==> []: /Users/bart/working/horizon/product_homes/shared_configuration
+   Banner 9 modules configured to refer to this home will 
+   share the configuration specified here.
+
+ ==> []: /Users/chardt/working/horizon/product_homes/shared_configuration
 InstallHome ... 
 
 
+    ______                                    ____  
+   (____  \                                  / __ \ 
+    ____)  ) ____ ____  ____   ____  ____   ( (__) )
+   |  __  ( / _  |  _ \|  _ \ / _  )/ ___)   \__  / 
+   | |__)  | ( | | | | | | | ( (/ /| |         / /  
+   |______/ \_||_|_| |_|_| |_|\____)_|        /_/
+        
+
 
 OK
-10:30 tion-area/installer $ cd ../..
+10:30 tion-area/installer $ 
 {code} 
+
+
+
+h4. 'Home Directory' Structure 
+A product home is created for each 'deployment'.  For example, the 'home' used to manage a module within a 'TEST' environment is a different 'home' than what is used within a 'PROD' environment.  A client may have many homes for the same solution, if supporting many different environments.  This provides the needed flexibility with respect to configuration, release level, and even client modifications. 
+
+A product home is one that is used to support configuration and creation of a deployable war file. In a subsequent release, this plugin will be extended to support the installation of a 'development home' that will support building from source code (that is managed within a Git repository clone). 
+
+The following directory tree shows the product home that was created using the steps above for the TEST environment.  Please note that in addition to the module's product home, there is a separate 'shared_configuration_TEST' home that contains cross-module configuration for the TEST environment. Currently this directory holds a single file (banner_configuration.groovy) containing shared JNDI DataSource configuration. 
+{code}
+banner_TEST_homes/                      (optional and recommended top-level directory for all homes)
+
+|--> catalog_schedule_TEST/             (product home for 'catalog-schedule' in TEST environment)
+    |--> current
+        |--> instance/                  (instance-specific configuration that will not be overwritten)
+           |--> config/
+              |--> {app-name}_config.groovy (module-specific configuration for CAS, logging, etc.)
+           |--> lib
+              |--> ojdbc6.jar           (the Oracle database driver that must be placed manually into the tomcat/lib directory)
+              |--> logging.properties   (logging configuration that may be copied to the WEB-INF/classes directory that is 
+                                         very useful if the war file cannot be deployed successfully.)
+           |--> i18n                    (new or replacement message bundles that should be added the war) 
+           |--> css                     (new or replacement css files that should be added the war) 
+           |--> js                      (new or replacement javascript files that should be added the war) 
+        |--> db/                        (contains SQL scripts for use with GOSTAGE)
+        |--> dist/                      (contains the war file, after it is creating using the 'systool') 
+        |--> installer/                 (contains the installer)
+    |--> archived-releases/             (directory for previous releases)
+        |--> catalog_schedule_v9.0.0.2/          
+        |--> catalog_schedule_v9.0.0.1/ 
+
+|--> shared_configuration_TEST/         (home for configuration files shared across modules in an environment)
+    |--> banner_configuration.groovy    (a 'shared' configuration file containing dataSource)
+{code} 
+
 
 
 \\

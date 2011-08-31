@@ -32,6 +32,7 @@
  grails.doc.alias.release       = "2.1 Building the Release Package"
  grails.doc.alias.install       = "2.2 Installing into a 'Home'"
  grails.doc.alias.war           = "2.3 Re-generating the War File"
+ grails.doc.alias.deploytomcat  = "2.4 Deploying the War to Tomcat"
 
  
 // configuration for plugin testing - will not be included in the plugin zip 

@@ -139,10 +139,14 @@ eventPackagePluginEnd = { pluginName ->
 
 			def installerSourceDir = "${basedir}/src/installer"
 			ant.copy( todir:installerDir ) {
-				fileset( dir:installerSourceDir, excludes:"apache-ant*" )
+				fileset( dir:installerSourceDir, includes:"**/*" /* excludes:"apache-ant*" */ )
 			}
 		
-			ant.unzip( src:"${basedir}/src/installer/apache-ant-1.8.2-bin.zip", dest:installerDir )
+			ant.unzip( src:"${basedir}/src/installer/apache-ant-1.8.2-bin.zip", dest:installerDir ) {
+			    patternset {
+        	        exclude( name:"apache-ant-1.8.2/docs/**/*" )
+        	    }
+			}
 		
 		    ant.zip( destfile:templateZip ) {
 				fileset( dir:stagingDir )

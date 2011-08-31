@@ -1,5 +1,5 @@
 
-_Note: This documentation may be generated locally using 'grails Doc' from the root directory of the plugin._ 
+_Note: Those who build this plugin from source may generate this documentation by using the 'grails doc' target from the root directory of the plugin._ 
 \\
 The banner-packaging plugin provides a common approach for creating release packages and for installation of Banner 9 web applications. 
 
@@ -8,58 +8,23 @@ Specifically, this plugin:
 * Adds a 'package-release' grails target that may be used to create a release package
 * Incorporates an installer into the release package, in order to provide a common installation approach across Banner 9 solutions
 * Supports installing into an existing product (aka deployment) 'home' directory, including archiving of the previous release
-* Supports overwriting CSS, JavaScript, and message properties (localization bundles) and re-generating the war file within the 'home' directory
+* Supports creation of new configuration files (both a shared 'banner_configuration.groovy file within a shared_configurations directory), and an \{app-name\}_configuration.groovy file within the 'instance/config' directory.  
+* Supports overwriting CSS, JavaScript, and message properties (localization bundles) and re-generating the war file
+* Supports deployment to Tomcat
+
+
+This documentation is is two parts, the first addressing creation of the 'release package' and the second addressing how the release package is used to create or update a 'home' directory, how to generate a war file, and how to deploy that war file. 
 
 The following sections provide details of the key capabilities provided by this plugin. 
 
 \\
+*Part I:*
 * [Creating a Release Package|guide:release]
-* [Installing into a 'Home'|guide:install]
+
+*Part II:*
+* [Installing into a 'Home'|guide:install]  
 * [Re-generating the War File|guide:war]
-
-
-Banner 9 web applications are modular, and are installed independently from each other (albeit they will usually share configuration). Since this plugin provides a common structure for release packages and a common installer, the product home directory structures are also the same for Banner 9 modules. 
-
-It is recommended to place all product homes for a particular environment together.  For example, the following directory structure shows two product homes and the shared_configuration directory that contains cross-module configuration used by the two modules, in support of a TEST environment.  
-{code}
-banner9_product_homes_TEST
-    |--> catalog_schedule_TEST 
-    |--> events_home_TEST 
-    |--> shared_configuration_TEST    
-{code}
-
-h4. 'Home Directory' Structure 
-A module home is created for each 'deployment'.  For example, the 'home' used to manage a module within a 'TEST' environment is a different 'home' than what is used within the PROD environment.  A client may have many homes for the same solution, if supporting many different environments.  This provides the needed flexibility with respect to configuration, release level, and even client modifications. 
-
-A 'deployment' product home is one that is used to support configuration and creation of a deployable war file. In a subsequent release, this plugin will be extended to support the installation of a 'development' home that supports building from source code. 
-
-The following example shows a 'deployment' product home for the 'Banner Course Catalog and Class Schedule' solution that is to be deployed within a TEST environment.  Please note that in addition to the module's product home, there is a separate 'shared_TEST_configs' home that contains cross-module configuration for the TEST environment. Currently this directory holds a single file (banner_configuration.groovy) containing only JNDI DataSource configuration. 
-{code}
-banner_TEST_homes/                      (optional and recommended top-level directory for all homes)
-
-|--> catalog_schedule_TEST/             (product home for 'catalog-schedule' in TEST environment)
-    |--> current
-        |--> instance/                  (instance-specific configuration that will not be overwritten)
-           |--> config/
-              |--> catalog_schedule_config.groovy (module-specific configuration for CAS, logging, etc.)
-           |--> lib
-              |--> ojdbc6.jar           (the Oracle database driver that must be placed manually into the tomcat/lib directory)
-           |--> i18n                    (new or replacement message bundles that should be added the war) 
-           |--> css                     (new or replacement css files that should be added the war) 
-           |--> js                      (new or replacement javascript files that should be added the war) 
-        |--> db/                        (contains SQL scripts for use with GOSTAGE)
-        |--> dist/                      (contains the war file, after it is creating using the 'systool') 
-        |--> installer/                 (contains the installer)
-    |--> archived-releases/             (directory for previous releases)
-        |--> catalog_schedule_v9.0.0.2/          
-        |--> catalog_schedule_v9.0.0.1/ 
-
-|--> shared_configuration_TEST/         (home for configuration files shared across modules in an environment)
-    |--> banner_configuration.groovy    (a 'shared' configuration file containing dataSource)
-{code} 
-
-
-
+* [Deploying the War to Tomcat|guide:deploytomcat]
 
 \\
 \\
