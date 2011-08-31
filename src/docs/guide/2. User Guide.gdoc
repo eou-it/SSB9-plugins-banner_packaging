@@ -1,21 +1,23 @@
 
 _Note: Those who build this plugin from source may generate this documentation by using the 'grails doc' target from the root directory of the plugin._ 
 \\
-The banner-packaging plugin provides a common approach for creating release packages and for installation of Banner 9 web applications. 
+\\
 
-Specifically, this plugin:
 
-* Adds a 'package-release' grails target that may be used to create a release package
+The banner-packaging plugin provides a common approach for creating release packages and subsequent installation of Banner 9 web applications. Specifically, this plugin:
+
+* Adds a Grails 'package-release' target that may be used to create the release package
 * Incorporates an installer into the release package, in order to provide a common installation approach across Banner 9 solutions
-* Supports installing into an existing product (aka deployment) 'home' directory, including archiving of the previous release
-* Supports creation of new configuration files (both a shared 'banner_configuration.groovy file within a shared_configurations directory), and an \{app-name\}_configuration.groovy file within the 'instance/config' directory.  
-* Supports overwriting CSS, JavaScript, and message properties (localization bundles) and re-generating the war file
-* Supports deployment to Tomcat
+* Supports installing into an existing product 'home' (directory), with archiving of the previous release
+* Copies configuration files ready for editing 
+** A shared 'banner_configuration.groovy file is copied to the 'shared_configuration' directory if it does not already exist
+** An \{app-name\}_configuration.groovy file is copied to the 'current/instance/config' directory within the home, if it does not already exist  
+* Supports replacement or addition of CSS, JavaScript, and message properties (localization bundles) 
+* Supports war file generation (that includes environment-specific configuration and CSS/JavaScript/i18n overrides)
+* Supports deployment to a Tomcat web container
 
 
-This documentation is is two parts, the first addressing creation of the 'release package' and the second addressing how the release package is used to create or update a 'home' directory, how to generate a war file, and how to deploy that war file. 
-
-The following sections provide details of the key capabilities provided by this plugin. 
+This documentation consists of two parts. Part I addresses the creation of the 'release package' by development.  Part II addresses installation (into a 'home' directory) and deployment of the solution.  
 
 \\
 *Part I:*
@@ -26,7 +28,5 @@ The following sections provide details of the key capabilities provided by this 
 * [Re-generating the War File|guide:war]
 * [Deploying the War to Tomcat|guide:deploytomcat]
 
-\\
-\\
 \\
 \\

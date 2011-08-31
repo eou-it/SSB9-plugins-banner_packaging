@@ -1,15 +1,17 @@
 
-The 'systool' used to create the war file may also be used to deploy the war file to a Tomcat container.  Since environments differ significantly from each other, this target provides basic support for deploying the war through the Tomcat 'manager' application. While it may likely work fine in your environment, there will likely exist environments where this target is not fully functional.  Since war deployment may be accomplished by copying the war file to the Tomcat webapps/ directory, this target is not a critical capability of the systool. 
+The 'systool' used to create the war file may also be used to deploy the war file to a Tomcat container.  
 
-You will need three pieces of information, for which you will be prompted:
+Since environments vary significantly from each other (with respect to user privileges, clustering approach, web container version, operating system, etc.), this target may or may not be suitable for your use.  Regardless, this target provides support for deploying the 'dist/' war file via the Tomcat 'manager' application.  Since war deployment to Tomcat may also be accomplished simply by copying the war file to the Tomcat 'webapps/' directory, use of this target is not critical. 
+
+To use this target, you will need three pieces of information, for which you will be prompted:
 1) the URL to the manager application in tomcat (e.g., 'http://localhost:8080/manager') 
 2) a Tomcat user who has deploy privileges (e.g., 'tomcat')
 3) the password for that user
 
-Following is an example of this process:
 
+Use of this target is shown below:
 {code}
-19:12 t/current/installer $ bin/systool deploy-tomcat
+t/current/installer $ bin/systool deploy-tomcat
 
 Enter the URL to the Tomcat Manager. 
    This URL will be accessed in order to deploy the war into the container. 
@@ -25,7 +27,7 @@ Enter the Tomcat password for the user.
    This password will not be persisted. 
 
  ==> []: tomcat
-DeployTomcat ...      [echo] /Users/chardt/working/horizon/product_homes/catalog_schedule_deployment/current/dist/banner_on_grails-0.2.0.war
+DeployTomcat ...      [echo] /Users/bart/working/horizon/product_homes/catalog_schedule_deployment/current/dist/banner_on_grails-0.2.0.war
    [deploy] OK - Deployed application at context path /banner_on_grails
 OK
 {code}

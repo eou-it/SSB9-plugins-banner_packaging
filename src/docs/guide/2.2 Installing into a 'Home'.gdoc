@@ -1,7 +1,7 @@
 
-Banner 9 web applications are modular and are installed independently from each other (albeit they may share 'common' configuration). Since this plugin provides a common structure for release packages as well as a common installer, the product home directory structures are also the same across Banner 9 modules. 
+Banner 9 web applications are modular and are installed independently from each other (albeit they may share 'common' configuration). Since this plugin provides a common structure for release packages as well as a common installer, the product home directory structures subsequently created are consistent across all Banner 9 modules. 
 
-It is +highly recommended+ that product homes for Banner 9 modules used in a particular environment be placed in sibling directories.  As an example, the following directory structure shows two product homes and a shared_configuration directory that all support a common 'TEST' environment.  
+It is +highly recommended+ product homes for Banner 9 modules within a particular environment be placed in sibling directories.  As an example, the following directory structure shows two product homes and a shared_configuration directory that all support a common 'TEST' environment.  
 {code}
 banner9_product_homes_TEST
     |--> catalog_schedule_TEST 
@@ -9,8 +9,7 @@ banner9_product_homes_TEST
     |--> shared_configuration_TEST    
 {code}
 
-Note the names of the homes is not dictated, and must be input when prompted to do so by the installer. 
-
+Note the names of the homes is not restricted, and must be input when prompted to do so by the installer.  If an identified home (or the directory for shared configuration) does not exist, it will be created by the installer. 
 
 
 The following steps illustrate installing the solution into a product (aka 'deployment') home:
@@ -18,11 +17,11 @@ The following steps illustrate installing the solution into a product (aka 'depl
 
 h4. Extract the release package into a temporary location
 {code}
-10:18 $ rm -rf temp/
-10:18 $ mkdir temp
-10:18 $ cd temp/
-10:18 temp $ cp /Users/bart/working/horizon/banner_on_grails/release-banner_on_grails-0.2.0.zip .
-10:19 temp $ unzip release-banner_on_grails-0.2.0.zip 
+$ rm -rf temp/
+$ mkdir temp
+$ cd temp/
+temp $ cp /Users/bart/working/horizon/banner_on_grails/release-banner_on_grails-0.2.0.zip .
+temp $ unzip release-banner_on_grails-0.2.0.zip 
 Archive:  release-banner_on_grails-0.2.0.zip
    creating: config/
    creating: i18n/
@@ -31,12 +30,16 @@ Archive:  release-banner_on_grails-0.2.0.zip
    ... lengthy logging removed ...
 {code}
 
+_If you manually create a home directory, or have already installed a previous version of a module and thus already have a home, you may find it convenient to create a 'temp-extraction' subdirectory within the home.  This is simply a way to ensure temp extraction directories are easily associated with homes. When extracting the release package into a temporary subdirectory of the home in which you will install the release, the installer will simply ignore the temporary directory._
+
+
 
 h4. Prepare the installer
+The installer contained within the release package has no dependencies other than the JVM.  There is no requirement to install groovy, or have Grails.  The 'Ant' build tool is used to prepare the installer, and is included within the release package.  The use of 'ant' to prepare the installer requires the user to run 'ant', as shown below:
 _Note: You may need, depending upon your system, to ensure the 'ant' file is executable (e.g., 'chmod +x ant')_
 {code}
-10:22 temp $ cd installer
-10:27 temp/installer $ ant
+temp $ cd installer
+temp/installer $ ant
 Buildfile: /Users/bart/working/horizon/product_homes/catalog_schedule_deployment/temp/installer/build.xml
 
 _checkInstallerMarker:
@@ -68,8 +71,9 @@ Total time: 4 seconds
 
 
 h4. Install into a 'Home'
+Once the installer has been prepared (using 'ant' as shown above), it may be used to 'install' the release into a product home: 
 {code}
-18:27 tion-area/installer $ bin/install home
+temp/installer $ bin/install home
 
 Enter the full path to the module home. 
    The module will be installed within the 'current' subdirectory within this home, 
@@ -121,14 +125,13 @@ banner_TEST_homes/                      (optional and recommended top-level dire
            |--> i18n                    (new or replacement message bundles that should be added the war) 
            |--> css                     (new or replacement css files that should be added the war) 
            |--> js                      (new or replacement javascript files that should be added the war) 
-        |--> db/                        (contains SQL scripts for use with GOSTAGE)
+        |--> i18n/                      (contains message bundles that may reflect changes not yet in 'baseline')
         |--> dist/                      (contains the war file, after it is creating using the 'systool') 
         |--> installer/                 (contains the installer)
     |--> archived-releases/             (directory for previous releases)
-        |--> catalog_schedule_v9.0.0.2/          
-        |--> catalog_schedule_v9.0.0.1/ 
+        |-->           
 
-|--> shared_configuration_TEST/         (home for configuration files shared across modules in an environment)
+|--> shared_configuration_TEST/         (home for configuration files shared across modules within an environment)
     |--> banner_configuration.groovy    (a 'shared' configuration file containing dataSource)
 {code} 
 

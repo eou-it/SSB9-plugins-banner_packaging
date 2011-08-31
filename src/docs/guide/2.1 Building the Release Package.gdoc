@@ -1,19 +1,19 @@
 
-This plugin adds a 'package-release' grails target that will generate a new 'release package' zip file containing the solution and the installer.  Use of this plugin across all Banner 9 projects ensures a common approach to configuration and installation. 
+This plugin adds a Grails 'package-release' target that creates a 'release package' (zip file) containing the solution and the installer.  Use of this plugin across all Banner 9 projects ensures a common approach to both configuration and installation.  
 
 Usage:
 {code}
 grails clean && grails package-release
 {code}
 
-The release package zip file will be created within the 'target' directory of the project. Depending upon your computer and the specific solution being packaged, this may take over 20 minutes.  
+The release package zip file is created within the 'target' directory of the project. Depending upon your computer and the specific solution being packaged, this may take over 20 minutes.  
 
-In order for a build number to be assigned, it is important to have connectivity to the SunGard Higher Education intranet.  This is needed because the build number is retrieved from an internal web service. 
+*Note:*
+In order for a build number to be assigned, you must have connectivity to the SunGard Higher Education intranet.  This is needed since the build number is retrieved from an internal web service.  (When 'source code release packages' are supported, this requirement will not exist when building from source.)
 
-If you need to package a release and you do not need a build number, you may comment out the 'build.number.uuid' property within the grails-app/conf/Config.groovy file.  Doing so will result in a build number of 'Unassigned'.  
+If you need to package a release and you do not need a build number, you may comment out the 'build.number.uuid' property within the grails-app/conf/Config.groovy file.  Doing so will result in a build number of 'Unassigned', and no connectivity is required.  
 
-If you do not comment out the 'build.number.uuid' property within the grails-app/conf/Config.groovy file, and do not have connectivity to the build number web service, you may still package the release.  In this case, the build number will be "   **** WARNING: Build number could not be attained ****    ".  
-
+If you do not comment out the 'build.number.uuid' property within the grails-app/conf/Config.groovy file, and you do not have connectivity to the build number web service, you may still package the release.  In this case, the build number will be "   **** WARNING: Build number could not be attained ****    ".  
 
 \\
 \\
