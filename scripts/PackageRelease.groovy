@@ -95,7 +95,7 @@ private void insertVersion( File target ) {
     def appName    = "${metadata.'app.name'}"
     def appVersion = "${metadata.'app.version'}"
     
-     // def config = new ConfigSlurper().parse( new File( "${basedir}/grails-app/conf/Config.groovy" ).toURL() )
+    // def config = new ConfigSlurper().parse( new File( "${basedir}/grails-app/conf/Config.groovy" ).toURL() )
     def uuid = config.build.number.uuid
     def url  = config.build.number.base.url + uuid 
     

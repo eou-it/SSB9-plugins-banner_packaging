@@ -18,8 +18,6 @@ import groovy.xml.StreamingMarkupBuilder
 import org.apache.tools.ant.taskdefs.*
 import org.apache.tools.ant.types.*
 
-import org.springframework.beans.factory.annotation.Required
-
 
 /**
  * Installer action for assembling a deployable war file from a template.
@@ -62,6 +60,11 @@ public class CreateWar extends DefaultAction {
 			throw new RuntimeException( "Shared config dir: ${sharedConfigDirName} does not exist" )
 		}
     }
+    
+    
+	private Properties getReleaseProperties() {
+		getProperties( "${FileStructure.I18N_DIR}/release.properties" )
+	}
 
 
 	private File getTemplate() {
@@ -110,47 +113,213 @@ public class CreateWar extends DefaultAction {
     
     
     private void updateWebXml() {
-        File webXml = resolveFile( stagingWarDir.getAbsolutePath() + "/WEB-INF/web.xml" )
-        def root = new XmlSlurper().parseText( webXml.getText() )
         
-    	updateWebXmlDataSourceRef(root )
-    	updateWebXmlCasConfiguration( root )	
+        def config         = new ConfigSlurper().parse( resolveFile( "${sharedConfigDir.getAbsolutePath()}/banner_configuration.groovy" ).toURL() )
+        def appName = getReleaseProperties().getProperty( "application.name" )
+        def instanceConfig = new ConfigSlurper().parse( resolveFile( "${FileStructure.INSTANCE_CONFIG_DIR}/${appName}_configuration.groovy" ).toURL() )        
+
+        File webXml = resolveFile( stagingWarDir.getAbsolutePath() + "/WEB-INF/web.xml" )
+        def root = new XmlParser().parseText( webXml.getText() )
+        
+    	updateWebXmlDataSourceRef( config, root )
     	
-    	webXml.text = new StreamingMarkupBuilder().bind {
-            mkp.declareNamespace( "": "http://java.sun.com/xml/ns/j2ee" )
-            mkp.yield( root )
-        }                    	
+    	if (!casIsEnabled( instanceConfig )) {
+            removeCasContentIfPresent( root )
+        } else {
+        	updateWebXmlCasConfiguration( instanceConfig, root )	
+        }
+            	
+        def stringWriter = new StringWriter() 
+        new XmlNodePrinter( new PrintWriter( stringWriter ) ).print( root ) 
+println stringWriter.toString()
+        webXml.text = stringWriter.toString()
     }
     
     
-    private void updateWebXmlDataSourceRef( root ) {
+    private void updateWebXmlDataSourceRef( config, root ) {
         
-        def config = new ConfigSlurper().parse( new File( "${sharedConfigDir.getAbsolutePath()}/banner_configuration.groovy" ).toURL() )
-        def jndiName = config.bannerDataSource.jndiName 
-        //println " found (in banner_configuration) jndiName $jndiName"
+        updateJndi( config.bannerDataSource.jndiName,
+                    'config.bannerDataSource.jndiName',
+                    root, 
+                    'BannerDS Datasource' )
+                         
+        updateJndi( config.bannerSsbDataSource.jndiName, 
+                    'config.bannerSsbDataSource.jndiName', 
+                    root, 
+                    'Banner Self Service Datasource', 
+                    false )
+    }
+    
+    
+    private void updateJndi( jndiName, configProp, root, refName, required = true ) {
+        if (required && jndiName instanceof Map) throw new RuntimeException( "Please configure '$configProp, and re-run this action." )
         
         if ("jdbc/bannerDataSource" != jndiName) {
-            // the user changed the jndiName $jndiName from the 'as-built' default ('jdbc/bannerDataSource')"
-            // we need to ensure the web.xml has the same name
+            def resourceRef = root.'resource-ref'.find { it.'description'.toString().contains( refName ) } 
+            def resourceRefName = resourceRef ? resourceRef.children().find { it.toString().contains( 'res-ref-name' ) } : null
             
-            def resourceRefName = root.'resource-ref'.'res-ref-name'        
-            //println " root.'resource-ref'.'res-ref-name' = $resourceRefName"
-
-            if ("$jndiName" != "$resourceRefName") {
-            //println " banner_configuration.groovy has jndiName $jndiName and web.xml has $resourceRefName, so will change the web.xml"
-                root.'resource-ref'.'res-ref-name' = jndiName
-                updateProgress( new UpdateDataSourceCompleteMessage( jndiName, resourceRefName ) )     
+            if (required && !resourceRefName) throw new RuntimeException( "Expected to find '$refName JNDI reference within the web.xml!" )                      
+            if (resourceRefName && "$jndiName" != "${resourceRefName.name()}") {
+                def oldValue = resourceRefName.value
+                resourceRefName.value = jndiName
+                updateProgress( new UpdateDataSourceCompleteMessage( "${resourceRef.description}", jndiName, "$oldValue" ) )     
             }
+        } 
+    }
+    
+    
+    private boolean casIsEnabled( instanceConfig ) {
+        'cas' == instanceConfig.banner.sso.authenticationProvider      
+    }
+    
+    
+    private boolean casIsConfiguredInWebXml( root ) {
+        root.filter.'filter-name'.any { it.'filter-name'.toString().contains( 'CAS' ) }
+    }
+    
+    
+    private void updateWebXmlCasConfiguration( instanceConfig, root ) {
+                
+        if (casIsConfiguredInWebXml( root )) { 
+            // We just need to update the validation filter content...
+            def validationFilter = root.filter.find { it.'filter-name'.toString() == 'CAS Validation Filter' }
+            validationFilter?.replaceNode( getCasValidationFilter() )                             
+        } 
+        else {
+            def ant = new AntBuilder()
+            ant.echo "Inserting CAS filter and filter-mapping elements into web.xml ..."            
+            insertCasFilters( instanceConfig, root )
+            insertCasFilterMappings( root )
+        }
+    }
+    
+    
+    private void removeCasContentIfPresent( root ) {
+        if (casIsConfiguredInWebXml( root )) {                
+            ant.echo "Removing CAS filter and filter-mapping elements from the web.xml..."
+            def allChildren = root.children()
+            def casContent = allChildren.find { it.'filter-name'.toString().contains( 'CAS' ) }
+            casContent?.each { it.replaceNode {} }
+        } 
+    }
+    
+    
+    private void insertCasFilters( instanceConfig, root ) {
+        def insertionIndex
+        def allChildren = root.children()
+        allChildren.eachWithIndex { elem, index -> 
+            if (elem.'filter-name'.toString().contains( 'springSecurityFilterChain' )) {
+                insertionIndex = insertionIndex ?: index + 1
+            }
+        }        
+        def casFilters = getCasFilters( instanceConfig )
+        casFilters.each {
+            allChildren.add( insertionIndex++, it )
+        }
+    }
+    
+    
+    private void insertCasFilterMappings( root ) {
+        def insertionIndex = 0 
+        def allChildren = root.children()
+        allChildren.eachWithIndex { elem, index -> 
+            if (elem.name().toString().contains( 'filter-mapping' )) {
+                insertionIndex = index
+            }
+        }
+        // we've got the index of the last filter-mapping, so we'll insert after that...
+        insertionIndex++         
+        def casFilterMappings = getCasFilterMappings()
+        casFilterMappings.each {
+            allChildren.add( insertionIndex++, it )
         }        
     }
     
     
-    private void updateWebXmlCasConfiguration( root ) {
-        //println " updateWebXmlCasConfiguration not yet implemented"
+    private def getCasFilters( instanceConfig ) {
+        
+        def casValidationFilters = getCasValidationFilterString( instanceConfig )
+        def filters = """
+            |<snippet-root>
+            |<filter>
+    	    |	<filter-name>CAS Single Sign Out Filter</filter-name>
+    	    |	<filter-class>org.jasig.cas.client.session.SingleSignOutFilter</filter-class>
+    	    |</filter>
+    	    |$casValidationFilters
+    	    |<filter>
+    	    |	<filter-name>CAS HttpServletRequest Wrapper Filter</filter-name>
+    	    |	<filter-class>org.jasig.cas.client.util.HttpServletRequestWrapperFilter</filter-class>
+    	    |</filter>
+            |</snippet-root>
+    	    |""".stripMargin()
+    	def root = new XmlParser().parseText( filters )
+    	root.children()
+    }
+    
+    
+    private def getCasValidationFilter() {
+        def root = new XmlParser().parseText( "<snippet-root>${getCasValidationFilterString()}</snippet-root>" )
+        root.filter
+    }
+    
+    
+    private String getCasValidationFilterString( instanceConfig ) {
+        
+        def validationFilter = """
+	        |<filter>
+	        |	<filter-name>CAS Validation Filter</filter-name>
+	        |	<filter-class>org.jasig.cas.client.validation.Saml11TicketValidationFilter</filter-class>
+	        |	<init-param>
+	        |		<param-name>casServerUrlPrefix</param-name>
+	        |		<param-value>${instanceConfig.grails.plugins.springsecurity.cas.serverUrlPrefix}</param-value>
+	        |	</init-param>
+	        |	<init-param>
+	        |		<param-name>serverName</param-name>
+	        |		<param-value>${instanceConfig.grails.plugins.springsecurity.cas.serverName}</param-value>
+	        |	</init-param>
+	        |	<init-param>
+	        |		<param-name>redirectAfterValidation</param-name>
+	        |		<param-value>true</param-value>
+	        |	</init-param>
+	        |</filter>
+            |""".stripMargin()
+    }
+    
+    
+    private def getCasFilterMappings() {
+        
+        def filterMappings = """
+            |<snippet-root>
+            |<filter-mapping>
+    	    |	<filter-name>CAS Single Sign Out Filter</filter-name>
+    	    |	<url-pattern>/*</url-pattern>
+    	    |</filter-mapping>
+    	    |<filter-mapping>
+    	    |	<filter-name>CAS Validation Filter</filter-name>
+    	    |	<url-pattern>/*</url-pattern>
+    	    |</filter-mapping>
+    	    |<filter-mapping>
+    	    |	<filter-name>CAS HttpServletRequest Wrapper Filter</filter-name>
+    	    |	<url-pattern>/*</url-pattern>
+    	    |</filter-mapping>    	
+            |</snippet-root>
+            |""".stripMargin()
+        def root = new XmlParser().parseText( filterMappings )
+        root.children()
+    }
+    
+    
+    // used only for debugging...
+    private String renderFormattedXml( String xml ) {
+        
+      def stringWriter = new StringWriter()
+      def node = new XmlParser().parseText( xml )
+      new XmlNodePrinter( new PrintWriter( stringWriter ) ).print( node )
+      stringWriter.toString()
     }
 
 
-	private void updateI18N( File stagingDir ) {
+	private void updateI18N( File stagingDir ) {	    
 		updateStaging( stagingDir, "WEB-INF/grails-app/i18n", FileStructure.I18N_DIR )
 		updateStaging( stagingDir, "WEB-INF/grails-app/i18n", FileStructure.INSTANCE_I18N_DIR )
 	}
@@ -185,16 +354,15 @@ public class CreateWar extends DefaultAction {
         copy.setTodir( toDir )
         copy.setOverwrite( true )
 		copy.addFileset( sources )
-        runTask( copy )
-		
+        runTask( copy )		
 	}
 
 
 	private class UpdateDataSourceCompleteMessage extends ProgressMessage {
 	    private static final String RESOURCE_CODE = "installer.message.update_datasource_complete"
 	
-	    UpdateDataSourceCompleteMessage( jndiName, resourceRef ) {
-	        super( RESOURCE_CODE, [ "$jndiName", "$resourceRef" ] )
+	    UpdateDataSourceCompleteMessage( description, jndiName, resourceRefName ) {
+	        super( RESOURCE_CODE, [ "$description", "$jndiName", "$resourceRefName" ] )
 	    }
 	}
 	

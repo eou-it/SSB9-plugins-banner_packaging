@@ -102,11 +102,11 @@ public class InstallHome extends DefaultAction {
             new File( "${sharedConfigHome.getValue()}/banner_configuration.groovy" ).write( example?.text )
 		}
 		
-		def releaseProps = getReleaseProperties()
-		File instanceConfig = resolveFile( "${home.getValue()}/current/instance/${releaseProps['application.name']}_configuration.groovy" )
-		if (!instanceConfig.exists()) {
-		    def example = resolveFile( "${home.getValue()}/current/config/${releaseProps['application.name']}_configuration.example" )  
-            new File( "${home.getValue()}/current/instance/config/${releaseProps['application.name']}_configuration.groovy" ).write( example?.text )
+        def appName = getReleaseProperties()['application.name']
+		File instanceConfig = resolveFile( "${home.getValue()}/current/instance/config/${appName}_configuration.groovy" )
+		if (!instanceConfig.exists()) { 
+		    def example = resolveFile( "${home.getValue()}/current/config/${appName}_configuration.example" )  
+            new File( "${home.getValue()}/current/instance/config/${appName}_configuration.groovy" ).write( example?.text )
 		}
     }
 
@@ -145,13 +145,10 @@ public class InstallHome extends DefaultAction {
         deleteTask.addFileset( fs )
         runTask( deleteTask )
 	}
-	
-	
+
+
 	private Properties getReleaseProperties() {
-		Properties p = new Properties()
-		File f = resolveFile( "${currentDir}/i18n/release.properties" )
-		p.load( new FileInputStream( f ) )
-		p
+		getProperties( "${currentDir}/i18n/release.properties" )
 	}
 
 }
