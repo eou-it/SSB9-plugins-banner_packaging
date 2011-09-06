@@ -152,6 +152,7 @@ println stringWriter.toString()
     
     
     private void updateJndi( jndiName, configProp, root, refName, required = true ) {
+        
         if (required && jndiName instanceof Map) throw new RuntimeException( "Please configure '$configProp, and re-run this action." )
         
         if ("jdbc/bannerDataSource" != jndiName) {
@@ -195,6 +196,7 @@ println stringWriter.toString()
     
     
     private void removeCasContentIfPresent( root ) {
+        
         if (casIsConfiguredInWebXml( root )) {                
             ant.echo "Removing CAS filter and filter-mapping elements from the web.xml..."
             def allChildren = root.children()
@@ -205,6 +207,7 @@ println stringWriter.toString()
     
     
     private void insertCasFilters( instanceConfig, root ) {
+        
         def insertionIndex
         def allChildren = root.children()
         allChildren.eachWithIndex { elem, index -> 
@@ -220,11 +223,31 @@ println stringWriter.toString()
     
     
     private void insertCasFilterMappings( root ) {
+        
         def insertionIndex = 0 
+        def grailsWebRequestFilterIndex = 0
         def allChildren = root.children()
         allChildren.eachWithIndex { elem, index -> 
-            if (elem.name().toString().contains( 'filter-mapping' )) {
-                insertionIndex = index
+            if (insertionIndex == 0) {
+                // we want to add the CAS filter-mapping elements as the first filter-mapping elements. 
+                // Unfortunately, the CAS plugin puts duplicate entries into the web.xml, placed with the 'filter' elements. 
+                // We know our last 'filter' is named 'grailsWebRequest', so we'll find the index for this filter.
+                if (grailsWebRequestFilterIndex == 0 && elem.'filter-name'.toString().contains( 'grailsWebRequest' )) {
+                    grailsWebRequestFilterIndex = index
+                }
+                
+                if (elem.name().toString().contains( 'filter-mapping' )) {
+                    if (elem.'filter-name'.toString().contains( 'CAS' ) && index < grailsWebRequestFilterIndex) {
+                        // We haven't reached the last filter, but encountered a CAS filter-mapping... 
+                        // We'll remove this (as we'll be adding the CAS filter-mapping elements in the correct location later...)
+                        println "Going to remove CAS filter-mapping at index $index:  ${elem.'filter-name'.toString()}"
+                        elem.replaceNode {} 
+                    }
+                
+                    if (grailsWebRequestFilterIndex > 0 && grailsWebRequestFilterIndex < index) {
+                        insertionIndex = index - 1
+                    }
+                }
             }
         }
         // we've got the index of the last filter-mapping, so we'll insert after that...
@@ -340,6 +363,7 @@ println stringWriter.toString()
 	 * the target dir (relative to the stagingDir)
 	 **/
 	private void updateStaging( File stagingDir, String target, String sourceDir ) {
+	    
 		File toDir = resolveFile( stagingDir.getAbsolutePath() + "/" + target )
 		mkdir( toDir )
 
@@ -359,6 +383,7 @@ println stringWriter.toString()
 
 
 	private class UpdateDataSourceCompleteMessage extends ProgressMessage {
+	    
 	    private static final String RESOURCE_CODE = "installer.message.update_datasource_complete"
 	
 	    UpdateDataSourceCompleteMessage( description, jndiName, resourceRefName ) {

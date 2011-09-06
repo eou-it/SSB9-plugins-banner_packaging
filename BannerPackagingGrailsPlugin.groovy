@@ -20,7 +20,7 @@ class BannerPackagingGrailsPlugin {
     // however it is not being picked up.  Consequently, a pom.xml file is added to the root directory with the correct groupId
     // and will be removed when the maven-publisher plugin correctly sets the groupId based on the following field.
 	def groupID = "sungardhe"
-    def version = "0.0.1.4"
+    def version = "0.0.1.5"
     
     def scopes = [ excludes:'war' ]
 
