@@ -131,7 +131,7 @@ public class CreateWar extends DefaultAction {
             	
         def stringWriter = new StringWriter() 
         new XmlNodePrinter( new PrintWriter( stringWriter ) ).print( root ) 
-println stringWriter.toString()
+//println stringWriter.toString()
         webXml.text = stringWriter.toString()
     }
     
@@ -240,7 +240,7 @@ println stringWriter.toString()
                     if (elem.'filter-name'.toString().contains( 'CAS' ) && index < grailsWebRequestFilterIndex) {
                         // We haven't reached the last filter, but encountered a CAS filter-mapping... 
                         // We'll remove this (as we'll be adding the CAS filter-mapping elements in the correct location later...)
-                        println "Going to remove CAS filter-mapping at index $index:  ${elem.'filter-name'.toString()}"
+//                        println "Going to remove CAS filter-mapping at index $index:  ${elem.'filter-name'.toString()}"
                         elem.replaceNode {} 
                     }
                 

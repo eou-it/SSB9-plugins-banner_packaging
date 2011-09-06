@@ -96,7 +96,7 @@
         <property name="promptResourceCode" value="installer.message.promptTomcatPassword"/> 
         <property name="localizer" ref="localizer"/>
 		<property name="propertyStore" ref="propertyStore"/>
-		<property name="responseKey" value=""/>
+	    <!-- Prevent storing the password by not setting the "responseKey" property -->
     </bean>
 
 
