@@ -95,7 +95,8 @@ public class CreateWar extends DefaultAction {
 		updateJS( stagingWarDir )
 		updateStaging( stagingWarDir, "WEB-INF/classes", sharedConfigDir.getAbsolutePath() )
 		updateStaging( stagingWarDir, "WEB-INF/classes", FileStructure.INSTANCE_CONFIG_DIR )
-		
+
+		copyReleaseProperties() // we'll copy release.properties to WEB-INF/classes 		
 		updateWebXml()
 				
         War war = (War) newTask( Tasks.WAR )
@@ -114,7 +115,7 @@ public class CreateWar extends DefaultAction {
     
     private void updateWebXml() {
         
-        def config         = new ConfigSlurper().parse( resolveFile( "${sharedConfigDir.getAbsolutePath()}/banner_configuration.groovy" ).toURL() )
+        def config  = new ConfigSlurper().parse( resolveFile( "${sharedConfigDir.getAbsolutePath()}/banner_configuration.groovy" ).toURL() )
         def appName = getReleaseProperties().getProperty( "application.name" )
         def instanceConfig = new ConfigSlurper().parse( resolveFile( "${FileStructure.INSTANCE_CONFIG_DIR}/${appName}_configuration.groovy" ).toURL() )        
 
@@ -355,6 +356,15 @@ public class CreateWar extends DefaultAction {
 
 	private void updateJS( File stagingDir )  {
 		updateStaging( stagingDir, "js", FileStructure.INSTANCE_JS_DIR )
+	}
+	
+	
+	private void copyReleaseProperties() {
+	    		
+	    def ant = new AntBuilder()
+    	ant.copy( todir: "${stagingWarDir.getAbsolutePath()}/WEB-INF/classes" ) {
+    		fileset( dir: "${FileStructure.I18N_DIR}", includes: "release.properties" )
+    	}
 	}
 
 	

@@ -10,12 +10,12 @@
  ****************************************************************************** */
 package com.sungardhe.banner.configuration
 
+
+import com.sungardhe.banner.configuration.ReleaseVersionUtils
+
 import groovy.sql.Sql
 
 import org.apache.log4j.Logger
-
-import org.codehaus.groovy.grails.commons.ApplicationHolder
-import org.codehaus.groovy.grails.commons.GrailsApplication
 
 
 class BannerDependencyService {
@@ -28,12 +28,15 @@ class BannerDependencyService {
     def init() {
         
         // 1. Validate dependencies.groovy against the installed applications
-        log.info "(Note: Runtime dependency validation is not yet supported)"
+        log.error "(Note: Runtime dependency validation is not yet supported)"
                 
         // 2. Record this application version (if not yet recorded)
         Sql sql = new Sql( sessionFactory.getCurrentSession().connection() )
         try {
-            log.error "BannerDependencyService not yet implemented!"
+            
+            def releaseNum = ReleaseVersionUtils.getBuildNumber()
+            log.error "\nXXXXXXXXXXXXXXX XXXXXXXX  XXXXXXXXXXXXXXXXX \nreleaseNum = $releaseNum"
+
             
         } catch (e) {
             log.error "Could not record application version within the database due to: ${e.message}", e

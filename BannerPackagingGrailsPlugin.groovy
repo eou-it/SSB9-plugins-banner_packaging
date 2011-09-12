@@ -38,6 +38,7 @@ class BannerPackagingGrailsPlugin {
     def doWithWebDescriptor = { xml -> }
 
     def doWithSpring = { 
+        println "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX adding BannerDependencyService service"
         bannerDependencyService( BannerDependencyService ) { bean ->
             bean.initMethod = 'init'
         }    
@@ -45,7 +46,12 @@ class BannerPackagingGrailsPlugin {
 
     def doWithDynamicMethods = { ctx -> }
 
-    def doWithApplicationContext = { applicationContext -> }
+    def doWithApplicationContext = { applicationContext ->
+        def bean = applicationContext.getBean('bannerDependencyService')
+        println "XXXXXXXXXXXX service is: $bean"
+        println "XXXXXXXXXXXX DID INIT NOT RUN?  WILL CALL..."
+        println "XXXXXXXXXXX      release number = ${bean.init()}"
+    }
 
     def onChange = { event -> }
 
