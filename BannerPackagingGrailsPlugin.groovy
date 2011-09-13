@@ -20,7 +20,7 @@ class BannerPackagingGrailsPlugin {
     // however it is not being picked up.  Consequently, a pom.xml file is added to the root directory with the correct groupId
     // and will be removed when the maven-publisher plugin correctly sets the groupId based on the following field.
 	def groupID = "sungardhe"
-    def version = "0.0.1.5"
+    def version = "0.0.1.6"
     
     def scopes = [ excludes:'war' ]
 
@@ -38,19 +38,17 @@ class BannerPackagingGrailsPlugin {
     def doWithWebDescriptor = { xml -> }
 
     def doWithSpring = { 
-        println "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX adding BannerDependencyService service"
-        bannerDependencyService( BannerDependencyService ) { bean ->
-            bean.initMethod = 'init'
-        }    
+//        bannerDependencyService( BannerDependencyService ) { bean ->
+//            bean.initMethod = 'init'
+//        }    
     }
 
     def doWithDynamicMethods = { ctx -> }
 
     def doWithApplicationContext = { applicationContext ->
-        def bean = applicationContext.getBean('bannerDependencyService')
-        println "XXXXXXXXXXXX service is: $bean"
-        println "XXXXXXXXXXXX DID INIT NOT RUN?  WILL CALL..."
-        println "XXXXXXXXXXX      release number = ${bean.init()}"
+//        def bean = applicationContext.getBean('bannerDependencyService')
+//        println "** Explicitly invoking 'bannerDependencyService.init()'"
+//        bean.init()
     }
 
     def onChange = { event -> }

@@ -96,7 +96,7 @@ public class CreateWar extends DefaultAction {
 		updateStaging( stagingWarDir, "WEB-INF/classes", sharedConfigDir.getAbsolutePath() )
 		updateStaging( stagingWarDir, "WEB-INF/classes", FileStructure.INSTANCE_CONFIG_DIR )
 
-		copyReleaseProperties() // we'll copy release.properties to WEB-INF/classes 		
+		// copyReleaseProperties() // we'll copy release.properties to WEB-INF/classes 		
 		updateWebXml()
 				
         War war = (War) newTask( Tasks.WAR )

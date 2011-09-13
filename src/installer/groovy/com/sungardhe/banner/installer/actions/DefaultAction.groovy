@@ -10,7 +10,7 @@
  *******************************************************************************/
 package com.sungardhe.banner.installer.actions
 
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Required
 import com.sungardhe.commoncomponents.installer.*
 import org.apache.tools.ant.taskdefs.*
 import org.apache.tools.ant.types.*
