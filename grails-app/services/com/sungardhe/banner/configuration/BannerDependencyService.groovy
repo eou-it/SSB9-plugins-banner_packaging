@@ -1,13 +1,14 @@
-/** *****************************************************************************
- © 2011 SunGard Higher Education.  All Rights Reserved.
- 
- CONFIDENTIAL BUSINESS INFORMATION
- 
- THIS PROGRAM IS PROPRIETARY INFORMATION OF SUNGARD HIGHER EDUCATION
- AND IS NOT TO BE COPIED, REPRODUCED, LENT, OR DISPOSED OF,
- NOR USED FOR ANY PURPOSE OTHER THAN THAT WHICH IT IS SPECIFICALLY PROVIDED
- WITHOUT THE WRITTEN PERMISSION OF THE SAID COMPANY
- ****************************************************************************** */
+/*********************************************************************************
+ Copyright 2009-2011 SunGard Higher Education. All Rights Reserved.
+ This copyrighted software contains confidential and proprietary information of 
+ SunGard Higher Education and its subsidiaries. Any use of this software is limited 
+ solely to SunGard Higher Education licensees, and is further subject to the terms 
+ and conditions of one or more written license agreements between SunGard Higher 
+ Education and the licensee in question. SunGard is either a registered trademark or
+ trademark of SunGard Data Systems in the U.S.A. and/or other regions and/or countries.
+ Banner and Luminis are either registered trademarks or trademarks of SunGard Higher 
+ Education in the U.S.A. and/or other regions and/or countries.
+ **********************************************************************************/
 package com.sungardhe.banner.configuration
 
 import groovy.sql.Sql
@@ -27,11 +28,11 @@ class BannerDependencyService { // implements ResourceLoaderAware {
 
     def sessionFactory   // injected by Spring
     
-    private String applicationVersion
-    private String buildNumber
+    private String  applicationVersion
+    private String  buildNumber
+    private String  appName
     
-    
-    public void init() {
+    def init() {
         Sql sql
         try {        
             cacheReleaseProperties( "/WEB-INF/grails-app/i18n/release.properties" )
@@ -53,8 +54,18 @@ class BannerDependencyService { // implements ResourceLoaderAware {
     
     
     private recordVersion( sql ) {
-        
-        // TODO: Insert/update into table to record app version and build number
+        def currentRelease = sql.firstRow('select gurwapp_release, gurwapp_build_no from gurwapp where gurwapp_application_name = ?',[appName])
+        log.debug("RecordVersion ${currentRelease}")
+        if (!currentRelease)  {
+            sql.execute('insert into gurwapp (gurwapp_application_name, gurwapp_release, gurwapp_build_no, gurwapp_stage_date, gurwapp_user_id, gurwapp_activity_date) values (?,?,?,sysdate,user,sysdate)', [appName, applicationVersion,buildNumber])
+            sql.commit()
+        }
+        else
+            if ((currentRelease.gurwapp_release != applicationVersion) || (currentRelease.gurwapp_build_no != buildNumber)) {
+                sql.executeUpdate('update gurwapp set gurwapp_release = ?,gurwapp_build_no = ? where gurwapp_application_name=? ', [applicationVersion,buildNumber,appName])
+                sql.commit()
+            }
+
     }
     
     
@@ -66,9 +77,18 @@ class BannerDependencyService { // implements ResourceLoaderAware {
     	
     	applicationVersion = getAppVersion()
         buildNumber = getBuildNumber()
+        appName = getAppName()
     }
     
-    
+    /**
+     * Returns the application version.
+     * The application version is specified within the application's 'application.properties' file.
+     **/
+    public String getAppName() {
+        def appName = releaseProperties['application.name']
+        appName instanceof String ? appName : ''
+    }
+
     /**
      * Returns the application version with a build number appended.
      * The returned string is suitable for displaying to the end user.
