@@ -18,14 +18,12 @@ import org.apache.log4j.Logger
 import org.springframework.context.ApplicationContext
 import org.codehaus.groovy.grails.commons.ApplicationHolder
 
-                                // Using this marker interface causes a side-effect, 
-                                // which prevents authentication...
-class BannerDependencyService { // implements ResourceLoaderAware {
+                                                                 
+class BannerDependencyService { 
        
     private final Logger log = Logger.getLogger( getClass() )
     
-    Properties     releaseProperties     
-
+    Properties releaseProperties 
     def sessionFactory   // injected by Spring
     
     private String  applicationVersion

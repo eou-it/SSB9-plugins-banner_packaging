@@ -120,7 +120,7 @@
                          maxmemory="256M"
                          dir="${bin.dir}"
 						 unixExtension=""
-						 windowsExtension="cmd">
+						 windowsExtension=".cmd">
             <sysproperty key="java.awt.headless" value="true"/>
             <arg value="spring/systool-context.xml"/>
             <arg value="spring/context.properties"/>
