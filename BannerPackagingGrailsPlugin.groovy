@@ -21,7 +21,7 @@ class BannerPackagingGrailsPlugin {
     // however it is not being picked up.  Consequently, a pom.xml file is added to the root directory with the correct groupId
     // and will be removed when the maven-publisher plugin correctly sets the groupId based on the following field.
 	def groupID = "sungardhe"
-    def version = "1.0.0"
+    def version = "1.0.1"
     
     def scopes = [ excludes:'war' ]
 
@@ -47,9 +47,9 @@ class BannerPackagingGrailsPlugin {
     def doWithDynamicMethods = { ctx -> }
 
     def doWithApplicationContext = { applicationContext ->
-        def bean = applicationContext.getBean('bannerDependencyService')
-        println "** Explicitly invoking 'bannerDependencyService.init()'"
-        bean.init()
+    //    def bean = applicationContext.getBean('bannerDependencyService')
+    //    println "** Explicitly invoking 'bannerDependencyService.init()'"
+    //    bean.init()
     }
 
     def onChange = { event -> }

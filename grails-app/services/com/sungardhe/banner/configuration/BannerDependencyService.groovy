@@ -52,6 +52,7 @@ class BannerDependencyService {
     
     
     private recordVersion( sql ) {
+        /**
         def currentRelease = sql.firstRow('select gurwapp_release, gurwapp_build_no from gurwapp where gurwapp_application_name = ?',[appName])
         log.debug("RecordVersion ${currentRelease}")
         if (!currentRelease)  {
@@ -63,6 +64,7 @@ class BannerDependencyService {
                 sql.executeUpdate('update gurwapp set gurwapp_release = ?,gurwapp_build_no = ? where gurwapp_application_name=? ', [applicationVersion,buildNumber,appName])
                 sql.commit()
             }
+         **/
 
     }
     
