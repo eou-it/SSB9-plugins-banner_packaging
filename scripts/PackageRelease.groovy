@@ -53,6 +53,9 @@ target( default:"Package Release" ) {
 	ant.mkdir( dir:"${stagingDir}/i18n" )
 	ant.copy( todir:"${stagingDir}/i18n" ) {
 		fileset( dir:"${basedir}/grails-app/i18n", includes:"**/*" )
+		// we'll also copy the release.properties to the i18n directory so that 
+		// it is easily accessible by the installer...
+		fileset( dir: "$basedir/target/classes", includes: "release.properties" )
 	}
 	
 	ant.mkdir( dir:"${stagingDir}/webapp" )
@@ -139,7 +142,7 @@ target( genReleaseProperties: "Creates a release.properties file holding a newly
                      |
                      |""".stripMargin()
     
-    def releasePropertiesFile = new File( "$basedir/target/classes/release.properties")    
+    def releasePropertiesFile = new File( "$basedir/target/classes/release.properties" )    
     releasePropertiesFile.write content
 }
 
