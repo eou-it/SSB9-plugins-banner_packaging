@@ -10,8 +10,6 @@
  Education in the U.S.A. and/or other regions and/or countries.
  **********************************************************************************/
 
-//import grails.util.BuildScope
-
 import org.apache.ivy.core.report.ArtifactDownloadReport
 import org.codehaus.groovy.grails.resolve.IvyDependencyManager
 
@@ -23,19 +21,18 @@ import org.codehaus.groovy.grails.resolve.IvyDependencyManager
  * environment specific configuration and overrides (localization message bundles, CSS, JavaScript).
  **/
 scriptEnv = "production"
-  
 includeTargets << grailsScript( "_GrailsPackage" )
 includeTargets << grailsScript( "_GrailsWar" )
 
+
 target( default:"Package Release" ) {
-	depends( checkVersion, createConfig, war )
+	depends( checkVersion, compile, createConfig, genReleaseProperties, war )
     
     event( "PackageReleaseStart", [] )
 
 	File templateZip = getTemplateHomeZip()
-
-    File installerZip = new File( "${basedir}/target/release-${metadata.'app.name'}-${metadata.'app.version'}.zip" )
-    ant.delete( file:installerZip )
+    File releasePackageZip = new File( "${basedir}/target/release-${metadata.'app.name'}-${metadata.'app.version'}.zip" )
+    ant.delete( file:releasePackageZip )
 
 	def stagingDir = new File( "${projectWorkDir}/installer-staging" )
 	ant.delete( dir:stagingDir )
@@ -57,7 +54,6 @@ target( default:"Package Release" ) {
 	ant.copy( todir:"${stagingDir}/i18n" ) {
 		fileset( dir:"${basedir}/grails-app/i18n", includes:"**/*" )
 	}
-	insertVersion( new File( "${stagingDir}/i18n/release.properties") )
 	
 	ant.mkdir( dir:"${stagingDir}/webapp" )
 	ant.copy( todir:"${stagingDir}/webapp" ) {
@@ -75,19 +71,33 @@ target( default:"Package Release" ) {
 		fileset( dir:"${basedir}/src", includes:"logging.properties" )
 	}
 
-	ant.zip( destfile:installerZip ) {
+	ant.zip( destfile:releasePackageZip ) {
 		fileset( dir:stagingDir )
 	}
 
     ant.delete( dir:stagingDir )
-
     event( "PackageReleaseEnd", [] )
 }
 
 
-private void insertVersion( File target ) {
+private File getTemplateHomeZip() {
     
-	// This method uses a 'build number' web service to retrieve the next build number 
+	//The template home dir is a zipped distro within the plugin directory.  We have to find the plugin dir.
+	File zip = null
+	pluginSettings.getPluginInfos().each() {
+		if (it.name.equals( "banner-packaging" )) {
+			zip = new File( it.pluginDir.getFile(), "template.zip" )
+		}
+	}
+	if (zip == null) {
+		throw new Exception( "Template home zip could not be found" )
+	}
+	zip
+}
+
+target( genReleaseProperties: "Creates a release.properties file holding a newly assigned build number and the application version." ) {    
+    
+	// This target uses a 'build number' web service to retrieve the next build number 
     // for the project.  Each project is assigned a UUID (manually), and this UUID is 
     // supplied to the web service to identify which 'build number sequence' to increment 
     // and return. The project's UUID, and the URL to the service, are 
@@ -100,13 +110,15 @@ private void insertVersion( File target ) {
     def uuid = config.build.number.uuid
     def url  = config.build.number.base.url + uuid 
     
-    def extractedBuildNumber = "Unassigned"
+    def extractedBuildNumber = "Unassigned" // used when the configuration does not specify a uuid 
     if (uuid instanceof String && url instanceof String) { 
         try {
             def buildNumberProperty  = url.toURL().getText()
             extractedBuildNumber = (buildNumberProperty =~ /[\d]+/).collect { it }[0]
         } catch (e) {
-            extractedBuildNumber = "   **** WARNING: Build number could not be attained ****    "
+            def msg = "   **** WARNING: Build number could not be attained ****    "
+            extractedBuildNumber = msg
+            println "$msg"
             // we'll bury the excepton and let the packaging proceed...
         }
     }
@@ -127,22 +139,8 @@ private void insertVersion( File target ) {
                      |
                      |""".stripMargin()
     
-    target.write content
+    def releasePropertiesFile = new File( "$basedir/target/classes/release.properties")    
+    releasePropertiesFile.write content
 }
 
-
-private File getTemplateHomeZip() {
-    
-	//The template home dir is a zipped distro within the plugin directory.  We have to find the plugin dir.
-	File zip = null
-	pluginSettings.getPluginInfos().each() {
-		if (it.name.equals( "banner-packaging" )) {
-			zip = new File( it.pluginDir.getFile(), "template.zip" )
-		}
-	}
-	if (zip == null) {
-		throw new Exception( "Template home zip could not be found" )
-	}
-	zip
-}
 
