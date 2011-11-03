@@ -8,7 +8,6 @@
     <resource>Config</resource>
     <resource>DataSource</resource>
     <resource>UrlMappings</resource>
-    <resource>com.sungardhe.banner.configuration.BannerDependencyService</resource>
   </resources>
   <dependencies />
   <behavior />

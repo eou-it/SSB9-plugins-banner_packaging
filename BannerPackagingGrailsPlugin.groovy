@@ -10,7 +10,6 @@
  Education in the U.S.A. and/or other regions and/or countries.
  **********************************************************************************/
 
-import com.sungardhe.banner.configuration.BannerDependencyService 
 
 /** 
  * Plugin class for the banner-packaging plugin.
@@ -38,19 +37,11 @@ class BannerPackagingGrailsPlugin {
 
     def doWithWebDescriptor = { xml -> }
 
-    def doWithSpring = { 
-       // bannerDependencyService( BannerDependencyService ) { bean ->
-       //     bean.initMethod = 'init'
-        //}
-    }
+    def doWithSpring = { }
 
     def doWithDynamicMethods = { ctx -> }
 
-    def doWithApplicationContext = { applicationContext ->
-    //    def bean = applicationContext.getBean('bannerDependencyService')
-    //    println "** Explicitly invoking 'bannerDependencyService.init()'"
-    //    bean.init()
-    }
+    def doWithApplicationContext = { applicationContext -> }
 
     def onChange = { event -> }
 
