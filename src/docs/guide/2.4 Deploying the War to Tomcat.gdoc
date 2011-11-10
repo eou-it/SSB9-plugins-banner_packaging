@@ -4,8 +4,8 @@ The 'systool' used to create the war file may also be used to deploy the war fil
 Since environments vary significantly from each other (with respect to user privileges, clustering approach, web container version, operating system, etc.), this target may or may not be suitable for your use.  Regardless, this target provides support for deploying the 'dist/' war file via the Tomcat 'manager' application.  Since war deployment to Tomcat may also be accomplished simply by copying the war file to the Tomcat 'webapps/' directory, use of this target is not critical. 
 
 To use this target, you will need three pieces of information, for which you will be prompted:
-1) the URL to the manager application in tomcat (e.g., 'http://localhost:8080/manager') 
-2) a Tomcat user who has deploy privileges (e.g., 'tomcat')
+1) the URL to the manager application in tomcat (e.g., 'http://localhost:8080/manager' or 'http://localhost:8080/manager.html')
+2) a Tomcat user who has deploy privileges (e.g., 'tomcat').  Please refer to your Tomcat documentation. 
 3) the password for that user
 
 
