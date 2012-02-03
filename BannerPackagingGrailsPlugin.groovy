@@ -21,10 +21,10 @@ class BannerPackagingGrailsPlugin {
     // and will be removed when the maven-publisher plugin correctly sets the groupId based on the following field.
 	def groupID = "sungardhe"
     def version = "1.0.2"
-    
+
     def scopes = [ excludes:'war' ]
 
-    def grailsVersion  = "1.3.5 > *"
+    def grailsVersion  = "1.3.7 > *"
     def dependsOn      = [:]
     def pluginExcludes = [ "grails-app/views/error.gsp" ]
 
