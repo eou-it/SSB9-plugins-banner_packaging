@@ -158,9 +158,13 @@ eventTemplateZip = { pluginName, pluginVersion ->
         File instanceProperties = new File( "$instanceDir/config/instance.properties" )
         instanceProperties << "shared.config.dir="
 
-        // TODO: determine the path to the src/installer, versus assuming it's in-place
-//       def installerSourceDir = "${basedir}/plugins/banner_packaging.git/src/installer"
-        def installerSourceDir = "${basedir}/src/installer"
+        def pluginDir = pluginSettings.inlinePluginDirectories.find { it.file.name == "banner-packaging" }
+        if (!pluginDir) {
+            def pluginInfo = pluginSettings.getPluginInfos().find { it.name == 'banner-packaging' }
+            //pluginDir = "${grailsSettings.projectPluginsDir}/${pluginInfo.name}-${pluginInfo.version}"
+            pluginDir = "${pluginInfo.pluginDir.getFile()}"
+        }
+        def installerSourceDir = "${pluginDir}/src/installer"
         ant.copy( todir:installerDir ) {
             fileset( dir:installerSourceDir, includes:"**/*" /* excludes:"apache-ant*" */ )
         }

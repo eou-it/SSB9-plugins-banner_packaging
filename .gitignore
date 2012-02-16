@@ -21,3 +21,4 @@ test/**/cobertura.ser
 test/**/release_info.groovy
 test/**/release_info.groovy.old
 plugin.xml
+template.zip
