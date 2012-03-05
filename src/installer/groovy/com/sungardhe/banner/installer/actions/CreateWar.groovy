@@ -1,4 +1,4 @@
-/*********************************************************************************
+/* *******************************************************************************
  Copyright 2009-2011 SunGard Higher Education. All Rights Reserved.
  This copyrighted software contains confidential and proprietary information of 
  SunGard Higher Education and its subsidiaries. Any use of this software is limited 
@@ -24,15 +24,14 @@ import org.apache.tools.ant.types.*
  * Installer action for assembling a deployable war file from a template.
  **/
 public class CreateWar extends DefaultAction {
-    
+
     private File stagingWarDir    // set by a call to 'setDirectories'
     private File sharedConfigDir  // set by a call to 'setDirectories'
-    
 
     public String getNameResourceCode() {
         "installer.action.CreateWar.name"
     }
-    
+
 
     public void execute() throws ActionRunnerException {
 
@@ -51,7 +50,7 @@ public class CreateWar extends DefaultAction {
 
         mkdir( FileStructure.DIST_DIR )
         mkdir( stagingWarDir )
-        
+
 		String sharedConfigDirName = getInstanceProperties().getProperty( "shared.config.dir" )
 		if (sharedConfigDirName?.trim()?.size() == 0) {
 			throw new RuntimeException( "Shared config dir not set" )
@@ -61,8 +60,8 @@ public class CreateWar extends DefaultAction {
 			throw new RuntimeException( "Shared config dir: ${sharedConfigDirName} does not exist" )
 		}
     }
-    
-    
+
+
 	private Properties getReleaseProperties() {
 		getProperties( "${FileStructure.I18N_DIR}/release.properties" )
 	}
@@ -105,131 +104,133 @@ public class CreateWar extends DefaultAction {
         war.setUpdate( true )
         war.setWebxml( resolveFile( stagingWarDir.getAbsolutePath() + "/WEB-INF/web.xml" ) )
         war.setManifest( resolveFile( stagingWarDir.getAbsolutePath() + "/META-INF/MANIFEST.MF" ) )
-        
+
         FileSet fs = newFileSet()
         fs.setDir( stagingWarDir )
         fs.createExclude().setName( "**WEB-INF/web.xml" )
         war.addFileset( fs )
         runTask( war )
     }
-    
-    
+
+
     private void updateWebXml() {
-        
+
         def config  = new ConfigSlurper().parse( resolveFile( "${sharedConfigDir.getAbsolutePath()}/banner_configuration.groovy" ).toURL() )
         def appName = getReleaseProperties().getProperty( "application.name" )
         def instanceConfig = new ConfigSlurper().parse( resolveFile( "${FileStructure.INSTANCE_CONFIG_DIR}/${appName}_configuration.groovy" ).toURL() )        
 
         File webXml = resolveFile( stagingWarDir.getAbsolutePath() + "/WEB-INF/web.xml" )
         def root = new XmlParser().parseText( webXml.getText() )
-        
+
     	updateWebXmlDataSourceRef( config, root )
-    	
+	
     	if (!casIsEnabled( instanceConfig )) {
             removeCasContentIfPresent( root )
         } else {
         	updateWebXmlCasConfiguration( instanceConfig, root )	
         }
-            	
+	
         def stringWriter = new StringWriter() 
         new XmlNodePrinter( new PrintWriter( stringWriter ) ).print( root ) 
 //println stringWriter.toString()
         webXml.text = stringWriter.toString()
     }
-    
-    
+
+
     private void updateWebXmlDataSourceRef( config, root ) {
-        
+
         updateJndi( config.bannerDataSource.jndiName,
+                    'jdbc/bannerDataSource', /*default name*/
                     'config.bannerDataSource.jndiName',
-                    root, 
+                    root,
                     'BannerDS Datasource' )
-                         
-        updateJndi( config.bannerSsbDataSource.jndiName, 
-                    'config.bannerSsbDataSource.jndiName', 
-                    root, 
-                    'Banner Self Service Datasource', 
+
+        updateJndi( config.bannerSsbDataSource.jndiName,
+                    'jdbc/bannerSsbDataSource', /*default name*/
+                    'config.bannerSsbDataSource.jndiName',
+                    root,
+                    'Banner Self Service Datasource',
                     false )
     }
-    
-    
-    private void updateJndi( jndiName, configProp, root, refName, required = true ) {
-        
+
+
+    private void updateJndi( jndiName, defaultName, configProp, root, refName, required = true ) {
+
         if (required && jndiName instanceof Map) throw new RuntimeException( "Please configure '$configProp, and re-run this action." )
-        
-        if ("jdbc/bannerDataSource" != jndiName) {
+
+        if (defaultName != jndiName) {
             def resourceRef = root.'resource-ref'.find { it.'description'.toString().contains( refName ) } 
             def resourceRefName = resourceRef ? resourceRef.children().find { it.toString().contains( 'res-ref-name' ) } : null
-            
-            if (required && !resourceRefName) throw new RuntimeException( "Expected to find '$refName JNDI reference within the web.xml!" )                      
+
+            if (required && !resourceRefName) throw new RuntimeException( "Expected to find '$refName JNDI reference within the web.xml!" )
             if (resourceRefName && "$jndiName" != "${resourceRefName.name()}") {
                 def oldValue = resourceRefName.value
                 resourceRefName.value = jndiName
-                updateProgress( new UpdateDataSourceCompleteMessage( "${resourceRef.description}", jndiName, "$oldValue" ) )     
+                updateProgress( new UpdateDataSourceCompleteMessage( "${resourceRef.description}", jndiName, "$oldValue" ) )
             }
-        } 
+        }
     }
-    
-    
+
+
     private boolean casIsEnabled( instanceConfig ) {
-        'cas' == instanceConfig.banner.sso.authenticationProvider      
+        'cas' == instanceConfig.banner.sso.authenticationProvider
     }
-    
-    
+
+
     private boolean casIsConfiguredInWebXml( root ) {
         root.filter.'filter-name'.any { it.'filter-name'.toString().contains( 'CAS' ) }
     }
-    
-    
+
+
     private void updateWebXmlCasConfiguration( instanceConfig, root ) {
-                
+
         if (casIsConfiguredInWebXml( root )) { 
             // We just need to update the validation filter content...
             def validationFilter = root.filter.find { it.'filter-name'.toString() == 'CAS Validation Filter' }
-            validationFilter?.replaceNode( getCasValidationFilter() )                             
-        } 
+            validationFilter?.replaceNode( getCasValidationFilter() )
+        }
         else {
             def ant = new AntBuilder()
-            ant.echo "Inserting CAS filter and filter-mapping elements into web.xml ..."            
+            ant.echo "Inserting CAS filter and filter-mapping elements into web.xml ..."
             insertCasFilters( instanceConfig, root )
             insertCasFilterMappings( root )
         }
     }
-    
-    
+
+
     private void removeCasContentIfPresent( root ) {
-        
-        if (casIsConfiguredInWebXml( root )) {                
+
+        if (casIsConfiguredInWebXml( root )) {
             ant.echo "Removing CAS filter and filter-mapping elements from the web.xml..."
             def allChildren = root.children()
             def casContent = allChildren.find { it.'filter-name'.toString().contains( 'CAS' ) }
             casContent?.each { it.replaceNode {} }
-        } 
+        }
     }
-    
-    
+
+
     private void insertCasFilters( instanceConfig, root ) {
-        
+
         def insertionIndex
         def allChildren = root.children()
-        allChildren.eachWithIndex { elem, index -> 
+        allChildren.eachWithIndex { elem, index ->
             if (elem.'filter-name'.toString().contains( 'springSecurityFilterChain' )) {
                 insertionIndex = insertionIndex ?: index + 1
             }
-        }        
+        }
         def casFilters = getCasFilters( instanceConfig )
         casFilters.each {
             allChildren.add( insertionIndex++, it )
         }
     }
-    
-    
+
+
     private void insertCasFilterMappings( root ) {
-        
-        def insertionIndex = 0 
+
+        def insertionIndex = 0
         def grailsWebRequestFilterIndex = 0
         def allChildren = root.children()
-        allChildren.eachWithIndex { elem, index -> 
+        allChildren.eachWithIndex { elem, index ->
             if (insertionIndex == 0) {
                 // we want to add the CAS filter-mapping elements as the first filter-mapping elements. 
                 // Unfortunately, the CAS plugin puts duplicate entries into the web.xml, placed with the 'filter' elements. 
@@ -237,15 +238,15 @@ public class CreateWar extends DefaultAction {
                 if (grailsWebRequestFilterIndex == 0 && elem.'filter-name'.toString().contains( 'grailsWebRequest' )) {
                     grailsWebRequestFilterIndex = index
                 }
-                
+
                 if (elem.name().toString().contains( 'filter-mapping' )) {
                     if (elem.'filter-name'.toString().contains( 'CAS' ) && index < grailsWebRequestFilterIndex) {
                         // We haven't reached the last filter, but encountered a CAS filter-mapping... 
                         // We'll remove this (as we'll be adding the CAS filter-mapping elements in the correct location later...)
 //                        println "Going to remove CAS filter-mapping at index $index:  ${elem.'filter-name'.toString()}"
-                        elem.replaceNode {} 
+                        elem.replaceNode {}
                     }
-                
+
                     if (grailsWebRequestFilterIndex > 0 && grailsWebRequestFilterIndex < index) {
                         insertionIndex = index - 1
                     }
@@ -253,16 +254,16 @@ public class CreateWar extends DefaultAction {
             }
         }
         // we've got the index of the last filter-mapping, so we'll insert after that...
-        insertionIndex++         
+        insertionIndex++
         def casFilterMappings = getCasFilterMappings()
         casFilterMappings.each {
             allChildren.add( insertionIndex++, it )
-        }        
+        }
     }
-    
-    
+
+
     private def getCasFilters( instanceConfig ) {
-        
+
         def casValidationFilters = getCasValidationFilterString( instanceConfig )
         def filters = """
             |<snippet-root>
@@ -280,16 +281,16 @@ public class CreateWar extends DefaultAction {
     	def root = new XmlParser().parseText( filters )
     	root.children()
     }
-    
-    
+
+
     private def getCasValidationFilter() {
         def root = new XmlParser().parseText( "<snippet-root>${getCasValidationFilterString()}</snippet-root>" )
         root.filter
     }
-    
-    
+
+
     private String getCasValidationFilterString( instanceConfig ) {
-        
+
         def validationFilter = """
 	        |<filter>
 	        |	<filter-name>CAS Validation Filter</filter-name>
@@ -309,10 +310,10 @@ public class CreateWar extends DefaultAction {
 	        |</filter>
             |""".stripMargin()
     }
-    
-    
+
+
     private def getCasFilterMappings() {
-        
+
         def filterMappings = """
             |<snippet-root>
             |<filter-mapping>
@@ -332,11 +333,11 @@ public class CreateWar extends DefaultAction {
         def root = new XmlParser().parseText( filterMappings )
         root.children()
     }
-    
-    
+
+
     // used only for debugging...
     private String renderFormattedXml( String xml ) {
-        
+
       def stringWriter = new StringWriter()
       def node = new XmlParser().parseText( xml )
       new XmlNodePrinter( new PrintWriter( stringWriter ) ).print( node )
@@ -344,7 +345,7 @@ public class CreateWar extends DefaultAction {
     }
 
 
-	private void updateI18N( File stagingDir ) {	    
+	private void updateI18N( File stagingDir ) {	
 		updateStaging( stagingDir, "WEB-INF/grails-app/i18n", FileStructure.I18N_DIR )
 		updateStaging( stagingDir, "WEB-INF/grails-app/i18n", FileStructure.INSTANCE_I18N_DIR )
 	}
@@ -361,7 +362,7 @@ public class CreateWar extends DefaultAction {
 	
 	
 	private void copyReleaseProperties() {
-	    		
+	
 	    def ant = new AntBuilder()
     	ant.copy( todir: "${stagingWarDir.getAbsolutePath()}/WEB-INF/classes" ) {
     		fileset( dir: "${FileStructure.I18N_DIR}", includes: "release.properties" )
@@ -374,7 +375,7 @@ public class CreateWar extends DefaultAction {
 	 * the target dir (relative to the stagingDir)
 	 **/
 	private void updateStaging( File stagingDir, String target, String sourceDir ) {
-	    
+
 		File toDir = resolveFile( stagingDir.getAbsolutePath() + "/" + target )
 		mkdir( toDir )
 
@@ -394,7 +395,7 @@ public class CreateWar extends DefaultAction {
 
 
 	private class UpdateDataSourceCompleteMessage extends ProgressMessage {
-	    
+
 	    private static final String RESOURCE_CODE = "installer.message.update_datasource_complete"
 	
 	    UpdateDataSourceCompleteMessage( description, jndiName, resourceRefName ) {

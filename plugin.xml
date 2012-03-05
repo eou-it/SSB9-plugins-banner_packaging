@@ -1,8 +1,8 @@
-<plugin name='banner-packaging' version='1.0.2' grailsVersion='1.3.5 &gt; *'>
-  <author>SunGard Higher Education</author>
-  <authorEmail>horizon-support@sungardhe.com</authorEmail>
-  <title>Banner Packaging Framework Plugin</title>
+<plugin name='banner-packaging' version='1.0.3' grailsVersion='1.3.7 &gt; *'>
+  <author>Datatel+SGHE</author>
+  <title>Banner 9 Web-tier Packaging Framework Plugin</title>
   <description>This plugin adds a package-release Grails target that creates a release package containing an installer.</description>
+  <documentation>(Please generate documentation using 'grails doc')</documentation>
   <resources>
     <resource>BuildConfig</resource>
     <resource>Config</resource>

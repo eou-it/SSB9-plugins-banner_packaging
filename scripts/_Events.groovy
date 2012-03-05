@@ -1,4 +1,4 @@
-/*********************************************************************************
+/* *******************************************************************************
  Copyright 2009-2011 SunGard Higher Education. All Rights Reserved.
  This copyrighted software contains confidential and proprietary information of 
  SunGard Higher Education and its subsidiaries. Any use of this software is limited 
@@ -37,7 +37,7 @@ import org.codehaus.groovy.grails.resolve.IvyDependencyManager
 
 
 eventPackagePluginEnd = { pluginName ->
-    
+
 	if (pluginName == "${metadata.'app.name'}") {
 		try {
 			IvyDependencyManager dm = new IvyDependencyManager( "$pluginName", "${plugin.version}" )
@@ -64,7 +64,7 @@ eventPackagePluginEnd = { pluginName ->
 			        mavenRepo "http://repository.jboss.org/maven2/"
 			        mavenRepo "http://repository.codehaus.org"
 			    }
-			    
+
 			    dependencies {
 					runtime( 'sungardhe:installerframework:1.0.1' ) {
 						export = false
@@ -155,10 +155,10 @@ eventPackagePluginEnd = { pluginName ->
 		
 			ant.zip( destfile:"${basedir}/grails-${pluginName}-${plugin.version}.zip", 
 			         update:true, basedir:"${projectWorkDir}", includes:"template.zip")
-			         
+
 			ant.delete( dir:stagingDir )
 			ant.delete( file:templateZip )
-		} 
+		}
 		catch (Throwable t) {
 		    ant.echo "Caught $t"
 			t.printStackTrace()
