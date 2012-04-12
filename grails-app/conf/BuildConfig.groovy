@@ -21,15 +21,9 @@ grails.project.dependency.resolution = {
 
     distribution = {
          localRepository = ""
-         remoteRepository( id:"releases", url:"http://m038083.sungardhe.com:8081/nexus/content/repositories/releases" ) {
-             authentication  username:'admin', password:'admin123'
-         }
     }
 
     repositories {
-        mavenRepo "http://m038083.sungardhe.com:8081/nexus/content/repositories/releases/"
-        mavenRepo "http://m038083.sungardhe.com:8081/nexus/content/repositories/snapshots/"
-        mavenRepo "http://m038083.sungardhe.com:8081/nexus/content/repositories/thirdparty/"
         
         grailsPlugins()
         grailsHome()
