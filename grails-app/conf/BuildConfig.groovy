@@ -1,5 +1,5 @@
-/*********************************************************************************
- Copyright 2009-2011 SunGard Higher Education. All Rights Reserved.
+/* ********************************************************************************
+ Copyright 2009-2012 SunGard Higher Education. All Rights Reserved.
  This copyrighted software contains confidential and proprietary information of 
  SunGard Higher Education and its subsidiaries. Any use of this software is limited 
  solely to SunGard Higher Education licensees, and is further subject to the terms 
@@ -20,26 +20,18 @@ grails.project.dependency.resolution = {
     log "warn" // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
 
     distribution = {
-         localRepository = ""
-         remoteRepository( id:"releases", url:"http://m038083.sungardhe.com:8081/nexus/content/repositories/releases" ) {
-             authentication  username:'admin', password:'admin123'
-         }
     }
 
     repositories {
-        mavenRepo "http://m038083.sungardhe.com:8081/nexus/content/repositories/releases/"
-        mavenRepo "http://m038083.sungardhe.com:8081/nexus/content/repositories/snapshots/"
-        mavenRepo "http://m038083.sungardhe.com:8081/nexus/content/repositories/thirdparty/"
-        
         grailsPlugins()
         grailsHome()
         grailsCentral()
-        
+ 
         mavenCentral()
         mavenRepo "http://repository.jboss.org/maven2/"
         mavenRepo "http://repository.codehaus.org"
     }
-    
+
     dependencies {
 	    // This plugin builds a non-grails application.  See the _Events.groovy file for the actual depdency list.
     }

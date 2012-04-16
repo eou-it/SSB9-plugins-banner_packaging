@@ -1,5 +1,5 @@
 /* *******************************************************************************
- Copyright 2009-2011 SunGard Higher Education. All Rights Reserved.
+ Copyright 2009-2012 SunGard Higher Education. All Rights Reserved.
  This copyrighted software contains confidential and proprietary information of 
  SunGard Higher Education and its subsidiaries. Any use of this software is limited 
  solely to SunGard Higher Education licensees, and is further subject to the terms 
@@ -68,9 +68,6 @@ eventTemplateZip = { pluginName, pluginVersion ->
 
         dm.parseDependencies({
             repositories {
-                mavenRepo "http://m038083.sungardhe.com:8081/nexus/content/repositories/releases/"
-                mavenRepo "http://m038083.sungardhe.com:8081/nexus/content/repositories/snapshots/"
-                mavenRepo "http://m038083.sungardhe.com:8081/nexus/content/repositories/thirdparty/"
                 grailsPlugins()
                 grailsHome()
                 grailsCentral()

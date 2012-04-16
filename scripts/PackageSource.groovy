@@ -1,5 +1,5 @@
 /* *******************************************************************************
- Copyright 2009-2011 SunGard Higher Education. All Rights Reserved.
+ Copyright 2009-2012 SunGard Higher Education. All Rights Reserved.
  This copyrighted software contains confidential and proprietary information of 
  SunGard Higher Education and its subsidiaries. Any use of this software is limited 
  solely to SunGard Higher Education licensees, and is further subject to the terms 
@@ -71,8 +71,6 @@ private void includeSource( sourceStagingDir ) {
 
 
 private void cloneRepository( sourceStagingDir, repoName, originUrl ) {
-
-    //println "XXXX->> invoke (from ${sourceStagingDir}/${repoName}):\n  git clone --bare ${originUrl}'" 
 
     // We'll clone the repository as a 'bare' repository, since we do NOT
     // want any possibility that a client might attempt to use this repository

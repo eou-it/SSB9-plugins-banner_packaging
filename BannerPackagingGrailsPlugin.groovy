@@ -1,5 +1,5 @@
-/*********************************************************************************
- Copyright 2009-2011 SunGard Higher Education. All Rights Reserved.
+/* *******************************************************************************
+ Copyright 2009-2012 SunGard Higher Education. All Rights Reserved.
  This copyrighted software contains confidential and proprietary information of 
  SunGard Higher Education and its subsidiaries. Any use of this software is limited 
  solely to SunGard Higher Education licensees, and is further subject to the terms 
@@ -11,9 +11,9 @@
  **********************************************************************************/
 
 
-/** 
+/**
  * Plugin class for the banner-packaging plugin.
- **/ 
+ **/
 class BannerPackagingGrailsPlugin {
 	
 	// Note: the groupId 'should' be used when deploying this plugin via the 'grails maven-deploy --repository=releases' command,
@@ -28,8 +28,8 @@ class BannerPackagingGrailsPlugin {
     def dependsOn      = [:]
     def pluginExcludes = [ "grails-app/views/error.gsp" ]
 
-    def author      = "SunGard Higher Education"
-    def authorEmail = "horizon-support@sungardhe.com"
+    def author      = "ellucian"
+    def authorEmail = "horizon-support@ellucian.com"
     def title       = "Banner Packaging Framework Plugin"
     def description = '''This plugin adds a package-release Grails target that creates a release package containing an installer.'''.stripMargin() 
 

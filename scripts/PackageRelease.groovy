@@ -1,5 +1,5 @@
 /* *******************************************************************************
- Copyright 2009-2011 SunGard Higher Education. All Rights Reserved.
+ Copyright 2009-2012 SunGard Higher Education. All Rights Reserved.
  This copyrighted software contains confidential and proprietary information of 
  SunGard Higher Education and its subsidiaries. Any use of this software is limited 
  solely to SunGard Higher Education licensees, and is further subject to the terms 
@@ -35,7 +35,7 @@ target( default:"Package Release" ) {
 
     try {
         verifyCleanWorkingCopy( basedir )
-    } 
+    }
     catch (e) {
         // TODO: Prompt user unless --non-interactive was specified, to allow
         // someone to proceed even though the git working directory is not clean.
