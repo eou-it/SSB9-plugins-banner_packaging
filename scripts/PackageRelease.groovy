@@ -37,12 +37,10 @@ target( default:"Package Release" ) {
         verifyCleanWorkingCopy( basedir )
     }
     catch (e) {
-        // TODO: Prompt user unless --non-interactive was specified, to allow
-        // someone to proceed even though the git working directory is not clean.
-        println "*****************************************************"
-        println "<<<<<<<<<< Git Working Copy NOT Clean >>>>>>>>>>>>>>>"
-        println "(proceeding anyway (temporarily, until a prompt is added to provide a choice)"
-        // bury the exception so we can proceed...
+        println "*******************************************"
+        println "<<< WARNING: Git Working Copy NOT Clean >>>"
+        println "            (proceeding anyway)"
+        println "*******************************************"
     }
 
     // We'll fire a 'TemplateZip' event, and respond to it via the _Events.groovy script

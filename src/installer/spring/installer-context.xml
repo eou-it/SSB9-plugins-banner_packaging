@@ -16,7 +16,7 @@
         <property name="propertyFile" value="${homeDir}/installer-store.properties"/>
     </bean>
 
-    <bean id="logPrinter" class="com.sungardhe.commoncomponents.installer.LogPrinter">
+    <bean id="logPrinter" class="com.sungardhe.commoncomponents.installer.LogPrinterImpl">
         <property name="logFile" value="${homeDir}/logs/installer.log"/>
     </bean>
 

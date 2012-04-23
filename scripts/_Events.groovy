@@ -77,12 +77,6 @@ eventTemplateZip = { pluginName, pluginVersion ->
             }
 
             dependencies {
-                runtime( 'sungardhe:installerframework:1.0.1' ) {
-                    export = false
-                }
-                runtime( 'sungardhe:SGHECommonUtil:1.0.1') {
-                    export = false
-                }
                 runtime( 'org.springframework:spring-core:3.0.5.RELEASE') {
                     export = false
                 }
@@ -122,12 +116,9 @@ eventTemplateZip = { pluginName, pluginVersion ->
             exit 1
         }
 
-        def templateZip 
-        pluginSettings.getPluginInfos().each() {
-            if (it.name.equals( "banner-packaging" )) {
-                templateZip = new File( it.pluginDir.getFile(), "template.zip" )
-            }
-        }
+        def pluginInfo  = pluginSettings.getPluginInfos().find({it.name.equals("banner-packaging")})
+        def pluginDir   = pluginInfo.pluginDir.getFile()
+        def templateZip = new File( pluginDir, "template.zip" )
 
         def stagingDir   = "$projectWorkDir/staging"
         def installerDir = "$stagingDir/installer"
@@ -146,21 +137,27 @@ eventTemplateZip = { pluginName, pluginVersion ->
             }
         }
 
+        ant.echo "Going to copy installer from ${pluginDir}/lib"
+        // Now we'll add internal dependencies from our project into the lib dir
+        ant.copy( todir: "$libDir", overwrite:true, preservelastmodified:true ) {
+            fileset( dir: "${pluginDir}/lib", includes:"*.jar" )
+        }
+
         def instanceDir = "$stagingDir/instance"
         ant.mkdir( dir:"$instanceDir/i18n" )
         ant.mkdir( dir:"$instanceDir/css" )
         ant.mkdir( dir:"$instanceDir/js" )
+        ant.mkdir( dir:"$instanceDir/images" )
         ant.mkdir( dir:"$instanceDir/config" )
 
         File instanceProperties = new File( "$instanceDir/config/instance.properties" )
         instanceProperties << "shared.config.dir="
 
-        def pluginDir = pluginSettings.inlinePluginDirectories.find { it.file.name == "banner-packaging" }
-        if (!pluginDir) {
-            def pluginInfo = pluginSettings.getPluginInfos().find { it.name == 'banner-packaging' }
-            //pluginDir = "${grailsSettings.projectPluginsDir}/${pluginInfo.name}-${pluginInfo.version}"
-            pluginDir = "${pluginInfo.pluginDir.getFile()}"
-        }
+        //if (!pluginDir) {
+            //def pluginInfo = pluginSettings.getPluginInfos().find { it.name == 'banner-packaging' }
+            ////pluginDir = "${grailsSettings.projectPluginsDir}/${pluginInfo.name}-${pluginInfo.version}"
+            //pluginDir = "${pluginInfo.pluginDir.getFile()}"
+        //}
         def installerSourceDir = "${pluginDir}/src/installer"
         ant.copy( todir:installerDir ) {
             fileset( dir:installerSourceDir, includes:"**/*" /* excludes:"apache-ant*" */ )
