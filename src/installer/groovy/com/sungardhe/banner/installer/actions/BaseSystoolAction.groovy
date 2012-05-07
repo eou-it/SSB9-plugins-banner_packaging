@@ -21,22 +21,9 @@ import com.sungardhe.banner.installer.*
  * Installer action for assembling a deployable ear from a template.
  **/
 abstract
-public class DefaultAction extends Action {
-
-			
-	protected Properties getProperties( String filePath ) {
-		File f = resolveFile( filePath )
-		Properties p = new Properties()
-		p.load( new FileInputStream( f ) )
-		p
-	}
+public class BaseSystoolAction extends DefaultAction {
 
 
-	protected Properties getInstanceProperties() {
-		getProperties( FileStructure.LOCAL_INSTANCE_PROPERTIES )
-	}
-	
-	
     protected File getSharedConfiguration() {
 		String sharedConfigDirName = getInstanceProperties().getProperty( "shared.config.dir" )
 		if (sharedConfigDirName?.trim()?.size() == 0) {
@@ -48,17 +35,4 @@ public class DefaultAction extends Action {
 		}
         sharedConfDir
     }
-
-	
-	protected String getBanner() {
-	   '''
-       |    ______                                    ____
-       |   (____  \\                                  / __ \\
-       |    ____)  ) ____ ____  ____   ____  ____   ( (__) )
-       |   |  __  ( / _  |  _ \\|  _ \\ / _  )/ ___)   \\__  /
-       |   | |__)  | ( | | | | | | | ( (/ /| |         / /
-       |   |______/ \\_||_|_| |_|_| |_|\\____)_|        /_/
-        '''.stripMargin()
-	}
-	
 }

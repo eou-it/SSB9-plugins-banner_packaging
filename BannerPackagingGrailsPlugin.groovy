@@ -16,11 +16,7 @@
  **/
 class BannerPackagingGrailsPlugin {
 	
-	// Note: the groupId 'should' be used when deploying this plugin via the 'grails maven-deploy --repository=releases' command,
-    // however it is not being picked up.  Consequently, a pom.xml file is added to the root directory with the correct groupId
-    // and will be removed when the maven-publisher plugin correctly sets the groupId based on the following field.
-	def groupID = "sungardhe"
-    def version = "1.0.2"
+    def version = "1.0.4"
 
     def scopes = [ excludes:'war' ]
 
@@ -29,7 +25,7 @@ class BannerPackagingGrailsPlugin {
     def pluginExcludes = [ "grails-app/views/error.gsp" ]
 
     def author      = "ellucian"
-    def authorEmail = "horizon-support@ellucian.com"
+    def authorEmail = "banner9-support@ellucian.com"
     def title       = "Banner Packaging Framework Plugin"
     def description = '''This plugin adds a package-release Grails target that creates a release package containing an installer.'''.stripMargin() 
 

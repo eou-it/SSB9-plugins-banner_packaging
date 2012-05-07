@@ -98,7 +98,7 @@ target( default:"Package Release" ) {
         fileset( dir:stagingDir, excludes:"*.lock" )
     }
 
-    ant.delete( dir:stagingDir )
+//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX    ant.delete( dir:stagingDir )
     event( "PackageReleaseEnd", [] )
 }
 

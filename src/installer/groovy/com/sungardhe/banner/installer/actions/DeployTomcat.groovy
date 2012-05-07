@@ -1,5 +1,5 @@
-/*********************************************************************************
- Copyright 2009-2011 SunGard Higher Education. All Rights Reserved.
+/* *******************************************************************************
+ Copyright 2009-2012 SunGard Higher Education. All Rights Reserved.
  This copyrighted software contains confidential and proprietary information of 
  SunGard Higher Education and its subsidiaries. Any use of this software is limited 
  solely to SunGard Higher Education licensees, and is further subject to the terms 
@@ -21,7 +21,7 @@ import java.text.*
 /**
  * Installer action for deploying the war to tomcat.
  **/
-public class DeployTomcat extends DefaultAction {
+public class DeployTomcat extends BaseSystoolAction {
 	
 	private StringResource tomcatMgrUrl
 	private StringResource tomcatUser
@@ -31,28 +31,28 @@ public class DeployTomcat extends DefaultAction {
     public String getNameResourceCode() {
         "installer.action.DeployTomcat.name"
     }
-    
+
 
     @Required // 'http://localhost:8080/manager'
     public void setTomcatMgrUrl( StringResource tomcatMgrUrl ) {
         this.tomcatMgrUrl = tomcatMgrUrl
         addRequiredResource( this.tomcatMgrUrl )
     }
-    
+
 
     @Required // 'manager'
     public void setTomcatUser( StringResource tomcatUser ) {
         this.tomcatUser = tomcatUser
         addRequiredResource( this.tomcatUser )
     }
-    
+
 
     @Required //  'secret'
     public void setTomcatPassword( StringResource tomcatPassword ) {
         this.tomcatPassword = tomcatPassword
         addRequiredResource( this.tomcatPassword )
     }
-        
+
 
     public void execute() throws ActionRunnerException {
 
@@ -75,7 +75,7 @@ public class DeployTomcat extends DefaultAction {
 			        path:     "/$contextName",
 			        username: tomcatUser.getValue(),
 			        password: tomcatPassword.getValue() )
-			    
+
 	    updateProgress( new DeployTomcatCompleteMessage( warFile.getName() ) )
 	}
 
@@ -114,33 +114,3 @@ public class DeployTomcat extends DefaultAction {
 	
 }
 
-
-// ============================
-/*		
-		case 'list':
-		    list(  url:url,
-				   username:user,
-				   password:pass)
-
-
-		case 'undeploy':
-			configureServerContextPath()
-			println "Undeploying application $serverContextPath from Tomcat"
-			println '''\
-  
-  NOTE: If you experience a classloading error during undeployment you need to take the following steps:					
-
-* Upgrade to Tomcat 6.0.20 or above
-* Pass this system argument to Tomcat: -Dorg.apache.catalina.loader.WebappClassLoader.ENABLE_CLEAR_REFERENCES=false
-
-See http://tomcat.apache.org/tomcat-6.0-doc/config/systemprops.html for more information
-'''
-		    undeploy(
-				   url:url,
-				   path:serverContextPath,
-				   username:user,
-				   password:pass)		
-		
-	}
-
-} */
