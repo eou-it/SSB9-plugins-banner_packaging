@@ -98,12 +98,12 @@ target( default:"Package Release" ) {
         fileset( dir:stagingDir, excludes:"*.lock" )
     }
 
-//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX    ant.delete( dir:stagingDir )
+    ant.delete( dir:stagingDir )
     event( "PackageReleaseEnd", [] )
 }
 
 
-target( genReleaseProperties: "Creates a release.properties file holding a newly assigned build number and the application version." ) {    
+target( genReleaseProperties: "Creates a release.properties file holding a newly assigned build number and the application version." ) {
 
     // This target uses a 'build number' web service to retrieve the next build number 
     // for the project.  Each project is assigned a UUID (manually), and this UUID is 
@@ -211,11 +211,9 @@ private File getTemplateHomeZip() {
 private Map retrievePluginInfo() {
 
     def inlinePluginVersionInfo = [:]
-    def gitSubmodulesFile = new File( "${projectWorkDir}/.gitmodules" )
+    def inlinePluginDirPaths = pluginSettings.inlinePluginDirectories*.file.path
 
     GrailsPluginUtils.getPluginInfos().each {
-        def inlinePluginDirPaths = pluginSettings.inlinePluginDirectories*.file.path
-        inlinePluginDirPaths.each { println "INLINE: ${it}" }
 
         def pluginDirPath = it.pluginDir.path
         def sha1   = ''
@@ -233,7 +231,6 @@ private Map retrievePluginInfo() {
                             status:   "${status}" ]
         inlinePluginVersionInfo[it.name] = versionInfo
     }
-//    inlinePluginVersionInfo.each { println "${it.key} : ${it.value}"}
     inlinePluginVersionInfo
 }
 
