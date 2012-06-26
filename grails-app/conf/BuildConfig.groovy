@@ -23,6 +23,10 @@ grails.project.dependency.resolution = {
     }
 
     repositories {
+        if (System.properties['PROXY_SERVER_NAME']) {
+            mavenRepo "${System.properties['PROXY_SERVER_NAME']}"
+        } else {
+        }
         grailsPlugins()
         grailsHome()
         grailsCentral()
