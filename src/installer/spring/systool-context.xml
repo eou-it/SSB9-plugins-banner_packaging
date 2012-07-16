@@ -53,7 +53,7 @@
     </bean>
 
     <lang:groovy id="action.DeployTomcat"
-                 script-source="classpath:com/sungardhe/banner/installer/actions/DeployTomcat.groovy">
+                 script-source="classpath:net/hedtech/banner/installer/actions/DeployTomcat.groovy">
         <lang:property name="tomcatMgrUrl" ref="resource.tomcatMgrUrl"/>
         <lang:property name="tomcatUser" ref="resource.tomcatUser"/>
         <lang:property name="tomcatPassword" ref="resource.tomcatPassword"/>

@@ -9,7 +9,7 @@
     <!-- ============================= Base Actions ================================== -->
 
     <lang:groovy id="action.CreateWar"
-                 script-source="classpath:com/sungardhe/banner/installer/actions/CreateWar.groovy">
+                 script-source="classpath:net/hedtech/banner/installer/actions/CreateWar.groovy">
     </lang:groovy>
 
 </beans>

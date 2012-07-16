@@ -42,7 +42,7 @@
     </bean>
 
     <lang:groovy id="action.InstallHome"
-                 script-source="classpath:com/sungardhe/banner/installer/actions/InstallHome.groovy">
+                 script-source="classpath:net/hedtech/banner/installer/actions/InstallHome.groovy">
         <lang:property name="home" ref="resource.ModuleHome"/>
         <lang:property name="sharedConfigHome" ref="resource.SharedConfigurationHome"/>
     </lang:groovy>
