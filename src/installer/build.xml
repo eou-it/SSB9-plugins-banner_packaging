@@ -55,7 +55,7 @@
             <!-- define MANIFEST.MF -->
             <manifest>
                 <attribute name="Built-By" value="${user.name}"/>
-                <attribute name="Main-Class" value="com.sungardhe.commoncomponents.installer.ui.CommandLineInstaller"/>
+                <attribute name="Main-Class" value="net.hedtech.commoncomponents.installer.ui.CommandLineInstaller"/>
                 <!-- finally, use the generated libs path -->
                 <attribute name="Class-Path" value="${libs.project}"/>
             </manifest>
@@ -79,7 +79,7 @@
 	</target>
 
 	<target name="create.installer.script" if="${installer.marker.exists}" depends="_checkInstallerMarker, jar">
-		<taskdef name="generate-script" classname="com.sungardhe.commoncomponents.installer.tasks.GenerateScriptTask"
+		<taskdef name="generate-script" classname="net.hedtech.commoncomponents.installer.tasks.GenerateScriptTask"
                  classpathref="task.classpath"/>
 		<generate-script fileName="install"
                          jar="systool.jar"
@@ -112,7 +112,7 @@
 		
 
     <target name="create.systool.script" depends="_checkInstallerMarker,jar" unless="${installer.marker.exists}">
-        <taskdef name="generate-script" classname="com.sungardhe.commoncomponents.installer.tasks.GenerateScriptTask"
+        <taskdef name="generate-script" classname="net.hedtech.commoncomponents.installer.tasks.GenerateScriptTask"
                  classpathref="task.classpath"/>
 
         <generate-script fileName="systool"

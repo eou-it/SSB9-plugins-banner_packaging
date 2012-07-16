@@ -9,13 +9,13 @@
  Banner and Luminis are either registered trademarks or trademarks of SunGard Higher 
  Education in the U.S.A. and/or other regions and/or countries.
  **********************************************************************************/
-package com.sungardhe.banner.installer.actions
+package net.hedtech.banner.installer.actions
 
 import org.springframework.beans.factory.annotation.Required
-import com.sungardhe.commoncomponents.installer.*
+import net.hedtech.commoncomponents.installer.*
 import org.apache.tools.ant.taskdefs.*
 import org.apache.tools.ant.types.*
-import com.sungardhe.banner.installer.*
+import net.hedtech.banner.installer.*
 import java.text.*
 
 /**

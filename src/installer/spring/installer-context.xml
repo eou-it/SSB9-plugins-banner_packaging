@@ -12,11 +12,11 @@
     <!-- Contains configuration specific to the main installer, including the property store to use,
          the log file, and the available install targets -->
 
-    <bean id="propertyStore" class="com.sungardhe.commoncomponents.installer.PropertyStoreImpl">
+    <bean id="propertyStore" class="net.hedtech.commoncomponents.installer.PropertyStoreImpl">
         <property name="propertyFile" value="${homeDir}/installer-store.properties"/>
     </bean>
 
-    <bean id="logPrinter" class="com.sungardhe.commoncomponents.installer.LogPrinterImpl">
+    <bean id="logPrinter" class="net.hedtech.commoncomponents.installer.LogPrinterImpl">
         <property name="logFile" value="${homeDir}/logs/installer.log"/>
     </bean>
 
@@ -31,7 +31,7 @@
 <!--=========================== Installer targets ===========================-->
 
 
-    <bean id="namedsequence.InstallHome" class="com.sungardhe.commoncomponents.installer.NamedSequence">
+    <bean id="namedsequence.InstallHome" class="net.hedtech.commoncomponents.installer.NamedSequence">
         <property name="nameResourceCode" value="installer.sequence.InstallHome.name"/>
         <property name="descriptionResourceCode" value="installer.sequence.InstallHome.description"/>
         <property name="steps">
@@ -48,12 +48,12 @@
     </lang:groovy>
 
     <bean id="resource.ModuleHome"
-          class="com.sungardhe.commoncomponents.installer.StringResource">
+          class="net.hedtech.commoncomponents.installer.StringResource">
         <property name="editor" ref="resourceEditor.ModuleHome"/>
     </bean>
 
     <bean id="resourceEditor.ModuleHome"
-          class="com.sungardhe.commoncomponents.installer.StringResourceEditor">
+          class="net.hedtech.commoncomponents.installer.StringResourceEditor">
         <property name="promptResourceCode" value="installer.message.promptModuleHome"/>
         <property name="localizer" ref="localizer"/>
 		<property name="propertyStore" ref="propertyStore"/>
@@ -61,12 +61,12 @@
     </bean>
 
     <bean id="resource.SharedConfigurationHome"
-          class="com.sungardhe.commoncomponents.installer.StringResource">
+          class="net.hedtech.commoncomponents.installer.StringResource">
         <property name="editor" ref="resourceEditor.SharedConfigurationHome"/>
     </bean>
 
     <bean id="resourceEditor.SharedConfigurationHome"
-          class="com.sungardhe.commoncomponents.installer.StringResourceEditor">
+          class="net.hedtech.commoncomponents.installer.StringResourceEditor">
         <property name="promptResourceCode" value="installer.message.promptSharedConfigurationHome"/>
         <property name="localizer" ref="localizer"/>
 		<property name="propertyStore" ref="propertyStore"/>

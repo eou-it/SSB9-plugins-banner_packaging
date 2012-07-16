@@ -29,33 +29,33 @@
 	<!-- The main localizer for the installer.  Currently only handles localized exceptions from the installer itself,
 	     as no code from the banner applications is executed by the installer.  If this changes, a delegating
 	     localizer will need to be added to handle both exception heirarchies -->
-    <bean id="localizer" class="com.sungardhe.commoncomponents.installer.LocalizerImpl">
+    <bean id="localizer" class="net.hedtech.commoncomponents.installer.LocalizerImpl">
         <property name="messageSource">
             <ref bean="commonInstallerMessageSource"/>
         </property>
     </bean>
 
 
-    <bean id="installerHome" class="com.sungardhe.commoncomponents.installer.InstallerHome">
+    <bean id="installerHome" class="net.hedtech.commoncomponents.installer.InstallerHome">
         <property name="homeDir" value="${homeDir}"/>
     </bean>
 
-    <bean id="progressLoggingListener" class="com.sungardhe.commoncomponents.installer.ProgressLoggingListener">
+    <bean id="progressLoggingListener" class="net.hedtech.commoncomponents.installer.ProgressLoggingListener">
         <property name="localizer" ref="localizer"/>
         <property name="logPrinter" ref="logPrinter"/>
     </bean>
 
-    <bean id="feedbackListener" class="com.sungardhe.commoncomponents.installer.FeedbackListener">
+    <bean id="feedbackListener" class="net.hedtech.commoncomponents.installer.FeedbackListener">
         <property name="logPrinter" ref="logPrinter"/>
         <property name="localizer" ref="localizer"/>
     </bean>
 
-    <bean id="optionParser" class="com.sungardhe.commoncomponents.installer.ui.OptionParser">
+    <bean id="optionParser" class="net.hedtech.commoncomponents.installer.ui.OptionParser">
         <property name="localizer" ref="localizer"/>
     </bean>
 
 
-    <bean id="uiHelper" class="com.sungardhe.commoncomponents.installer.ui.UIHelperImpl">
+    <bean id="uiHelper" class="net.hedtech.commoncomponents.installer.ui.UIHelperImpl">
         <property name="localizer" ref="localizer"/>
         <property name="titleResourceCode" value="application.name"/>
         <property name="versionValueResourceCode" value="application.version"/>
@@ -64,7 +64,7 @@
     </bean>
 
 
-    <bean id="actionRunner" class="com.sungardhe.commoncomponents.installer.ActionRunner">
+    <bean id="actionRunner" class="net.hedtech.commoncomponents.installer.ActionRunner">
         <property name="installerHome" ref="installerHome"/>
         <property name="localizer" ref="localizer"/>
         <property name="logPrinter" ref="logPrinter"/>
@@ -78,7 +78,7 @@
     </bean>
 
     <bean id="abstractInstaller"
-        class="com.sungardhe.commoncomponents.installer.ui.CommandLineInstaller" abstract="true" autowire="no">
+        class="net.hedtech.commoncomponents.installer.ui.CommandLineInstaller" abstract="true" autowire="no">
         <property name="actionRunner" ref="actionRunner"/>
         <property name="localizer" ref="localizer"/>
         <property name="uiHelper" ref="uiHelper"/>

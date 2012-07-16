@@ -9,34 +9,21 @@
  Banner and Luminis are either registered trademarks or trademarks of SunGard Higher 
  Education in the U.S.A. and/or other regions and/or countries.
  **********************************************************************************/
-package com.sungardhe.banner.installer.actions
+package net.hedtech.banner.installer.actions
 
 import org.springframework.beans.factory.annotation.Required
-import com.sungardhe.commoncomponents.installer.*
+import net.hedtech.commoncomponents.installer.*
 import org.apache.tools.ant.taskdefs.*
 import org.apache.tools.ant.types.*
-import com.sungardhe.banner.installer.*
+import net.hedtech.banner.installer.*
 
 /**
  * Installer action for assembling a deployable ear from a template.
  **/
 abstract
-public class DefaultAction extends Action {
-
-			
-	protected Properties getProperties( String filePath ) {
-		File f = resolveFile( filePath )
-		Properties p = new Properties()
-		p.load( new FileInputStream( f ) )
-		p
-	}
+public class BaseSystoolAction extends DefaultAction {
 
 
-	protected Properties getInstanceProperties() {
-		getProperties( FileStructure.LOCAL_INSTANCE_PROPERTIES )
-	}
-	
-	
     protected File getSharedConfiguration() {
 		String sharedConfigDirName = getInstanceProperties().getProperty( "shared.config.dir" )
 		if (sharedConfigDirName?.trim()?.size() == 0) {
@@ -48,17 +35,4 @@ public class DefaultAction extends Action {
 		}
         sharedConfDir
     }
-
-	
-	protected String getBanner() {
-	   '''
-       |    ______                                    ____
-       |   (____  \\                                  / __ \\
-       |    ____)  ) ____ ____  ____   ____  ____   ( (__) )
-       |   |  __  ( / _  |  _ \\|  _ \\ / _  )/ ___)   \\__  /
-       |   | |__)  | ( | | | | | | | ( (/ /| |         / /
-       |   |______/ \\_||_|_| |_|_| |_|\\____)_|        /_/
-        '''.stripMargin()
-	}
-	
 }
