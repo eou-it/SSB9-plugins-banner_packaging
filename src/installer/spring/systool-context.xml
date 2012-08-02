@@ -12,11 +12,11 @@
     <!-- Contains configuration specific to the main installer, including the property store to use,
          the log file, and the available install targets -->
 
-    <bean id="propertyStore" class="net.hedtech.commoncomponents.installer.PropertyStoreImpl">
+    <bean id="propertyStore" class="com.sungardhe.commoncomponents.installer.PropertyStoreImpl">
         <property name="propertyFile" value="${homeDir}/installer-store.properties"/>
     </bean>
 
-    <bean id="logPrinter" class="net.hedtech.commoncomponents.installer.LogPrinterImpl">
+    <bean id="logPrinter" class="com.sungardhe.commoncomponents.installer.LogPrinterImpl">
         <property name="logFile" value="${homeDir}/logs/systool.log"/>
     </bean>
 
@@ -31,7 +31,7 @@
 
 <!--=========================== 'systool' targets ===========================-->
 
-    <bean id="namedsequence.War" class="net.hedtech.commoncomponents.installer.NamedSequence">
+    <bean id="namedsequence.War" class="com.sungardhe.commoncomponents.installer.NamedSequence">
         <property name="nameResourceCode" value="installer.sequence.War.name"/>
         <property name="descriptionResourceCode" value="installer.sequence.War.description"/>
         <property name="steps">
@@ -42,7 +42,7 @@
     </bean>
     <!-- Note: CreateWar is 'built-in' - see 'common-base-actions-context.xml' -->
     
-    <bean id="namedsequence.DeployTomcat" class="net.hedtech.commoncomponents.installer.NamedSequence">
+    <bean id="namedsequence.DeployTomcat" class="com.sungardhe.commoncomponents.installer.NamedSequence">
         <property name="nameResourceCode" value="installer.sequence.DeployTomcat.name"/>
         <property name="descriptionResourceCode" value="installer.sequence.DeployTomcat.description"/>
         <property name="steps">
@@ -53,19 +53,19 @@
     </bean>
 
     <lang:groovy id="action.DeployTomcat"
-                 script-source="classpath:com/sungardhe/banner/installer/actions/DeployTomcat.groovy">
+                 script-source="classpath:net/hedtech/banner/installer/actions/DeployTomcat.groovy">
         <lang:property name="tomcatMgrUrl" ref="resource.tomcatMgrUrl"/>
         <lang:property name="tomcatUser" ref="resource.tomcatUser"/>
         <lang:property name="tomcatPassword" ref="resource.tomcatPassword"/>
     </lang:groovy>
 
     <bean id="resource.tomcatMgrUrl"
-          class="net.hedtech.commoncomponents.installer.StringResource">
+          class="com.sungardhe.commoncomponents.installer.StringResource">
         <property name="editor" ref="resourceEditor.tomcatMgrUrl"/>
     </bean>
 
     <bean id="resourceEditor.tomcatMgrUrl"
-          class="net.hedtech.commoncomponents.installer.StringResourceEditor">
+          class="com.sungardhe.commoncomponents.installer.StringResourceEditor">
         <property name="promptResourceCode" value="installer.message.promptTomcatMgrUrl"/>
         <property name="localizer" ref="localizer"/>
 		<property name="propertyStore" ref="propertyStore"/>
@@ -73,12 +73,12 @@
     </bean>
     
     <bean id="resource.tomcatUser"
-          class="net.hedtech.commoncomponents.installer.StringResource">
+          class="com.sungardhe.commoncomponents.installer.StringResource">
         <property name="editor" ref="resourceEditor.tomcatUser"/>
     </bean>
 
     <bean id="resourceEditor.tomcatUser"
-          class="net.hedtech.commoncomponents.installer.StringResourceEditor">
+          class="com.sungardhe.commoncomponents.installer.StringResourceEditor">
         <property name="promptResourceCode" value="installer.message.promptTomcatUser"/>
         <property name="localizer" ref="localizer"/>
 		<property name="propertyStore" ref="propertyStore"/>
@@ -87,12 +87,12 @@
 
 
     <bean id="resource.tomcatPassword"
-          class="net.hedtech.commoncomponents.installer.StringResource">
+          class="com.sungardhe.commoncomponents.installer.StringResource">
         <property name="editor" ref="resourceEditor.tomcatPassword"/>
     </bean>
 
     <bean id="resourceEditor.tomcatPassword"
-          class="net.hedtech.commoncomponents.installer.StringResourceEditor">
+          class="com.sungardhe.commoncomponents.installer.StringResourceEditor">
         <property name="promptResourceCode" value="installer.message.promptTomcatPassword"/> 
         <property name="localizer" ref="localizer"/>
 		<property name="propertyStore" ref="propertyStore"/>
