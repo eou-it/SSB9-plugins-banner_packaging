@@ -12,7 +12,7 @@
 package net.hedtech.banner.installer.actions
 
 import org.springframework.beans.factory.annotation.Required;
-import net.hedtech.commoncomponents.installer.*
+import com.sungardhe.commoncomponents.installer.*
 import org.apache.tools.ant.taskdefs.*
 import org.apache.tools.ant.types.*
 import net.hedtech.banner.installer.*

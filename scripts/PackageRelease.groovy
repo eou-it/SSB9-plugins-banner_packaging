@@ -1,12 +1,12 @@
 /* *******************************************************************************
  Copyright 2009-2012 SunGard Higher Education. All Rights Reserved.
- This copyrighted software contains confidential and proprietary information of 
- SunGard Higher Education and its subsidiaries. Any use of this software is limited 
- solely to SunGard Higher Education licensees, and is further subject to the terms 
- and conditions of one or more written license agreements between SunGard Higher 
+ This copyrighted software contains confidential and proprietary information of
+ SunGard Higher Education and its subsidiaries. Any use of this software is limited
+ solely to SunGard Higher Education licensees, and is further subject to the terms
+ and conditions of one or more written license agreements between SunGard Higher
  Education and the licensee in question. SunGard is either a registered trademark or
  trademark of SunGard Data Systems in the U.S.A. and/or other regions and/or countries.
- Banner and Luminis are either registered trademarks or trademarks of SunGard Higher 
+ Banner and Luminis are either registered trademarks or trademarks of SunGard Higher
  Education in the U.S.A. and/or other regions and/or countries.
  **********************************************************************************/
 
@@ -17,8 +17,8 @@ import org.codehaus.groovy.grails.resolve.IvyDependencyManager
 
 /**
  * Gant script for creating a release package for a banner module.
- * The release package contains an 'installer/systool' that is used 
- * to manage product homes and to re-generate the war file with 
+ * The release package contains an 'installer/systool' that is used
+ * to manage product homes and to re-generate the war file with
  * environment specific configuration and overrides (localization message bundles, CSS, JavaScript).
  **/
 scriptEnv = "production"
@@ -41,7 +41,7 @@ target( default:"Package Release" ) {
     }
 
     // We'll fire a 'TemplateZip' event, and respond to it via the _Events.groovy script
-    // before continuing. The 'eventTemplateZip' handler will use Ivy to retrieve all of 
+    // before continuing. The 'eventTemplateZip' handler will use Ivy to retrieve all of
     // the dependencies that need to be included in the release package
     //
     event "TemplateZip", [pluginName, '1.0.2'] // TODO: Read plugin version from it's *Plugin file...
@@ -60,7 +60,7 @@ target( default:"Package Release" ) {
         }
     }
 
-    File customDir = new File( "${basedir}/src/installer" )	
+    File customDir = new File( "${basedir}/src/installer" )
     if (customDir.exists()) {
         ant.copy( todir:"${stagingDir}/installer", overwrite:true ) {
             fileset( dir:"${customDir}", includes:"**/*" )
@@ -70,7 +70,7 @@ target( default:"Package Release" ) {
     ant.mkdir( dir:"${stagingDir}/i18n" )
     ant.copy( todir:"${stagingDir}/i18n" ) {
         fileset( dir:"${basedir}/grails-app/i18n", includes:"**/*" )
-        // we'll also copy the release.properties to the i18n directory so that 
+        // we'll also copy the release.properties to the i18n directory so that
         // it is easily accessible by the installer...
         fileset( dir: "$basedir/target/classes", includes: "release.properties" )
     }
@@ -102,11 +102,11 @@ target( default:"Package Release" ) {
 
 target( genReleaseProperties: "Creates a release.properties file holding a newly assigned build number and the application version." ) {
 
-    // This target uses a 'build number' web service to retrieve the next build number 
-    // for the project.  Each project is assigned a UUID (manually), and this UUID is 
-    // supplied to the web service to identify which 'build number sequence' to increment 
-    // and return. The project's UUID, and the URL to the service, are 
-    // found in the project's configuration. 
+    // This target uses a 'build number' web service to retrieve the next build number
+    // for the project.  Each project is assigned a UUID (manually), and this UUID is
+    // supplied to the web service to identify which 'build number sequence' to increment
+    // and return. The project's UUID, and the URL to the service, are
+    // found in the project's configuration.
     //
     def appName    = "${metadata.'app.name'}"
     def appVersion = "${metadata.'app.version'}"
@@ -114,7 +114,7 @@ target( genReleaseProperties: "Creates a release.properties file holding a newly
     // def config = new ConfigSlurper().parse( new File( "${basedir}/grails-app/conf/Config.groovy" ).toURL() )
     def uuid = config.build.number.uuid
     def url  = config.build.number.base.url + uuid
-    def extractedBuildNumber = "Unassigned" // used when the configuration does not specify a uuid 
+    def extractedBuildNumber = "Unassigned" // used when the configuration does not specify a uuid
 
     if (uuid instanceof String && url instanceof String) {
         try {
@@ -219,7 +219,7 @@ private Map retrievePluginInfo() {
         def branch = ''
         def status = ''
         if (pluginDirPath in inlinePluginDirPaths) {
-            sha1   = new File("${it.pluginDir.path}/.git/refs/heads/master").text
+            sha1   = resolvePluginSha1( pluginDirPath )
             branch = getWorkingBranch( pluginDirPath )
             status = getStatus( pluginDirPath )
         }
@@ -233,6 +233,15 @@ private Map retrievePluginInfo() {
     inlinePluginVersionInfo
 }
 
+private String resolvePluginSha1( dir ) {
+    def gitDir = new File( "${dir}/.git" )
+    if ( gitDir.isDirectory() ) {
+        new File("${dir}/.git/refs/heads/master").text
+    } else {
+        def redir = gitDir.readLines().first().replaceAll( "gitdir:", "" ).trim()
+        new File( "${dir}/${redir}/refs/heads/master").text
+    }
+}
 
 private String getWorkingBranch( dir ) {
 

@@ -12,7 +12,7 @@
 package net.hedtech.banner.installer.actions
 
 import net.hedtech.banner.installer.*
-import net.hedtech.commoncomponents.installer.*
+import com.sungardhe.commoncomponents.installer.*
 
 import groovy.xml.StreamingMarkupBuilder
 
