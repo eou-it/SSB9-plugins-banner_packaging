@@ -20,7 +20,7 @@ class BannerPackagingGrailsPlugin {
 
     def scopes = [ excludes:'war' ]
 
-    def grailsVersion  = "1.3.7 > *"
+    def grailsVersion  = "2.2.1 > *"
     def dependsOn      = [:]
     def pluginExcludes = [ "grails-app/views/error.gsp" ]
 
