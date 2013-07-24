@@ -1,17 +1,18 @@
 /* *******************************************************************************
  Copyright 2009-2012 SunGard Higher Education. All Rights Reserved.
- This copyrighted software contains confidential and proprietary information of 
- SunGard Higher Education and its subsidiaries. Any use of this software is limited 
- solely to SunGard Higher Education licensees, and is further subject to the terms 
- and conditions of one or more written license agreements between SunGard Higher 
+ This copyrighted software contains confidential and proprietary information of
+ SunGard Higher Education and its subsidiaries. Any use of this software is limited
+ solely to SunGard Higher Education licensees, and is further subject to the terms
+ and conditions of one or more written license agreements between SunGard Higher
  Education and the licensee in question. SunGard is either a registered trademark or
  trademark of SunGard Data Systems in the U.S.A. and/or other regions and/or countries.
- Banner and Luminis are either registered trademarks or trademarks of SunGard Higher 
+ Banner and Luminis are either registered trademarks or trademarks of SunGard Higher
  Education in the U.S.A. and/or other regions and/or countries.
  **********************************************************************************/
 
 import groovy.xml.StreamingMarkupBuilder
 
+import grails.util.BuildSettings
 import grails.util.Environment
 
 import org.apache.ivy.core.report.ArtifactDownloadReport
@@ -38,17 +39,21 @@ import org.codehaus.groovy.grails.resolve.IvyDependencyManager
 
 includeTargets << grailsScript("_GrailsEvents")
 
+eventCleanEnd = {
+    ant.delete(file:"./target/template.zip")
+}
+
 eventPackagePluginEnd = { pluginName ->
 
     if (pluginName == "${metadata.'app.name'}") {
         try {
             event "TemplateZip", ["$pluginName", "${plugin.version}"]
 
-            ant.zip( destfile:"${basedir}/grails-${pluginName}-${plugin.version}.zip", 
+            ant.zip( destfile:"${basedir}/grails-${pluginName}-${plugin.version}.zip",
             update:true, basedir:"${projectWorkDir}", includes:"template.zip")
 
             def stagingDir   = "$projectWorkDir/staging"
-            def templateZip  = "$projectWorkDir/template.zip"
+            def templateZip  = "$projectWorkDir/target/template.zip"
             ant.delete( dir:stagingDir )
             ant.delete( file:templateZip )
         }
@@ -63,9 +68,19 @@ eventPackagePluginEnd = { pluginName ->
 
 eventTemplateZip = { pluginName, pluginVersion ->
 
-    try {
-        IvyDependencyManager dm = new IvyDependencyManager( "$pluginName", "$pluginVersion" )
+        def pluginInfo  = pluginSettings.getPluginInfos().find({it.name.equals("banner-packaging")})
+        def pluginDir   = pluginInfo.pluginDir.getFile()
+        def templateZip = new File( "$pluginDir/target", "template.zip" )
+        def stagingDir   = "$projectWorkDir/staging"
+        def installerDir = "$stagingDir/installer"
 
+    if (templateZip.exists()) {
+        ant.echo "...found existing template.zip "
+        return
+    }
+
+    try {
+        IvyDependencyManager dm = new IvyDependencyManager( "$pluginName", "$pluginVersion", new BuildSettings() )
         dm.parseDependencies({
             repositories {
                 grailsPlugins()
@@ -76,26 +91,27 @@ eventTemplateZip = { pluginName, pluginVersion ->
                 mavenRepo "http://repository.codehaus.org"
             }
 
+            log "error"
             dependencies {
-                runtime( 'org.springframework:spring-core:3.0.5.RELEASE') {
+                runtime( 'org.springframework:spring-core:3.1.4.RELEASE') {
                     export = false
                 }
-                runtime( 'org.springframework:spring-expression:3.0.5.RELEASE') {
+                runtime( 'org.springframework:spring-expression:3.1.4.RELEASE') {
                     export = false
                 }
-                runtime( 'org.springframework:spring-context:3.0.5.RELEASE') {
+                runtime( 'org.springframework:spring-context:3.1.4.RELEASE') {
                     export = false
                 }
-                runtime( 'org.springframework:spring-beans:3.0.5.RELEASE') {
+                runtime( 'org.springframework:spring-beans:3.1.4.RELEASE') {
                     export = false
                 }
-                runtime( 'org.springframework:spring-aop:3.0.5.RELEASE') {
+                runtime( 'org.springframework:spring-aop:3.1.4.RELEASE') {
                     export = false
                 }
-                runtime( 'org.springframework:spring-asm:3.0.5.RELEASE') {
+                runtime( 'org.springframework:spring-asm:3.1.4.RELEASE') {
                     export = false
                 }
-                runtime( 'org.codehaus.groovy:groovy:1.8.0') {
+                runtime( 'org.codehaus.groovy:groovy-all:2.0.7') {
                     export = false
                 }
                 runtime( 'log4j:log4j:1.2.16') {
@@ -112,16 +128,9 @@ eventTemplateZip = { pluginName, pluginVersion ->
 
         ResolveReport report = dm.resolveDependencies()
         if (dm.resolveErrors) {
-            println "Error: There was an error resolving dependencies"
+            ant.echo "Error: There was an error resolving dependencies"
             exit 1
         }
-
-        def pluginInfo  = pluginSettings.getPluginInfos().find({it.name.equals("banner-packaging")})
-        def pluginDir   = pluginInfo.pluginDir.getFile()
-        def templateZip = new File( pluginDir, "template.zip" )
-
-        def stagingDir   = "$projectWorkDir/staging"
-        def installerDir = "$stagingDir/installer"
 
         ant.delete( dir:"$stagingDir" )
         ant.mkdir(  dir:"$stagingDir" )
@@ -136,7 +145,6 @@ eventTemplateZip = { pluginName, pluginVersion ->
                }
             }
         }
-
         ant.echo "Going to copy installer from ${pluginDir}/lib"
         // Now we'll add internal dependencies from our project into the lib dir
         ant.copy( todir: "$libDir", overwrite:true, preservelastmodified:true ) {

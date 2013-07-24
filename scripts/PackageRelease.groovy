@@ -44,7 +44,15 @@ target( default:"Package Release" ) {
     // before continuing. The 'eventTemplateZip' handler will use Ivy to retrieve all of
     // the dependencies that need to be included in the release package
     //
-    event "TemplateZip", [pluginName, '1.0.2'] // TODO: Read plugin version from it's *Plugin file...
+// TODO: Raise TemplateZip event during package-release
+// NOTE: Following the migration to Grails 2.2.1 the dependencies are not correctly
+//       resolved when created as part of package-release.
+//       A work around is to execute:
+//          (cd plugins/banner-packaging.git && grails package-plugin)
+//       prior to running this script. This will raise the same event, but when executed
+//       from package-plugin it successfully resolves the dependencies and creates the zip file.
+//
+//    event "TemplateZip", [pluginName, '1.0.4'] // TODO: Read plugin version from it's *Plugin file...
 
     File releasePackageZip = new File( "${basedir}/target/release-${metadata.'app.name'}-${metadata.'app.version'}.zip" )
     ant.delete( file:releasePackageZip )
@@ -193,7 +201,8 @@ private File getTemplateHomeZip() {
     File zip = null
     pluginSettings.getPluginInfos().each() {
         if (it.name.equals( "banner-packaging" )) {
-            zip = new File( it.pluginDir.getFile(), "template.zip" )
+            def pluginDirectory = it.pluginDir.getFile()
+            zip = new File( "$pluginDirectory/target", "template.zip" )
         }
     }
 
@@ -271,7 +280,6 @@ private String getStatus( dir ) {
     def status = 'not clean (changes found)'
     process = "git status".execute( null, new File( dir ) )
     process.in.eachLine { line ->
-        println "Evaluating git status line: $line"
         if (line.contains( 'nothing to commit' )) {
             status = 'clean'
             return
