@@ -21,6 +21,7 @@ import org.codehaus.groovy.grails.resolve.IvyDependencyManager
  * to manage product homes and to re-generate the war file with
  * environment specific configuration and overrides (localization message bundles, CSS, JavaScript).
  **/
+grailsSettings.defaultEnv = true
 scriptEnv = "production"
 includeTargets << grailsScript( "_GrailsPackage" )
 includeTargets << grailsScript( "_GrailsWar" )
