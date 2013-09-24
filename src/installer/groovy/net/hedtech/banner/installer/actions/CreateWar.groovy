@@ -261,7 +261,7 @@ public class CreateWar extends BaseSystoolAction {
             |<snippet-root>
             |<filter>
     	    |	<filter-name>CAS Single Sign Out Filter</filter-name>
-           |	<filter-class>net.hedtech.banner.security.cas.SingleSignOutFilter</filter-class>
+           |	<filter-class>org.jasig.cas.client.session.SingleSignOutFilter</filter-class>
     	    |</filter>
     	    |$casValidationFilters
     	    |<filter>
