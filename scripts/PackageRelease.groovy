@@ -40,6 +40,27 @@ target( default:"Package Release" ) {
         println "            (proceeding anyway)"
         println "*******************************************"
     }
+	
+	//Added to address the issue related to  generation of zip file, 
+	//using this fix we can run "Grails packageRelease" on the  plugin "plugins/banner-packaging.git"
+	//inline with the  "Grails packageRelease" and there is no need to have work around 
+	//by execute:(cd plugins/banner-packaging.git && grails package-plugin) prior
+	//to running "grails package-plugin"
+	def command = null
+    if (System.properties.'os.name'.startsWith('Windows')) {
+        command = "grails.bat"
+
+    }else{
+        command = "grails"
+    }
+    println ">>>>>>>>> OS is "+System.getProperty('os.name');
+    def projectDir = "$grailsSettings.baseDir/plugins/banner_packaging.git"
+    println ">>>>>>>>> started  executing : grails package-plugin : on plugins/banner-packaging.git"
+
+    ant.exec(executable: command, dir: "$projectDir", failonerror: true) {
+        arg line: "package-plugin"
+    }
+    println ">>>>>>>>> : Successfully executed  : grails package-plugin : on plugins/banner-packaging.git"
 
     // We'll fire a 'TemplateZip' event, and respond to it via the _Events.groovy script
     // before continuing. The 'eventTemplateZip' handler will use Ivy to retrieve all of
