@@ -89,7 +89,7 @@ public class CreateWar extends BaseSystoolAction {
 		updateJS( stagingWarDir )
 		updateStaging( stagingWarDir, "WEB-INF/classes", sharedConfigDir.getAbsolutePath() )
 		updateStaging( stagingWarDir, "WEB-INF/classes", FileStructure.INSTANCE_CONFIG_DIR )
-
+        updateSecurityXmlIfSamlEnabled()
 		// copyReleaseProperties() // we'll copy release.properties to WEB-INF/classes 		
 		updateWebXml()
 				
@@ -104,6 +104,14 @@ public class CreateWar extends BaseSystoolAction {
         fs.createExclude().setName( "**WEB-INF/web.xml" )
         war.addFileset( fs )
         runTask( war )
+    }
+
+    private void updateSecurityXmlIfSamlEnabled(){
+        def appName = getReleaseProperties().getProperty( "application.name" )
+        def instanceConfig = new ConfigSlurper().parse( resolveFile( "${FileStructure.INSTANCE_CONFIG_DIR}/${appName}_configuration.groovy" ).toURL() )
+        if(samlIsEnabled(instanceConfig)){
+            updateSamlConfigurationFiles( stagingWarDir, "WEB-INF/classes/security", FileStructure.INSTANCE_CONFIG_DIR )
+        }
     }
 
 
@@ -168,6 +176,9 @@ public class CreateWar extends BaseSystoolAction {
         'cas' == instanceConfig.banner.sso.authenticationProvider      
     }
 
+    private boolean samlIsEnabled( instanceConfig ) {
+        'saml' == instanceConfig.banner.sso.authenticationProvider
+    }
 
     private boolean casIsConfiguredInWebXml( root ) {
         root.filter.'filter-name'.any { it.'filter-name'.toString().contains( 'CAS' ) }
@@ -361,7 +372,7 @@ public class CreateWar extends BaseSystoolAction {
     	}
 	}
 
-	
+
 	/**
 	 * Copies (recursively) a source directory (relative to the installer home) to
 	 * the target dir (relative to the stagingDir)
@@ -373,17 +384,39 @@ public class CreateWar extends BaseSystoolAction {
 
 		File source = new File( sourceDir )
 		if (!source.exists()) return
-		
-		FileSet sources = newFileSet()
+
+        String[] fileExtensionArray= ["*.xml","*.jks"]
+        FileSet sources = newFileSet()
         sources.setDir( source )
-		
+        sources.appendExcludes(fileExtensionArray)
+
 		Copy copy = (Copy) newTask( Tasks.COPY )
         copy.setForce( true )
         copy.setTodir( toDir )
         copy.setOverwrite( true )
 		copy.addFileset( sources )
-        runTask( copy )		
+        runTask( copy )
 	}
+
+    public void updateSamlConfigurationFiles(File stagingDir, String target, String sourceDir ){
+        File toDir = resolveFile( stagingDir.getAbsolutePath() + "/" + target )
+        mkdir( toDir )
+
+        File source = new File( sourceDir )
+        if (!source.exists()) return
+
+        String[] fileExtensionArray= ["*.xml","*.jks"]
+        FileSet sources = newFileSet()
+        sources.setDir( source )
+        sources.appendIncludes(fileExtensionArray)
+
+        Copy copy = (Copy) newTask( Tasks.COPY )
+        copy.setForce( true )
+        copy.setTodir( toDir )
+        copy.setOverwrite( true )
+        copy.addFileset( sources )
+        runTask( copy )
+    }
 
 
 	private class UpdateDataSourceCompleteMessage extends ProgressMessage {
