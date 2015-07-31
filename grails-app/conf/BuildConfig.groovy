@@ -6,7 +6,7 @@ grails.project.class.dir        = "target/classes"
 grails.project.test.class.dir   = "target/test-classes"
 grails.project.test.reports.dir = "target/test-reports"
 
-grails.project.dependency.resolver = "ivy" // or maven
+grails.project.dependency.resolver="maven"
 
 grails.project.dependency.resolution = {
 	
@@ -21,8 +21,6 @@ grails.project.dependency.resolution = {
             mavenRepo "${System.properties['PROXY_SERVER_NAME']}"
         } else
         {
-            grailsPlugins()
-            grailsHome()
             grailsCentral()
             mavenCentral()
             mavenRepo "http://repository.jboss.org/maven2/"
@@ -31,7 +29,7 @@ grails.project.dependency.resolution = {
     }
 
     plugins {
-        test ':code-coverage:2.0.3-2',
+        test ':code-coverage:2.0.3-3',
         {
             excludes 'xercesImpl'
         }
