@@ -300,11 +300,11 @@ public class CreateWar extends BaseSystoolAction {
 	        |	<filter-class>org.jasig.cas.client.validation.Saml11TicketValidationFilter</filter-class>
 	        |	<init-param>
 	        |		<param-name>casServerUrlPrefix</param-name>
-	        |		<param-value>${instanceConfig.grails.plugins.springsecurity.cas.serverUrlPrefix}</param-value>
+	        |		<param-value>${instanceConfig.grails.plugin.springsecurity.cas.serverUrlPrefix}</param-value>
 	        |	</init-param>
 	        |	<init-param>
 	        |		<param-name>serverName</param-name>
-	        |		<param-value>${instanceConfig.grails.plugins.springsecurity.cas.serverName}</param-value>
+	        |		<param-value>${instanceConfig.grails.plugin.springsecurity.cas.serverName}</param-value>
 	        |	</init-param>
 	        |	<init-param>
 	        |		<param-name>redirectAfterValidation</param-name>
