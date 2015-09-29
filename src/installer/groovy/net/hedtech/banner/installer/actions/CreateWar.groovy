@@ -129,7 +129,7 @@ public class CreateWar extends BaseSystoolAction {
     	if (!casIsEnabled( instanceConfig )) {
             removeCasContentIfPresent( root )
         } else {
-        	updateWebXmlCasConfiguration( instanceConfig, root )	
+        	updateWebXmlCasConfiguration( instanceConfig, root )
         }
 
         def stringWriter = new StringWriter() 
@@ -193,10 +193,12 @@ public class CreateWar extends BaseSystoolAction {
             validationFilter?.replaceNode( getCasValidationFilter() )
         }
         else {
-            def ant = new AntBuilder()
-            ant.echo "Inserting CAS filter and filter-mapping elements into web.xml ..."
-            insertCasFilters( instanceConfig, root )
-            insertCasFilterMappings( root )
+            if(!checkExistingCasContentIfPresent( root )){
+				def ant = new AntBuilder()
+				ant.echo "Inserting CAS filter and filter-mapping elements into web.xml ..."
+				insertCasFilters( instanceConfig, root )
+				insertCasFilterMappings( root )
+			} 
         }
     }
 
@@ -209,6 +211,13 @@ public class CreateWar extends BaseSystoolAction {
             def casContent = allChildren.find { it.'filter-name'.toString().contains( 'CAS' ) }
             casContent?.each { it.replaceNode {} }
         }
+    }
+	
+	private boolean checkExistingCasContentIfPresent( root ) {
+
+			def ant = new AntBuilder()
+            ant.echo "Check CAS filter and filter-mapping elements from the web.xml..."
+			root.filter.any { it.'filter-name'.toString().contains('CAS Validation Filter') }
     }
 
 
@@ -297,7 +306,7 @@ public class CreateWar extends BaseSystoolAction {
         def validationFilter = """
 	        |<filter>
 	        |	<filter-name>CAS Validation Filter</filter-name>
-	        |	<filter-class>org.jasig.cas.client.validation.Saml11TicketValidationFilter</filter-class>
+	        |	<filter-class>net.hedtech.jasig.cas.client.BannerSaml11ValidationFilter</filter-class>
 	        |	<init-param>
 	        |		<param-name>casServerUrlPrefix</param-name>
 	        |		<param-value>${instanceConfig.grails.plugin.springsecurity.cas.serverUrlPrefix}</param-value>
@@ -310,6 +319,14 @@ public class CreateWar extends BaseSystoolAction {
 	        |		<param-name>redirectAfterValidation</param-name>
 	        |		<param-value>true</param-value>
 	        |	</init-param>
+	        |   <init-param>
+            |       <param-name>artifactParameterName</param-name>
+            |       <param-value>ticket</param-value>
+            |   </init-param>
+            |   <init-param>
+            |       <param-name>tolerance</param-name>
+            |       <param-value />
+            |   </init-param>
 	        |</filter>
             |""".stripMargin()
     }
