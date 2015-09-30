@@ -321,7 +321,7 @@ public class CreateWar extends BaseSystoolAction {
 	        |	</init-param>
 	        |   <init-param>
             |       <param-name>artifactParameterName</param-name>
-            |       <param-value>ticket</param-value>
+            |       <param-value>${instanceConfig.grails.plugin.springsecurity.cas.artifactParameter}</param-value>
             |   </init-param>
             |   <init-param>
             |       <param-name>tolerance</param-name>
