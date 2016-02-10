@@ -6,12 +6,12 @@ grails.project.class.dir        = "target/classes"
 grails.project.test.class.dir   = "target/test-classes"
 grails.project.test.reports.dir = "target/test-reports"
 
-grails.project.dependency.resolver = "ivy" // or maven
+grails.project.dependency.resolver="maven"
 
 grails.project.dependency.resolution = {
 	
     inherits("global") { }
-    log "warn" // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
+    log "error" // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
 
     distribution = {
     }
@@ -21,12 +21,17 @@ grails.project.dependency.resolution = {
             mavenRepo "${System.properties['PROXY_SERVER_NAME']}"
         } else
         {
-            grailsPlugins()
-            grailsHome()
             grailsCentral()
             mavenCentral()
             mavenRepo "http://repository.jboss.org/maven2/"
-            mavenRepo "http://repository.codehaus.org"
+            mavenRepo "https://code.lds.org/nexus/content/groups/main-repo"
+        }
+    }
+
+    plugins {
+        test ':code-coverage:2.0.3-3',
+        {
+            excludes 'xercesImpl'
         }
     }
 

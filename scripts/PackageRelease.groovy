@@ -111,6 +111,7 @@ target( default:"Package Release" ) {
     ant.mkdir( dir:"${stagingDir}/lib" )
     ant.copy( todir:"${stagingDir}/lib" ) {
         fileset( dir:"${basedir}/target", includes:"ojdbc6.jar" )
+        fileset( dir:"${basedir}/target", includes:"xdb6.jar" )
         fileset( dir:"${basedir}/src", includes:"logging.properties" )
     }
 
