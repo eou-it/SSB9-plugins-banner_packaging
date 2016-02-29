@@ -184,7 +184,9 @@ public class CreateWar extends BaseSystoolAction {
         root.filter.'filter-name'.any { it.'filter-name'.toString().contains( 'CAS' ) }
     }
 
-
+    private boolean casSaml11ProtocolEnabled( instanceConfig ) {
+        'SAMLart' == instanceConfig.grails.plugin.springsecurity.cas.artifactParameter
+    }
     private void updateWebXmlCasConfiguration( instanceConfig, root ) {
 
         if (casIsConfiguredInWebXml( root )) { 
@@ -230,7 +232,12 @@ public class CreateWar extends BaseSystoolAction {
                 insertionIndex = insertionIndex ?: index + 1
             }
         }
-        def casFilters = getCasFilters( instanceConfig )
+        def casFilters
+        if(casSaml11ProtocolEnabled( instanceConfig )) {
+            casFilters = getCasSaml11ProtocolFilters( instanceConfig )
+        } else {
+            casFilters = getCasFilters( instanceConfig )
+        }
         casFilters.each {
             allChildren.add( insertionIndex++, it )
         }
@@ -294,6 +301,28 @@ public class CreateWar extends BaseSystoolAction {
     	root.children()
     }
 
+    private def getCasSaml11ProtocolFilters( instanceConfig ) {
+        def casValidationFilters = getCasValidationFilterString( instanceConfig )
+        def filters = """
+            |<snippet-root>
+            |<filter>
+            |    <filter-name>CAS Single Sign Out Filter</filter-name>
+            |    <filter-class>org.jasig.cas.client.session.SingleSignOutFilter</filter-class>
+            |    <init-param>
+            |        <param-name>artifactParameterName</param-name>
+            |        <param-value>SAMLart</param-value>
+            |    </init-param>
+            |</filter>
+            |$casValidationFilters
+            |<filter>
+            |    <filter-name>CAS HttpServletRequest Wrapper Filter</filter-name>
+            |    <filter-class>org.jasig.cas.client.util.HttpServletRequestWrapperFilter</filter-class>
+            |</filter>
+            |</snippet-root>
+            |""".stripMargin()
+        def root = new XmlParser().parseText( filters )
+        root.children()
+    }
 
     private def getCasValidationFilter() {
         def root = new XmlParser().parseText( "<snippet-root>${getCasValidationFilterString()}</snippet-root>" )
