@@ -185,7 +185,7 @@ public class CreateWar extends BaseSystoolAction {
     }
 
     private boolean casSaml11ProtocolEnabled( instanceConfig ) {
-        'SAMLart' == instanceConfig.grails.plugin.springsecurity.cas.artifactParameter
+        'samlart' == instanceConfig.grails.plugin.springsecurity.cas.artifactParameter.toLowerCase()
     }
     private void updateWebXmlCasConfiguration( instanceConfig, root ) {
 
