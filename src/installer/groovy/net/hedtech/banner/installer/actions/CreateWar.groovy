@@ -15,7 +15,7 @@ import net.hedtech.banner.installer.*
 import com.sungardhe.commoncomponents.installer.*
 
 import groovy.xml.StreamingMarkupBuilder
-
+import net.hedtech.banner.installer.exception.GenericCustomException
 import org.apache.tools.ant.taskdefs.*
 import org.apache.tools.ant.types.*
 
@@ -65,7 +65,7 @@ public class CreateWar extends BaseSystoolAction {
 		File dir = resolveFile( FileStructure.WEBAPP_DIR )
 		String[] names = dir.list()
 		if (names.length != 1) {
-			throw new RuntimeException( "$dir must contain a single war" )
+            throw new GenericCustomException( "$dir must contain a single war" )
 		}
 		new File( dir, names[0] )		
 	}
@@ -126,10 +126,10 @@ public class CreateWar extends BaseSystoolAction {
 
     	updateWebXmlDataSourceRef( config, root )
 
-    	if (!casIsEnabled( instanceConfig )) {
-            removeCasContentIfPresent( root )
+        if (casIsEnabled( instanceConfig )) {
+            updateWebXmlCasConfiguration( instanceConfig, root )
         } else {
-        	updateWebXmlCasConfiguration( instanceConfig, root )
+            removeCasContentIfPresent( root )
         }
 
         def stringWriter = new StringWriter() 
@@ -156,13 +156,13 @@ public class CreateWar extends BaseSystoolAction {
 
     private void updateJndi( jndiName, configProp, root, refName, required = true ) {
 
-        if (required && jndiName instanceof Map) throw new RuntimeException( "Please configure '$configProp, and re-run this action." )
+        if (required && jndiName instanceof Map) throw new GenericCustomException( "Please configure '$configProp, and re-run this action." )
 
         if ("jdbc/bannerDataSource" != jndiName) {
             def resourceRef = root.'resource-ref'.find { it.'description'.toString().contains( refName ) } 
             def resourceRefName = resourceRef ? resourceRef.children().find { it.toString().contains( 'res-ref-name' ) } : null
 
-            if (required && !resourceRefName) throw new RuntimeException( "Expected to find '$refName JNDI reference within the web.xml!" )                      
+            if (required && !resourceRefName) throw new GenericCustomException( "Expected to find '$refName JNDI reference within the web.xml!" )
             if (resourceRefName && "$jndiName" != "${resourceRefName.name()}") {
                 def oldValue = resourceRefName.value
                 resourceRefName.value = jndiName

@@ -11,6 +11,7 @@
  **********************************************************************************/
 package net.hedtech.banner.installer.actions
 
+import net.hedtech.banner.installer.exception.GenericCustomException
 import org.springframework.beans.factory.annotation.Required
 import com.sungardhe.commoncomponents.installer.*
 import org.apache.tools.ant.taskdefs.*
@@ -27,11 +28,11 @@ public class BaseSystoolAction extends DefaultAction {
     protected File getSharedConfiguration() {
 		String sharedConfigDirName = getInstanceProperties().getProperty( "shared.config.dir" )
 		if (sharedConfigDirName?.trim()?.size() == 0) {
-			throw new RuntimeException( "Shared config dir not set" )
+            throw new GenericCustomException( "Shared config dir not set" )
 		}
 		File sharedConfDir = resolveFile( sharedConfigDirName )
 		if (!sharedConfDir.exists()) {
-			throw new RuntimeException( "Shared config dir: ${sharedConfigDirName} does not exist" )
+            throw new GenericCustomException( "Shared config dir: ${sharedConfigDirName} does not exist" )
 		}
         sharedConfDir
     }

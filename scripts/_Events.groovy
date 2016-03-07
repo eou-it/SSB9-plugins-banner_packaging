@@ -32,7 +32,7 @@ import org.apache.ivy.plugins.resolver.FileSystemResolver
 import org.apache.ivy.plugins.resolver.IBiblioResolver
 import org.apache.ivy.util.DefaultMessageLogger
 import org.apache.ivy.util.Message
-
+import org.codehaus.groovy.grails.io.support.UrlResource
 import org.codehaus.groovy.grails.plugins.GrailsPluginUtils
 import org.codehaus.groovy.grails.resolve.IvyDependencyManager
 
@@ -41,6 +41,35 @@ includeTargets << grailsScript("_GrailsEvents")
 
 eventCleanEnd = {
     ant.delete(file:"./target/template.zip")
+}
+
+
+extraSrcDirs = ["${basedir}/src/installer/groovy","${basedir}/src/installer/i18n","${basedir}/src/installer/spring"]
+
+eventCompileStart = {
+    for (String path in extraSrcDirs) {
+        projectCompiler.srcDirectories << path
+        println "extraSrcDirs = "+path
+    }
+    copyResources buildSettings.resourcesDir
+
+}
+
+eventCreateWarStart = { warName, stagingDir ->
+    copyResources "$stagingDir/WEB-INF/classes"
+}
+
+private copyResources(destination) {
+    ant.copy(todir: destination,
+            failonerror: false,
+            preservelastmodified: true) {
+        for (String path in extraSrcDirs) {
+            fileset(dir: path) {
+                exclude(name: '*.groovy')
+                exclude(name: '*.java')
+            }
+        }
+    }
 }
 
 eventPackagePluginEnd = { pluginName ->
