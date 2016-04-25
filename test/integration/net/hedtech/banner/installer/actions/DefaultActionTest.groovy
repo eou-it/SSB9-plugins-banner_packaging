@@ -1,9 +1,10 @@
+/*****************************************************************************************
+ * Copyright 2009 - 2016 Ellucian Company L.P. and its affiliates.                       *
+ *****************************************************************************************/
 package net.hedtech.banner.installer.actions
 
 import com.sungardhe.commoncomponents.installer.Action
 import com.sungardhe.commoncomponents.installer.ActionRunner
-import net.hedtech.banner.installer.actions.CreateWar
-import net.hedtech.banner.installer.actions.DefaultAction
 import org.junit.After
 import org.junit.AfterClass
 import org.junit.Assert
@@ -13,9 +14,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExpectedException
 
-/**
- * Created by mohitj on 8/26/2015.
- */
 class DefaultActionTest {
     static def DefaultAction defaultAction;
     static ActionRunner runner=new ActionRunner();

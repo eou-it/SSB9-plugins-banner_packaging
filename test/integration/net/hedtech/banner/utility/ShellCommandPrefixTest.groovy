@@ -1,13 +1,12 @@
+/*****************************************************************************************
+ * Copyright 2009 - 2016 Ellucian Company L.P. and its affiliates.                       *
+ *****************************************************************************************/
 package net.hedtech.banner.utility
-import net.hedtech.banner.utility.ShellCommandPrefix
+
 import org.junit.Before
 import org.junit.Test
 import static org.junit.Assert.*
 
-
-/**
- * Created by mohitj on 8/12/15.
- */
 
 class ShellCommandPrefixTest {
 

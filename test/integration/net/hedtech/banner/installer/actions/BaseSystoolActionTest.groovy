@@ -1,17 +1,14 @@
+/*****************************************************************************************
+ * Copyright 2009 - 2016 Ellucian Company L.P. and its affiliates.                       *
+ *****************************************************************************************/
 package net.hedtech.banner.installer.actions
 
 
 import com.sungardhe.commoncomponents.installer.Action
 import com.sungardhe.commoncomponents.installer.ActionRunner
-import com.sungardhe.commoncomponents.installer.ActionRunnerListener
-import com.sungardhe.commoncomponents.installer.Resource
-import net.hedtech.banner.installer.actions.BaseSystoolAction
-import net.hedtech.banner.installer.actions.CreateWar
 import org.junit.*
 import org.junit.rules.ExpectedException
-import net.hedtech.banner.installer.exception.GenericCustomException
 
-import java.awt.event.ActionListener
 
 class BaseSystoolActionTest {
 

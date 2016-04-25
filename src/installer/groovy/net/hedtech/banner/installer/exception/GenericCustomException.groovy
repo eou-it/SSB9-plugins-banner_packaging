@@ -1,8 +1,8 @@
+/*****************************************************************************************
+ * Copyright 2009 - 2016 Ellucian Company L.P. and its affiliates.                       *
+ *****************************************************************************************/
 package net.hedtech.banner.installer.exception
 
-/**
- * Created by mohitj on 8/13/15.
- */
 class GenericCustomException  extends RuntimeException {
 
     private String message = null;
