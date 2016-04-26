@@ -11,6 +11,9 @@
  **********************************************************************************/
 package net.hedtech.banner.installer
 
+import groovy.transform.CompileStatic
+
+@CompileStatic
 public interface FileStructure {
 	public static final String DIST_DIR = "../dist"
 	public static final String WEBAPP_DIR = "../webapp"
@@ -21,6 +24,6 @@ public interface FileStructure {
 	public static final String I18N_DIR = "../i18n"
 	public static final String INSTANCE_JS_DIR = INSTANCE_DIR + "/js"
 	public static final String INSTANCE_CSS_DIR = INSTANCE_DIR + "/css"
-	
+	public def sayHello();
 	
 }
