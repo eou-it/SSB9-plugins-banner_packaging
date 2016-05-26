@@ -11,6 +11,7 @@
  **********************************************************************************/
 package net.hedtech.banner.installer.actions
 
+import net.hedtech.banner.installer.exception.GenericCustomException
 import org.springframework.beans.factory.annotation.Required;
 import com.sungardhe.commoncomponents.installer.*
 import org.apache.tools.ant.taskdefs.*
@@ -84,7 +85,7 @@ public class DeployTomcat extends BaseSystoolAction {
 		File dir = resolveFile( FileStructure.WEBAPP_DIR )
 		String[] names = dir.list()
 		if (names.length != 1) {
-			throw new RuntimeException( "$dir must contain a single war" )
+            throw new GenericCustomException( "$dir must contain a single war" )
 		}
 		new File( dir, names[0] )		
 	}
