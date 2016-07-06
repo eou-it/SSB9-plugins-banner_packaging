@@ -30,10 +30,10 @@ grails.project.dependency.resolution = {
 
     plugins {
         test ':code-coverage:2.0.3-3',
-        {
-            excludes 'xercesImpl'
-        }
-    }
+                {
+                    excludes 'asm' ,'asm-util' , 'asm-commons' ,'asm-analysis' ,'asm-tree','xercesImpl'
+                }
+           }
 
     dependencies {
 	    // This plugin builds a non-grails application.  See the _Events.groovy file for the actual depdency list.
