@@ -3,7 +3,7 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:lang="http://www.springframework.org/schema/lang"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
-           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+
            http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-2.0.xsd">
 
     <import resource="common-base-context.xml"/>
@@ -24,6 +24,7 @@
         <property name="steps">
             <list>
                 <ref bean="namedsequence.War"/>
+                <ref bean="namedsequence.SamlSetup"/>
                 <ref bean="namedsequence.DeployTomcat"/>
             </list>
         </property>
@@ -40,6 +41,22 @@
             </list>
         </property>
     </bean>
+
+    <bean id="namedsequence.SamlSetup" class="com.sungardhe.commoncomponents.installer.NamedSequence">
+        <property name="nameResourceCode" value="installer.saml.setup.name"/>
+        <property name="descriptionResourceCode" value="installer.saml.setup.description"/>
+        <property name="steps">
+            <list>
+                <ref bean="action.SamlSetup"/>
+            </list>
+        </property>
+    </bean>
+
+    <lang:groovy id="action.SamlSetup"
+                 script-source="classpath:net/hedtech/banner/installer/actions/SamlSetup.groovy">
+    </lang:groovy>
+
+
     <!-- Note: CreateWar is 'built-in' - see 'common-base-actions-context.xml' -->
     
     <bean id="namedsequence.DeployTomcat" class="com.sungardhe.commoncomponents.installer.NamedSequence">
