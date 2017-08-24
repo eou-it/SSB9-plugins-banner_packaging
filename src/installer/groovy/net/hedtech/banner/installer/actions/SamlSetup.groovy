@@ -1,10 +1,10 @@
-/*******************************************************************************
- Copyright 2017 Ellucian Company L.P. and its affiliates.
- *******************************************************************************/
+/* *******************************************************************************
+Ellucian 2017 copyright
+ **********************************************************************************/
 package net.hedtech.banner.installer.actions
+import net.hedtech.banner.installer.FileStructure
 
 import com.sungardhe.commoncomponents.installer.ActionRunnerException
-import net.hedtech.banner.installer.FileStructure
 
 /**
  * Installer action for saml setup
@@ -26,7 +26,6 @@ public class SamlSetup extends BaseSystoolAction {
         propertiesFile.withInputStream {
             config.load(it)
         }
-        //def config = new ConfigSlurper().parse(resolveFile("${sharedConfigDir.getAbsolutePath()}/saml_configuration.properties").toURL())
         def alias = config?.getProperty("alias")
         def CN = config?.getProperty("CN")
         def OU = config?.getProperty("OU")
@@ -34,29 +33,31 @@ public class SamlSetup extends BaseSystoolAction {
         def L = config?.getProperty("L")
         def S = config?.getProperty("S")
         def C = config?.getProperty("C")
-        def serviceAssertionLocation = config?.getProperty("serviceAssertionLocation")
         def serviceProviderLocation = config?.getProperty("serviceProviderLocation")
+        def serviceAssertionLocation = config?.getProperty("serviceAssertionLocation")
         def identityProviderLocation = config?.getProperty("identityProviderLocation")
         def certificateAvailable = config?.getProperty("certificateAvailable")
         def password1 = config?.getProperty("password")
         def keystoreName = config?.getProperty("keystoreName")
-        println "certificateAvailable " + certificateAvailable
         """keytool -genkey -noprompt -alias $alias -dname "CN=$CN, OU=$OU, O=$O, L=$L, S=$S, C=$C" -keystore $keystoreName -storepass $password1 -keypass $password1""".execute()
-        println "Keystore $keystoreName successfully generated!"
-        "keytool -export -alias $alias -storepass $password1 -file ${FileStructure?.INSTANCE_CONFIG_DIR}/SERVICE-PROVIDER.cer -keystore $keystoreName".execute()
-        println "SERVICE-PROVIDER.cer successfully generated!!!"
-        def certCommand = "keytool -printcert -rfc -file ${FileStructure?.INSTANCE_CONFIG_DIR}/SERVICE-PROVIDER.cer"
+        "keytool -export -alias $alias -storepass $password1 -file SERVICE-PROVIDER.cer -keystore $keystoreName"
+        "keytool -export -alias $alias -storepass $password1 -file $currentDir//SERVICE-PROVIDER.cer -keystore $keystoreName".execute()
+        def certCommand = "keytool -printcert -rfc -file $currentDir//SERVICE-PROVIDER.cer"
         Process certquantCmd = certCommand.execute()
+        println certCommand
         def certOutput = certquantCmd.in.text
         certOutput = certOutput.replace("-----BEGIN CERTIFICATE-----", "")
         certOutput = certOutput.replace("-----END CERTIFICATE-----", "")
         certOutput = certOutput.trim()
+        println certOutput
         generateSPXML(alias, serviceProviderLocation, serviceAssertionLocation)
         generateIDPXML(identityProviderLocation)
-        def ant = new AntBuilder()
         certificateInsertion(certOutput)
-        applicationConfigChanges(keystoreName, password1, alias)
-        ant.move(file: "${currentDir}/$keystoreName", todir: "${FileStructure?.INSTANCE_CONFIG_DIR}")
+        applicationConfigChanges(keystoreName,password1,alias)
+        def ant = new AntBuilder()
+        ant.move( file:"${currentDir}/$keystoreName", todir: "${FileStructure?.INSTANCE_CONFIG_DIR}")
+        ant.copy( file:"${currentDir}/SERVICE-PROVIDER.cer", todir: "${FileStructure?.INSTANCE_CONFIG_DIR}")
+
     }
 
     //----------- Private Method ------------------------
@@ -143,23 +144,23 @@ public class SamlSetup extends BaseSystoolAction {
 
     private certificateInsertion(certificateFile) {
         def currentDir = System.getProperty("user.dir")
-        def InputXML = new XmlParser().parse("${FileStructure?.INSTANCE_CONFIG_DIR}/ServiceProvider.xml")
+        println certificateFile
         def ant = new AntBuilder()
         ant.replace(file: "${FileStructure?.INSTANCE_CONFIG_DIR}/ServiceProvider.xml", token: "Enter the certificate here!!", value: "$certificateFile")
     }
 
-    private applicationConfigChanges(keystoreName, password1, alias) {
+    private applicationConfigChanges(keystoreName,password1,alias){
         def currentDir = System.getProperty("user.dir")
-        def content = """|
+        def content ="""|
                         |grails.plugin.springsecurity.saml.active = true
                         |grails.plugin.springsecurity.auth.loginFormUrl = '/saml/login'
                         |grails.plugin.springsecurity.saml.afterLogoutUrl ='/logout/customLogout'
-                        |banner.sso.authentication.saml.localLogout='false'                                             // To disable single logout set this to true,default 'false'.
-                        |grails.plugin.springsecurity.saml.keyManager.storeFile = 'classpath:security/$keystoreName'    // for unix file based Example:- 'file:/home/u02/samlkeystore.jks'
+                        |banner.sso.authentication.saml.localLogout='false'                 // To disable single logout set this to true,default 'false'.
+                        |grails.plugin.springsecurity.saml.keyManager.storeFile = 'classpath:security/$keystoreName'  // for unix file based Example:- 'file:/home/u02/samlkeystore.jks'
                         |grails.plugin.springsecurity.saml.keyManager.storePass = '$password1'
                         |grails.plugin.springsecurity.saml.keyManager.passwords = [ '$alias': '$password1' ]
                         |grails.plugin.springsecurity.saml.keyManager.defaultKey = '$alias'
-                        |grails.plugin.springsecurity.saml.metadata.sp.file = 'classpath:security/ServiceProvider.xml'              // for unix file based Example:-'/home/u02/sp-local.xml'
+                        |grails.plugin.springsecurity.saml.metadata.sp.file = 'classpath:security/ServiceProvider.xml'    // for unix file based Example:-'/home/u02/sp-local.xml'
                         |grails.plugin.springsecurity.saml.metadata.providers = [adfs: 'classpath:security/IdentityProvider.xml'] // for unix file based Ex:- '/home/u02/idp-local.xml'
                         |grails.plugin.springsecurity.saml.metadata.defaultIdp = 'adfs'
                         |grails.plugin.springsecurity.saml.metadata.sp.defaults = [
