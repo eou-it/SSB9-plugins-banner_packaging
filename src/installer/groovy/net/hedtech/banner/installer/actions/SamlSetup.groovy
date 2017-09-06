@@ -23,6 +23,10 @@ public class SamlSetup extends BaseSystoolAction {
     private static final String SPASSERTION_LOCATION = 'SPAssertionLocation'
     private static final String SPLOGOUT_LOCATION = 'SPLogoutLocation'
     private static final String IDP_LOCATION = 'IDPLocation'
+    private static final String SP_CERTIFICATE_PATH='spCertificatePath'
+    private static final String IDP_CERTIFICATE_PATH='idpCertificatePath'
+    private static final String SP_XML_PATH='spXmlPath'
+    private static final String IDP_XML_PATH='idpXmlPath'
 
     public String getNameResourceCode() {
         "installer.saml.setup.name"
@@ -30,7 +34,7 @@ public class SamlSetup extends BaseSystoolAction {
 
 
     public void execute() throws ActionRunnerException {
-        def alias, SPAssertionLocation, SPLogoutLocation, IDPLocation
+        def alias, SPAssertionLocation, SPLogoutLocation, IDPLocation, spCertificatePath, idpCertificatePath, spXmlPath, idpXmlPath
         sharedConfigDir = getSharedConfiguration()
         Properties config = new Properties()
         File propertiesFile = new File("${sharedConfigDir.getAbsolutePath()}/saml_configuration.properties")
@@ -39,10 +43,6 @@ public class SamlSetup extends BaseSystoolAction {
         }
         def appId = config?.getProperty("appId")
         def appName = config?.getProperty("appName")
-        def spCertificatePath = config?.getProperty("spCertificatePath")
-        def idpCertificatePath = config?.getProperty("idpCertificatePath")
-        def spXmlPath = config?.getProperty("spXmlPath")
-        def idpXmlPath = config?.getProperty("idpXmlPath")
         def dbConnection = config?.getProperty("dbconnectionURL")
         def username = config?.getProperty("dbusername")
         def pass = config?.getProperty("dbpassword")
@@ -64,6 +64,18 @@ public class SamlSetup extends BaseSystoolAction {
                 case IDP_LOCATION:
                     IDPLocation = rs.getString("GUROCFG_VALUE")
                     break
+                case SP_CERTIFICATE_PATH:
+                    spCertificatePath = rs.getString("GUROCFG_VALUE")
+                    break
+                case IDP_CERTIFICATE_PATH:
+                    idpCertificatePath = rs.getString("GUROCFG_VALUE")
+                    break
+                case SP_XML_PATH:
+                    spXmlPath = rs.getString("GUROCFG_VALUE")
+                    break
+                case IDP_XML_PATH:
+                    idpXmlPath = rs.getString("GUROCFG_VALUE")
+                    break
             }
         }
         con.close();
@@ -76,6 +88,14 @@ public class SamlSetup extends BaseSystoolAction {
         println "SPLogoutLocation" + SPLogoutLocation
         println "**************************************"
         println "IDPLocation" + IDPLocation
+        println "**************************************"
+        println "SP_CERTIFICATE_PATH" + spCertificatePath
+        println "**************************************"
+        println "IDP_CERTIFICATE_PATH" + idpCertificatePath
+        println "**************************************"
+        println "SP_XML_PATH" + spXmlPath
+        println "**************************************"
+        println "IDP_XML_PATH" + idpXmlPath
 
         /*"""keytool -genkey -noprompt -alias $alias -dname "CN=$CN, OU=$OU, O=$O, L=$L, S=$S, C=$C" -keystore $keystoreName -storepass $password1 -keypass $password1""".execute()*/
         /*"keytool -export -alias $alias -storepass $password1 -file SERVICE-PROVIDER.cer -keystore $keystoreName"*/
