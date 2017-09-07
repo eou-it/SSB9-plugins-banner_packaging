@@ -10,8 +10,8 @@ import net.hedtech.banner.installer.FileStructure
 
 import java.sql.Connection
 import java.sql.DriverManager
+import java.sql.PreparedStatement
 import java.sql.ResultSet
-import java.sql.Statement
 
 /**
  * Installer action for saml setup
@@ -27,6 +27,9 @@ public class SamlSetup extends BaseSystoolAction {
     private static final String IDP_CERTIFICATE_PATH = 'idpCertificatePath'
     private static final String SP_XML_PATH = 'spXmlPath'
     private static final String IDP_XML_PATH = 'idpXmlPath'
+    private static final String GUROCFG_VALUE = 'GUROCFG_VALUE'
+    private static final String GUROCFG_NAME = 'GUROCFG_NAME'
+
 
     public String getNameResourceCode() {
         "installer.saml.setup.name"
@@ -48,33 +51,34 @@ public class SamlSetup extends BaseSystoolAction {
         def pass = config?.getProperty("dbpassword")
         Class.forName("oracle.jdbc.OracleDriver");
         Connection con = DriverManager.getConnection("$dbConnection", "$username", "$pass");
-        Statement stmt = con.createStatement();
-        ResultSet rs = stmt.executeQuery("select * from GUROCFG where GUROCFG_GUBAPPL_APP_ID='$appId'");
+        PreparedStatement stmt =con.prepareStatement("SELECT * from GUROCFG WHERE  GUROCFG_GUBAPPL_APP_ID = ?");
+        stmt.setString(1, "$appId");
+        ResultSet rs = stmt.executeQuery();
         while (rs.next()) {
-            switch (rs.getString("GUROCFG_NAME")) {
+            switch (rs.getString(GUROCFG_NAME)) {
                 case ALIAS:
-                    alias = rs.getString("GUROCFG_VALUE")
+                    alias = rs.getString(GUROCFG_VALUE)
                     break
                 case SPASSERTION_LOCATION:
-                    SPAssertionLocation = rs.getString("GUROCFG_VALUE")
+                    SPAssertionLocation = rs.getString(GUROCFG_VALUE)
                     break
                 case SPLOGOUT_LOCATION:
-                    SPLogoutLocation = rs.getString("GUROCFG_VALUE")
+                    SPLogoutLocation = rs.getString(GUROCFG_VALUE)
                     break
                 case IDP_LOCATION:
-                    IDPLocation = rs.getString("GUROCFG_VALUE")
+                    IDPLocation = rs.getString(GUROCFG_VALUE)
                     break
                 case SP_CERTIFICATE_PATH:
-                    spCertificatePath = rs.getString("GUROCFG_VALUE")
+                    spCertificatePath = rs.getString(GUROCFG_VALUE)
                     break
                 case IDP_CERTIFICATE_PATH:
-                    idpCertificatePath = rs.getString("GUROCFG_VALUE")
+                    idpCertificatePath = rs.getString(GUROCFG_VALUE)
                     break
                 case SP_XML_PATH:
-                    spXmlPath = rs.getString("GUROCFG_VALUE")
+                    spXmlPath = rs.getString(GUROCFG_VALUE)
                     break
                 case IDP_XML_PATH:
-                    idpXmlPath = rs.getString("GUROCFG_VALUE")
+                    idpXmlPath = rs.getString(GUROCFG_VALUE)
                     break
             }
         }
