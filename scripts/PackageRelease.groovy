@@ -228,18 +228,7 @@ target(genSAMLProperties: "Creates saml_configuration.properties file holding SA
                      |#
                      |# this is important property do not change it. unless required
                      |appId=$appId
-                     |# This is the Issuer name provided in the Provider server
-                     |alias=''
-                     |#This is the URL of the service provider / Application to be configured. (http://<HOSTNAME>:<PORT>/<APPLICATION_NAME>/saml/SSO/alias/alias-name)
-                     |SPLogoutLocation=''
-                     |#This is Assertion URL to be mentioned during the Service provider configuration in Provider server
-                     |SPAssertionLocation=''
-                     |#This is the URL of the ID provider / Provider to be configured. (https://<HOSTNAME>:<PORT>/samlsso)
-                     |IDPLocation=''
-					 |spCertificatePath=''
-                     |idpCertificatePath=''
-                     |spXmlPath=''
-                     |idpXmlPath=''
+                     |appName=$appName
                      |#DB Details to be entered here in order to connect to db and fetc hth
                      |dbconnectionURL=jdbc:oracle:thin:@hostname:portnumber:serviceName/SID
                      |dbusername=username

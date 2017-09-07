@@ -23,10 +23,10 @@ public class SamlSetup extends BaseSystoolAction {
     private static final String SPASSERTION_LOCATION = 'SPAssertionLocation'
     private static final String SPLOGOUT_LOCATION = 'SPLogoutLocation'
     private static final String IDP_LOCATION = 'IDPLocation'
-    private static final String SP_CERTIFICATE_PATH='spCertificatePath'
-    private static final String IDP_CERTIFICATE_PATH='idpCertificatePath'
-    private static final String SP_XML_PATH='spXmlPath'
-    private static final String IDP_XML_PATH='idpXmlPath'
+    private static final String SP_CERTIFICATE_PATH = 'spCertificatePath'
+    private static final String IDP_CERTIFICATE_PATH = 'idpCertificatePath'
+    private static final String SP_XML_PATH = 'spXmlPath'
+    private static final String IDP_XML_PATH = 'idpXmlPath'
 
     public String getNameResourceCode() {
         "installer.saml.setup.name"
@@ -109,8 +109,6 @@ public class SamlSetup extends BaseSystoolAction {
         spCertOutput = spCertOutput.trim()
         println spCertOutput
         updateSPXML(spXmlPath, alias, SPLogoutLocation, SPAssertionLocation, spCertOutput, appName)
-        certificateInsertion(spCertOutput)
-
         def idpCertCommand = "keytool -printcert -rfc -file $idpCertificatePath"
         Process idpCertquantCmd = idpCertCommand.execute()
         println "***************************************************>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
@@ -124,6 +122,8 @@ public class SamlSetup extends BaseSystoolAction {
         def ant = new AntBuilder()
         ant.copy(file: "$idpCertificatePath", todir: "${FileStructure?.INSTANCE_CONFIG_DIR}")
         ant.copy(file: "$spCertificatePath", todir: "${FileStructure?.INSTANCE_CONFIG_DIR}")
+        ant.copy(file: "${sharedConfigDir.getAbsolutePath()}/banner-$appName-sp.xml", todir: "${FileStructure?.INSTANCE_CONFIG_DIR}")
+        ant.copy(file: "${sharedConfigDir.getAbsolutePath()}/banner-$appName-idp.xml", todir: "${FileStructure?.INSTANCE_CONFIG_DIR}")
     }
 
     /**
@@ -178,12 +178,6 @@ public class SamlSetup extends BaseSystoolAction {
         XmlUtil.serialize(result, newwriter)
     }
 
-    private certificateInsertion(certificateFile) {
-        def ant = new AntBuilder()
-        ant.replace(file: "${FileStructure?.INSTANCE_CONFIG_DIR}/ServiceProvider.xml", token: "Enter the certificate here!!", value: "$certificateFile")
-    }
-
-
     private applicationConfigChanges(appName, alias) {
         def content = """|
                         |grails.plugin.springsecurity.saml.active = true
@@ -194,7 +188,7 @@ public class SamlSetup extends BaseSystoolAction {
                         |grails.plugin.springsecurity.saml.keyManager.storePass = '<PASSWORD>'
                         |grails.plugin.springsecurity.saml.keyManager.passwords = [ '$alias': '<PASSWORD>' ]
                         |grails.plugin.springsecurity.saml.keyManager.defaultKey = '$alias'
-                        |grails.plugin.springsecurity.saml.metadata.sp.file = 'classpath:security/banner-$appName-sp'.xml'    // for unix file based Example:-'/home/u02/sp-local.xml'
+                        |grails.plugin.springsecurity.saml.metadata.sp.file = 'classpath:security/banner-$appName-sp.xml'    // for unix file based Example:-'/home/u02/sp-local.xml'
                         |grails.plugin.springsecurity.saml.metadata.providers = [adfs: 'classpath:security/banner-$appName-idp.xml'] // for unix file based Ex:- '/home/u02/idp-local.xml'
                         |grails.plugin.springsecurity.saml.metadata.defaultIdp = 'adfs'
                         |grails.plugin.springsecurity.saml.metadata.sp.defaults = [
