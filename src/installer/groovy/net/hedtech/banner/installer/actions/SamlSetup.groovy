@@ -171,10 +171,10 @@ public class SamlSetup extends BaseSystoolAction {
     private updateIDPXML(path, IDPLocation, idpCertOutput, appName) {
         File inputFile = new File("$path")
         def idpXML = new XmlSlurper().parse(inputFile)
-        idpXML?.SPSSODescriptor?.KeyDescriptor?.KeyInfo?.X509Data?.X509Certificate?.replaceBody "$idpCertOutput"
+        idpXML?.IDPSSODescriptor?.KeyDescriptor?.KeyInfo?.X509Data?.X509Certificate?.replaceBody "$idpCertOutput"
         idpXML['@entityID'] = "$IDPLocation"
-        idpXML?.SPSSODescriptor?.SingleLogoutService['@Location'] = "$IDPLocation"
-        idpXML?.SPSSODescriptor?.SingleSignOnService['@Location'] = "$IDPLocation"
+        idpXML?.IDPSSODescriptor?.SingleLogoutService['@Location'] = "$IDPLocation"
+        idpXML?.IDPSSODescriptor?.SingleSignOnService['@Location'] = "$IDPLocation"
 
         def newwriter = new FileWriter("${sharedConfigDir.getAbsolutePath()}/banner-$appName-idp.xml")
         def result = new StreamingMarkupBuilder().bind { mkp.yield idpXML }.toString()
