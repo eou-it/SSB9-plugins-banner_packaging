@@ -54,8 +54,37 @@
 
     <lang:groovy id="action.SamlSetup"
                  script-source="classpath:net/hedtech/banner/installer/actions/SamlSetup.groovy">
+        <lang:property name="dbUserName" ref="resource.dbUserName"/>
+        <lang:property name="dbPassword" ref="resource.dbPassword"/>
     </lang:groovy>
 
+
+    <bean id="resource.dbUserName"
+          class="com.sungardhe.commoncomponents.installer.StringResource">
+        <property name="editor" ref="resourceEditor.dbUserName"/>
+    </bean>
+
+    <bean id="resourceEditor.dbUserName"
+          class="com.sungardhe.commoncomponents.installer.StringResourceEditor">
+        <property name="promptResourceCode" value="installer.saml.db.promptUserName"/>
+        <property name="localizer" ref="localizer"/>
+        <property name="propertyStore" ref="propertyStore"/>
+        <property name="responseKey" value="resource.dbUserName.default"/>
+    </bean>
+
+
+    <bean id="resource.dbPassword"
+          class="com.sungardhe.commoncomponents.installer.StringResource">
+        <property name="editor" ref="resourceEditor.dbPassword"/>
+    </bean>
+
+    <bean id="resourceEditor.dbPassword"
+          class="com.sungardhe.commoncomponents.installer.StringResourceEditor">
+        <property name="promptResourceCode" value="installer.saml.db.promptPassword"/>
+        <property name="localizer" ref="localizer"/>
+        <property name="propertyStore" ref="propertyStore"/>
+        <!-- Prevent storing the password by not setting the "responseKey" property -->
+    </bean>
 
     <!-- Note: CreateWar is 'built-in' - see 'common-base-actions-context.xml' -->
     

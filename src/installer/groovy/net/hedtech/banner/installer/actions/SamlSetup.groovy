@@ -4,9 +4,11 @@ Ellucian 2017 copyright
 package net.hedtech.banner.installer.actions
 
 import com.sungardhe.commoncomponents.installer.ActionRunnerException
+import com.sungardhe.commoncomponents.installer.StringResource
 import groovy.xml.StreamingMarkupBuilder
 import groovy.xml.XmlUtil
 import net.hedtech.banner.installer.FileStructure
+import org.springframework.beans.factory.annotation.Required
 
 import java.sql.Connection
 import java.sql.DriverManager
@@ -19,6 +21,8 @@ import java.sql.ResultSet
 
 public class SamlSetup extends BaseSystoolAction {
     private static File sharedConfigDir
+    private StringResource dbUserName
+    private StringResource dbPassword
     private static final String ALIAS = 'alias'
     private static final String SPASSERTION_LOCATION = 'SPAssertionLocation'
     private static final String SPLOGOUT_LOCATION = 'SPLogoutLocation'
@@ -36,6 +40,20 @@ public class SamlSetup extends BaseSystoolAction {
     }
 
 
+    @Required // 'username'
+    public void setDbUserName( StringResource dbUserName ) {
+        this.dbUserName = dbUserName
+        addRequiredResource( this.dbUserName )
+    }
+
+
+    @Required //  'password'
+    public void setDbPassword( StringResource dbPassword ) {
+        this.dbPassword = dbPassword
+        addRequiredResource( this.dbPassword )
+    }
+
+
     public void execute() throws ActionRunnerException {
         def alias, SPAssertionLocation, SPLogoutLocation, IDPLocation, spCertificatePath, idpCertificatePath, spXmlPath, idpXmlPath
         sharedConfigDir = getSharedConfiguration()
@@ -48,9 +66,9 @@ public class SamlSetup extends BaseSystoolAction {
         def appName = config?.getProperty("appName")
         def dbConnection = config?.getProperty("dbconnectionURL")
         def username = config?.getProperty("dbusername")
-        def pass = config?.getProperty("dbpassword")
+        /* def pass = config?.getProperty("dbpassword")*/
         Class.forName("oracle.jdbc.OracleDriver");
-        Connection con = DriverManager.getConnection("$dbConnection", "$username", "$pass");
+        Connection con = DriverManager.getConnection("$dbConnection", dbUserName.getValue(), dbPassword.getValue());
         PreparedStatement stmt =con.prepareStatement("SELECT * from GUROCFG WHERE  GUROCFG_GUBAPPL_APP_ID = ?");
         stmt.setString(1, "$appId");
         ResultSet rs = stmt.executeQuery();

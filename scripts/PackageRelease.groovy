@@ -231,8 +231,6 @@ target(genSAMLProperties: "Creates saml_configuration.properties file holding SA
                      |appName=$appName
                      |#DB Details to be entered here in order to connect to db and fetc hth
                      |dbconnectionURL=jdbc:oracle:thin:@hostname:portnumber:serviceName/SID
-                     |dbusername=username
-                     |dbpassword=password
                      |appName=$appName
                      |#*******************************************************
                      |""".stripMargin()
