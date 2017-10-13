@@ -65,8 +65,6 @@ public class SamlSetup extends BaseSystoolAction {
         def appId = config?.getProperty("appId")
         def appName = config?.getProperty("appName")
         def dbConnection = config?.getProperty("dbconnectionURL")
-        def username = config?.getProperty("dbusername")
-        /* def pass = config?.getProperty("dbpassword")*/
         Class.forName("oracle.jdbc.OracleDriver");
         Connection con = DriverManager.getConnection("$dbConnection", dbUserName.getValue(), dbPassword.getValue());
         PreparedStatement stmt =con.prepareStatement("SELECT * from GUROCFG WHERE  GUROCFG_GUBAPPL_APP_ID = ?");
