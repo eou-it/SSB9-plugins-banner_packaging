@@ -23,14 +23,14 @@ public class SamlSetup extends BaseSystoolAction {
     private static File sharedConfigDir
     private StringResource dbUserName
     private StringResource dbPassword
-    private static final String ALIAS = 'alias'
-    private static final String SPASSERTION_LOCATION = 'SPAssertionLocation'
-    private static final String SPLOGOUT_LOCATION = 'SPLogoutLocation'
-    private static final String IDP_LOCATION = 'IDPLocation'
-    private static final String SP_CERTIFICATE_PATH = 'spCertificatePath'
-    private static final String IDP_CERTIFICATE_PATH = 'idpCertificatePath'
-    private static final String SP_XML_PATH = 'spXmlPath'
-    private static final String IDP_XML_PATH = 'idpXmlPath'
+    private static final String SERVICE_PROVIDER_ENTITY_ID= 'serviceProviderEntityID'
+    private static final String SERVICE_PROVIDER_ASSERTION_CONSUMER_SERVICE = 'serviceProviderAssertionConsumerService'
+    private static final String SERVICE_PROVIDER_SINGLE_LOGOUT_SERVICE = 'serviceProviderSingleLogoutService'
+    private static final String IDENTITY_PROVIDER_ENTITY_ID = 'identityProviderEntityID'
+    private static final String SERVICE_PROVIDER_CERTIFICATE_PATH = 'serviceProviderCertificatePath'
+    private static final String IDENTITY_PROVIDER_CERTIFICATE_PATH = 'identityProviderCertificatePath'
+    private static final String SERVICE_PROVIDER_XML_PATH= 'serviceProviderXmlPath'
+    private static final String IDENTITY_PROVIDER_XML_PATH = 'identityProviderXmlPath'
     private static final String GUROCFG_VALUE = 'GUROCFG_VALUE'
     private static final String GUROCFG_NAME = 'GUROCFG_NAME'
 
@@ -55,7 +55,7 @@ public class SamlSetup extends BaseSystoolAction {
 
 
     public void execute() throws ActionRunnerException {
-        def alias, SPAssertionLocation, SPLogoutLocation, IDPLocation, spCertificatePath, idpCertificatePath, spXmlPath, idpXmlPath
+        def serviceProviderEntityID, serviceProviderAssertionConsumerService, serviceProviderSingleLogoutService, identityProviderEntityID, serviceProviderCertificatePath, identityProviderCertificatePath, serviceProviderXmlPath, identityProviderXmlPath
         sharedConfigDir = getSharedConfiguration()
         Properties config = new Properties()
         File propertiesFile = new File("${sharedConfigDir.getAbsolutePath()}/saml_configuration.properties")
@@ -72,55 +72,55 @@ public class SamlSetup extends BaseSystoolAction {
         ResultSet rs = stmt.executeQuery();
         while (rs.next()) {
             switch (rs.getString(GUROCFG_NAME)) {
-                case ALIAS:
-                    alias = rs.getString(GUROCFG_VALUE)
+                case SERVICE_PROVIDER_ENTITY_ID:
+                    serviceProviderEntityID = rs.getString(GUROCFG_VALUE)
                     break
-                case SPASSERTION_LOCATION:
-                    SPAssertionLocation = rs.getString(GUROCFG_VALUE)
+                case SERVICE_PROVIDER_ASSERTION_CONSUMER_SERVICE:
+                    serviceProviderAssertionConsumerService = rs.getString(GUROCFG_VALUE)
                     break
-                case SPLOGOUT_LOCATION:
-                    SPLogoutLocation = rs.getString(GUROCFG_VALUE)
+                case SERVICE_PROVIDER_SINGLE_LOGOUT_SERVICE:
+                    serviceProviderSingleLogoutService = rs.getString(GUROCFG_VALUE)
                     break
-                case IDP_LOCATION:
-                    IDPLocation = rs.getString(GUROCFG_VALUE)
+                case IDENTITY_PROVIDER_ENTITY_ID:
+                    identityProviderEntityID = rs.getString(GUROCFG_VALUE)
                     break
-                case SP_CERTIFICATE_PATH:
-                    spCertificatePath = rs.getString(GUROCFG_VALUE)
+                case SERVICE_PROVIDER_CERTIFICATE_PATH:
+                    serviceProviderCertificatePath = rs.getString(GUROCFG_VALUE)
                     break
-                case IDP_CERTIFICATE_PATH:
-                    idpCertificatePath = rs.getString(GUROCFG_VALUE)
+                case IDENTITY_PROVIDER_CERTIFICATE_PATH:
+                    identityProviderCertificatePath = rs.getString(GUROCFG_VALUE)
                     break
-                case SP_XML_PATH:
-                    spXmlPath = rs.getString(GUROCFG_VALUE)
+                case SERVICE_PROVIDER_XML_PATH:
+                    serviceProviderXmlPath = rs.getString(GUROCFG_VALUE)
                     break
-                case IDP_XML_PATH:
-                    idpXmlPath = rs.getString(GUROCFG_VALUE)
+                case IDENTITY_PROVIDER_XML_PATH:
+                    identityProviderXmlPath = rs.getString(GUROCFG_VALUE)
                     break
             }
         }
         con.close();
 
         println "**************************************"
-        println "ALIAS" + alias
+        println "serviceProviderEntityID" + serviceProviderEntityID
         println "**************************************"
-        println "SPAssertionLocation" + SPAssertionLocation
+        println "SERVICE_PROVIDER_ASSERTION_CONSUMER_SERVICE" + serviceProviderAssertionConsumerService
         println "**************************************"
-        println "SPLogoutLocation" + SPLogoutLocation
+        println "SERVICE_PROVIDER_SINGLE_LOGOUT_SERVICE" + serviceProviderSingleLogoutService
         println "**************************************"
-        println "IDPLocation" + IDPLocation
+        println "IDENTITY_PROVIDER_ENTITY_ID" + identityProviderEntityID
         println "**************************************"
-        println "SP_CERTIFICATE_PATH" + spCertificatePath
+        println "SERVICE_PROVIDER_CERTIFICATE_PATH" + serviceProviderCertificatePath
         println "**************************************"
-        println "IDP_CERTIFICATE_PATH" + idpCertificatePath
+        println "IDP_CERTIFICATE_PATH" + identityProviderCertificatePath
         println "**************************************"
-        println "SP_XML_PATH" + spXmlPath
+        println "SERVICE_PROVIDER_XML_PATH" + serviceProviderXmlPath
         println "**************************************"
-        println "IDP_XML_PATH" + idpXmlPath
+        println "IDENTITY_PROVIDER_XML_PATH" + identityProviderXmlPath
 
         /*"""keytool -genkey -noprompt -alias $alias -dname "CN=$CN, OU=$OU, O=$O, L=$L, S=$S, C=$C" -keystore $keystoreName -storepass $password1 -keypass $password1""".execute()*/
         /*"keytool -export -alias $alias -storepass $password1 -file SERVICE-PROVIDER.cer -keystore $keystoreName"*/
         /*"keytool -export -alias $alias -storepass $password1 -file $currentDir//SERVICE-PROVIDER.cer -keystore $keystoreName".execute()*/
-        def spCertCommand = "keytool -printcert -rfc -file $spCertificatePath"
+        def spCertCommand = "keytool -printcert -rfc -file $serviceProviderCertificatePath"
         Process spCertquantCmd = spCertCommand.execute()
         println "***************************************************"
         def spCertOutput = spCertquantCmd.in.text
@@ -128,8 +128,8 @@ public class SamlSetup extends BaseSystoolAction {
         spCertOutput = spCertOutput.replace("-----END CERTIFICATE-----", "")
         spCertOutput = spCertOutput.trim()
         println spCertOutput
-        updateSPXML(spXmlPath, alias, SPLogoutLocation, SPAssertionLocation, spCertOutput, appName)
-        def idpCertCommand = "keytool -printcert -rfc -file $idpCertificatePath"
+        updateSPXML(serviceProviderXmlPath, serviceProviderEntityID, serviceProviderSingleLogoutService, serviceProviderAssertionConsumerService, spCertOutput, appName)
+        def idpCertCommand = "keytool -printcert -rfc -file $identityProviderCertificatePath"
         Process idpCertquantCmd = idpCertCommand.execute()
         println "***************************************************>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
         def idpCertOutput = idpCertquantCmd.in.text
@@ -137,11 +137,11 @@ public class SamlSetup extends BaseSystoolAction {
         idpCertOutput = idpCertOutput.replace("-----END CERTIFICATE-----", "")
         idpCertOutput = idpCertOutput.trim()
         println idpCertOutput
-        updateIDPXML(idpXmlPath, IDPLocation, idpCertOutput, appName)
-        applicationConfigChanges(appName, alias)
+        updateIDPXML(identityProviderXmlPath, identityProviderEntityID, idpCertOutput, appName)
+        applicationConfigChanges(appName, serviceProviderEntityID)
         def ant = new AntBuilder()
-        ant.copy(file: "$idpCertificatePath", todir: "${FileStructure?.INSTANCE_CONFIG_DIR}")
-        ant.copy(file: "$spCertificatePath", todir: "${FileStructure?.INSTANCE_CONFIG_DIR}")
+        ant.copy(file: "$identityProviderCertificatePath", todir: "${FileStructure?.INSTANCE_CONFIG_DIR}")
+        ant.copy(file: "$serviceProviderCertificatePath", todir: "${FileStructure?.INSTANCE_CONFIG_DIR}")
         ant.copy(file: "${sharedConfigDir.getAbsolutePath()}/banner-$appName-sp.xml", todir: "${FileStructure?.INSTANCE_CONFIG_DIR}")
         ant.copy(file: "${sharedConfigDir.getAbsolutePath()}/banner-$appName-idp.xml", todir: "${FileStructure?.INSTANCE_CONFIG_DIR}")
     }
@@ -151,22 +151,22 @@ public class SamlSetup extends BaseSystoolAction {
      * update the corresponding values based on values provided in SS config table
      * and writing the XML to new file (banner-appname-sp.xml) in sharedConfiguration location
      * @param path
-     * @param alias
-     * @param SPLogoutLocation
-     * @param SPAssertionLocation
+     * @param serviceProviderEntityID
+     * @param serviceProviderSingleLogoutService
+     * @param serviceProviderAssertionConsumerService
      * @param spCertOutput
      * @param appName
      * @return
      */
 
-    private updateSPXML(path, alias, SPLogoutLocation, SPAssertionLocation, spCertOutput, appName) {
+    private updateSPXML(path, serviceProviderEntityID, serviceProviderSingleLogoutService, serviceProviderAssertionConsumerService, spCertOutput, appName) {
         File inputFile = new File("$path")
         def spXML = new XmlSlurper().parse(inputFile)
         spXML?.SPSSODescriptor?.KeyDescriptor?.KeyInfo?.X509Data?.X509Certificate?.replaceBody "$spCertOutput"
-        spXML['@ID'] = "$alias"
-        spXML['@entityID'] = "$alias"
-        spXML?.SPSSODescriptor?.SingleLogoutService['@Location'] = "$SPLogoutLocation"
-        spXML?.SPSSODescriptor?.AssertionConsumerService['@Location'] = "$SPAssertionLocation"
+        spXML['@ID'] = "$serviceProviderEntityID"
+        spXML['@entityID'] = "$serviceProviderEntityID"
+        spXML?.SPSSODescriptor?.SingleLogoutService['@Location'] = "$serviceProviderSingleLogoutService"
+        spXML?.SPSSODescriptor?.AssertionConsumerService['@Location'] = "$serviceProviderAssertionConsumerService"
 
         def newwriter = new FileWriter("${sharedConfigDir.getAbsolutePath()}/banner-$appName-sp.xml")
         def result = new StreamingMarkupBuilder().bind { mkp.yield spXML }.toString()
@@ -179,18 +179,18 @@ public class SamlSetup extends BaseSystoolAction {
      * update the corresponding values based on values provided in SS config table
      * and writing the XML to new file (banner-appname-idp.xml) in sharedConfiguration location
      * @param path
-     * @param IDPLocation
+     * @param identityProviderEntityID
      * @param idpCertOutput
      * @param appName
      * @return
      */
-    private updateIDPXML(path, IDPLocation, idpCertOutput, appName) {
+    private updateIDPXML(path, identityProviderEntityID, idpCertOutput, appName) {
         File inputFile = new File("$path")
         def idpXML = new XmlSlurper().parse(inputFile)
         idpXML?.IDPSSODescriptor?.KeyDescriptor?.KeyInfo?.X509Data?.X509Certificate?.replaceBody "$idpCertOutput"
-        idpXML['@entityID'] = "$IDPLocation"
-        idpXML?.IDPSSODescriptor?.SingleLogoutService['@Location'] = "$IDPLocation"
-        idpXML?.IDPSSODescriptor?.SingleSignOnService['@Location'] = "$IDPLocation"
+        idpXML['@entityID'] = "$identityProviderEntityID"
+        idpXML?.IDPSSODescriptor?.SingleLogoutService['@Location'] = "$identityProviderEntityID"
+        idpXML?.IDPSSODescriptor?.SingleSignOnService['@Location'] = "$identityProviderEntityID"
 
         def newwriter = new FileWriter("${sharedConfigDir.getAbsolutePath()}/banner-$appName-idp.xml")
         def result = new StreamingMarkupBuilder().bind { mkp.yield idpXML }.toString()
@@ -198,7 +198,7 @@ public class SamlSetup extends BaseSystoolAction {
         XmlUtil.serialize(result, newwriter)
     }
 
-    private applicationConfigChanges(appName, alias) {
+    private applicationConfigChanges(appName, serviceProviderEntityID) {
         def content = """|
                         |grails.plugin.springsecurity.saml.active = true
                         |grails.plugin.springsecurity.auth.loginFormUrl = '/saml/login'
@@ -206,18 +206,18 @@ public class SamlSetup extends BaseSystoolAction {
                         |banner.sso.authentication.saml.localLogout='false'                 // To disable single logout set this to true,default 'false'.
                         |grails.plugin.springsecurity.saml.keyManager.storeFile = 'classpath:security/$appName'  // for unix file based Example:- 'file:/home/u02/samlkeystore.jks'
                         |grails.plugin.springsecurity.saml.keyManager.storePass = '<PASSWORD>'
-                        |grails.plugin.springsecurity.saml.keyManager.passwords = [ '$alias': '<PASSWORD>' ]
-                        |grails.plugin.springsecurity.saml.keyManager.defaultKey = '$alias'
+                        |grails.plugin.springsecurity.saml.keyManager.passwords = [ '$serviceProviderEntityID': '<PASSWORD>' ]
+                        |grails.plugin.springsecurity.saml.keyManager.defaultKey = '$serviceProviderEntityID'
                         |grails.plugin.springsecurity.saml.metadata.sp.file = 'classpath:security/banner-$appName-sp.xml'    // for unix file based Example:-'/home/u02/sp-local.xml'
                         |grails.plugin.springsecurity.saml.metadata.providers = [adfs: 'classpath:security/banner-$appName-idp.xml'] // for unix file based Ex:- '/home/u02/idp-local.xml'
                         |grails.plugin.springsecurity.saml.metadata.defaultIdp = 'adfs'
                         |grails.plugin.springsecurity.saml.metadata.sp.defaults = [
                         |       local: true,
-                        |       alias: '$alias',
+                        |       alias: '$serviceProviderEntityID',
                         |       securityProfile: 'metaiop',
-                        |       signingKey: '$alias',
-                        |       encryptionKey: '$alias',
-                        |       tlsKey: '$alias',
+                        |       signingKey: '$serviceProviderEntityID',
+                        |       encryptionKey: '$serviceProviderEntityID',
+                        |       tlsKey: '$serviceProviderEntityID',
                         |       requireArtifactResolveSigned: false,
                         |       requireLogoutRequestSigned: false,
                         |       requireLogoutResponseSigned: false
