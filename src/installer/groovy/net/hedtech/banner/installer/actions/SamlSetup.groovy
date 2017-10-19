@@ -69,7 +69,7 @@ public class SamlSetup extends BaseSystoolAction {
         def dbConnection = config?.getProperty("dbconnectionURL")
         sharedConfigDir.eachFileRecurse(FileType.FILES) {
             if (it.name =~ /\.xml/) {
-                if (it.name.contains("SamlMeta_IDP")) {
+                if (it.name.toLowerCase().endsWith("saml_idp.xml")) {
                     identityProviderXmlPath = it
                 }
 
@@ -77,7 +77,7 @@ public class SamlSetup extends BaseSystoolAction {
         }
         (new File(FileStructure?.INSTANCE_CONFIG_DIR)).eachFileRecurse(FileType.FILES) {
             if (it.name =~ /\.xml/) {
-                if (it.name.contains("SamlMeta_SP")) {
+                if (it.name.toLowerCase().endsWith("saml_sp.xml")) {
                     serviceProviderXmlPath = it
                 }
             }
@@ -167,7 +167,7 @@ public class SamlSetup extends BaseSystoolAction {
         spXML?.SPSSODescriptor?.SingleLogoutService['@Location'] = "$serviceProviderSingleLogoutService"
         spXML?.SPSSODescriptor?.AssertionConsumerService['@Location'] = "$serviceProviderAssertionConsumerService"
 
-        def newwriter = new FileWriter("${FileStructure?.INSTANCE_CONFIG_DIR}/$appName-SamlMeta_SP.xml")
+        def newwriter = new FileWriter("${FileStructure?.INSTANCE_CONFIG_DIR}/$appName-saml_sp.xml")
         def result = new StreamingMarkupBuilder().bind { mkp.yield spXML }.toString()
         new XmlSlurper().parseText(result)
         XmlUtil.serialize(result, newwriter)
@@ -191,7 +191,7 @@ public class SamlSetup extends BaseSystoolAction {
         idpXML?.IDPSSODescriptor?.SingleLogoutService['@Location'] = "$identityProviderEntityID"
         idpXML?.IDPSSODescriptor?.SingleSignOnService['@Location'] = "$identityProviderEntityID"
 
-        def newwriter = new FileWriter("${FileStructure?.INSTANCE_CONFIG_DIR}/$appName-SamlMeta_IDP.xml")
+        def newwriter = new FileWriter("${FileStructure?.INSTANCE_CONFIG_DIR}/$appName-saml_idp.xml")
         def result = new StreamingMarkupBuilder().bind { mkp.yield idpXML }.toString()
         new XmlSlurper().parseText(result)
         XmlUtil.serialize(result, newwriter)
