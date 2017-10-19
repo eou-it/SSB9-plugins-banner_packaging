@@ -5,6 +5,7 @@ package net.hedtech.banner.installer.actions
 
 import com.sungardhe.commoncomponents.installer.ActionRunnerException
 import com.sungardhe.commoncomponents.installer.StringResource
+import groovy.io.FileType
 import groovy.xml.StreamingMarkupBuilder
 import groovy.xml.XmlUtil
 import net.hedtech.banner.installer.FileStructure
@@ -14,6 +15,7 @@ import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.PreparedStatement
 import java.sql.ResultSet
+import java.sql.SQLException
 
 /**
  * Installer action for saml setup
@@ -65,91 +67,88 @@ public class SamlSetup extends BaseSystoolAction {
         def appId = config?.getProperty("appId")
         def appName = config?.getProperty("appName")
         def dbConnection = config?.getProperty("dbconnectionURL")
-        Class.forName("oracle.jdbc.OracleDriver");
-        Connection con = DriverManager.getConnection("$dbConnection", dbUserName.getValue(), dbPassword.getValue());
-        PreparedStatement stmt =con.prepareStatement("SELECT * from GUROCFG WHERE  GUROCFG_GUBAPPL_APP_ID = ?");
-        stmt.setString(1, "$appId");
-        ResultSet rs = stmt.executeQuery();
-        while (rs.next()) {
-            switch (rs.getString(GUROCFG_NAME)) {
-                case SERVICE_PROVIDER_ENTITY_ID:
-                    serviceProviderEntityID = rs.getString(GUROCFG_VALUE)
-                    break
-                case SERVICE_PROVIDER_ASSERTION_CONSUMER_SERVICE:
-                    serviceProviderAssertionConsumerService = rs.getString(GUROCFG_VALUE)
-                    break
-                case SERVICE_PROVIDER_SINGLE_LOGOUT_SERVICE:
-                    serviceProviderSingleLogoutService = rs.getString(GUROCFG_VALUE)
-                    break
-                case IDENTITY_PROVIDER_ENTITY_ID:
-                    identityProviderEntityID = rs.getString(GUROCFG_VALUE)
-                    break
-                case SERVICE_PROVIDER_CERTIFICATE_PATH:
-                    serviceProviderCertificatePath = rs.getString(GUROCFG_VALUE)
-                    break
-                case IDENTITY_PROVIDER_CERTIFICATE_PATH:
-                    identityProviderCertificatePath = rs.getString(GUROCFG_VALUE)
-                    break
-                case SERVICE_PROVIDER_XML_PATH:
-                    serviceProviderXmlPath = rs.getString(GUROCFG_VALUE)
-                    break
-                case IDENTITY_PROVIDER_XML_PATH:
-                    identityProviderXmlPath = rs.getString(GUROCFG_VALUE)
-                    break
+        sharedConfigDir.eachFileRecurse(FileType.FILES) {
+            if (it.name =~ /\.xml/) {
+                if (it.name.contains("SamlMeta_IDP")) {
+                    identityProviderXmlPath = it
+                }
+
             }
         }
-        con.close();
-
-        println "**************************************"
-        println "serviceProviderEntityID" + serviceProviderEntityID
-        println "**************************************"
-        println "SERVICE_PROVIDER_ASSERTION_CONSUMER_SERVICE" + serviceProviderAssertionConsumerService
-        println "**************************************"
-        println "SERVICE_PROVIDER_SINGLE_LOGOUT_SERVICE" + serviceProviderSingleLogoutService
-        println "**************************************"
-        println "IDENTITY_PROVIDER_ENTITY_ID" + identityProviderEntityID
-        println "**************************************"
-        println "SERVICE_PROVIDER_CERTIFICATE_PATH" + serviceProviderCertificatePath
-        println "**************************************"
-        println "IDP_CERTIFICATE_PATH" + identityProviderCertificatePath
-        println "**************************************"
-        println "SERVICE_PROVIDER_XML_PATH" + serviceProviderXmlPath
-        println "**************************************"
-        println "IDENTITY_PROVIDER_XML_PATH" + identityProviderXmlPath
-
+        (new File(FileStructure?.INSTANCE_CONFIG_DIR)).eachFileRecurse(FileType.FILES) {
+            if (it.name =~ /\.xml/) {
+                if (it.name.contains("SamlMeta_SP")) {
+                    serviceProviderXmlPath = it
+                }
+            }
+        }
+        Class.forName("oracle.jdbc.OracleDriver");
+        Connection con = DriverManager.getConnection("$dbConnection", dbUserName.getValue(), dbPassword.getValue());
+        try {
+            PreparedStatement stmt = con.prepareStatement("SELECT * from GUROCFG WHERE  GUROCFG_GUBAPPL_APP_ID = ?");
+            stmt.setString(1, "$appId");
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                switch (rs.getString(GUROCFG_NAME)) {
+                    case SERVICE_PROVIDER_ENTITY_ID:
+                        serviceProviderEntityID = rs.getString(GUROCFG_VALUE)
+                        break
+                    case SERVICE_PROVIDER_ASSERTION_CONSUMER_SERVICE:
+                        serviceProviderAssertionConsumerService = rs.getString(GUROCFG_VALUE)
+                        break
+                    case SERVICE_PROVIDER_SINGLE_LOGOUT_SERVICE:
+                        serviceProviderSingleLogoutService = rs.getString(GUROCFG_VALUE)
+                        break
+                    case IDENTITY_PROVIDER_ENTITY_ID:
+                        identityProviderEntityID = rs.getString(GUROCFG_VALUE)
+                        break
+                    case SERVICE_PROVIDER_CERTIFICATE_PATH:
+                        serviceProviderCertificatePath = rs.getString(GUROCFG_VALUE)
+                        break
+                    case IDENTITY_PROVIDER_CERTIFICATE_PATH:
+                        identityProviderCertificatePath = rs.getString(GUROCFG_VALUE)
+                        break
+                }
+            }
+        }catch (SQLException ex) {
+            exit(-1)
+        }
+        catch (Exception ex) {
+            exit(-1)
+        } finally {
+            con.close();
+        }
+        println "\n----------- Successfully extracted values from DB ----------------"
         /*"""keytool -genkey -noprompt -alias $alias -dname "CN=$CN, OU=$OU, O=$O, L=$L, S=$S, C=$C" -keystore $keystoreName -storepass $password1 -keypass $password1""".execute()*/
         /*"keytool -export -alias $alias -storepass $password1 -file SERVICE-PROVIDER.cer -keystore $keystoreName"*/
         /*"keytool -export -alias $alias -storepass $password1 -file $currentDir//SERVICE-PROVIDER.cer -keystore $keystoreName".execute()*/
         def spCertCommand = "keytool -printcert -rfc -file $serviceProviderCertificatePath"
         Process spCertquantCmd = spCertCommand.execute()
-        println "***************************************************"
         def spCertOutput = spCertquantCmd.in.text
         spCertOutput = spCertOutput.replace("-----BEGIN CERTIFICATE-----", "")
         spCertOutput = spCertOutput.replace("-----END CERTIFICATE-----", "")
         spCertOutput = spCertOutput.trim()
-        println spCertOutput
+        println "----------- Service Provider certificate extracted Successfully------------------"
         updateSPXML(serviceProviderXmlPath, serviceProviderEntityID, serviceProviderSingleLogoutService, serviceProviderAssertionConsumerService, spCertOutput, appName)
         def idpCertCommand = "keytool -printcert -rfc -file $identityProviderCertificatePath"
         Process idpCertquantCmd = idpCertCommand.execute()
-        println "***************************************************>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
         def idpCertOutput = idpCertquantCmd.in.text
         idpCertOutput = idpCertOutput.replace("-----BEGIN CERTIFICATE-----", "")
         idpCertOutput = idpCertOutput.replace("-----END CERTIFICATE-----", "")
         idpCertOutput = idpCertOutput.trim()
-        println idpCertOutput
+        println "----------- Identity Provider certificate extracted Successfully----------------"
         updateIDPXML(identityProviderXmlPath, identityProviderEntityID, idpCertOutput, appName)
         applicationConfigChanges(appName, serviceProviderEntityID)
         def ant = new AntBuilder()
         ant.copy(file: "$identityProviderCertificatePath", todir: "${FileStructure?.INSTANCE_CONFIG_DIR}")
         ant.copy(file: "$serviceProviderCertificatePath", todir: "${FileStructure?.INSTANCE_CONFIG_DIR}")
-        ant.copy(file: "${sharedConfigDir.getAbsolutePath()}/banner-$appName-sp.xml", todir: "${FileStructure?.INSTANCE_CONFIG_DIR}")
-        ant.copy(file: "${sharedConfigDir.getAbsolutePath()}/banner-$appName-idp.xml", todir: "${FileStructure?.INSTANCE_CONFIG_DIR}")
+        println "----------- Successfully created configurations ----------------"
     }
 
     /**
      * updateSPXML method is to read the service-provider xml from the path mentioned in SS config table and
      * update the corresponding values based on values provided in SS config table
-     * and writing the XML to new file (banner-appname-sp.xml) in sharedConfiguration location
+     * and writing the XML to new file (appName-SamlMeta_SP) in sharedConfiguration location
      * @param path
      * @param serviceProviderEntityID
      * @param serviceProviderSingleLogoutService
@@ -168,7 +167,7 @@ public class SamlSetup extends BaseSystoolAction {
         spXML?.SPSSODescriptor?.SingleLogoutService['@Location'] = "$serviceProviderSingleLogoutService"
         spXML?.SPSSODescriptor?.AssertionConsumerService['@Location'] = "$serviceProviderAssertionConsumerService"
 
-        def newwriter = new FileWriter("${sharedConfigDir.getAbsolutePath()}/banner-$appName-sp.xml")
+        def newwriter = new FileWriter("${FileStructure?.INSTANCE_CONFIG_DIR}/$appName-SamlMeta_SP.xml")
         def result = new StreamingMarkupBuilder().bind { mkp.yield spXML }.toString()
         new XmlSlurper().parseText(result)
         XmlUtil.serialize(result, newwriter)
@@ -177,7 +176,7 @@ public class SamlSetup extends BaseSystoolAction {
     /**
      * updateIDPXML method is to read the identity-provider xml from the path mentioned in SS config table and
      * update the corresponding values based on values provided in SS config table
-     * and writing the XML to new file (banner-appname-idp.xml) in sharedConfiguration location
+     * and writing the XML to new file ($appName-SamlMeta_IDP.xml) in sharedConfiguration location
      * @param path
      * @param identityProviderEntityID
      * @param idpCertOutput
@@ -192,7 +191,7 @@ public class SamlSetup extends BaseSystoolAction {
         idpXML?.IDPSSODescriptor?.SingleLogoutService['@Location'] = "$identityProviderEntityID"
         idpXML?.IDPSSODescriptor?.SingleSignOnService['@Location'] = "$identityProviderEntityID"
 
-        def newwriter = new FileWriter("${sharedConfigDir.getAbsolutePath()}/banner-$appName-idp.xml")
+        def newwriter = new FileWriter("${FileStructure?.INSTANCE_CONFIG_DIR}/$appName-SamlMeta_IDP.xml")
         def result = new StreamingMarkupBuilder().bind { mkp.yield idpXML }.toString()
         new XmlSlurper().parseText(result)
         XmlUtil.serialize(result, newwriter)
@@ -208,8 +207,8 @@ public class SamlSetup extends BaseSystoolAction {
                         |grails.plugin.springsecurity.saml.keyManager.storePass = '<PASSWORD>'
                         |grails.plugin.springsecurity.saml.keyManager.passwords = [ '$serviceProviderEntityID': '<PASSWORD>' ]
                         |grails.plugin.springsecurity.saml.keyManager.defaultKey = '$serviceProviderEntityID'
-                        |grails.plugin.springsecurity.saml.metadata.sp.file = 'classpath:security/banner-$appName-sp.xml'    // for unix file based Example:-'/home/u02/sp-local.xml'
-                        |grails.plugin.springsecurity.saml.metadata.providers = [adfs: 'classpath:security/banner-$appName-idp.xml'] // for unix file based Ex:- '/home/u02/idp-local.xml'
+                        |grails.plugin.springsecurity.saml.metadata.sp.file = 'classpath:security/$appName-SamlMeta_SP.xml'    // for unix file based Example:-'/home/u02/sp-local.xml'
+                        |grails.plugin.springsecurity.saml.metadata.providers = [adfs: 'classpath:security/$appName-SamlMeta_IDP.xml'] // for unix file based Ex:- '/home/u02/idp-local.xml'
                         |grails.plugin.springsecurity.saml.metadata.defaultIdp = 'adfs'
                         |grails.plugin.springsecurity.saml.metadata.sp.defaults = [
                         |       local: true,
