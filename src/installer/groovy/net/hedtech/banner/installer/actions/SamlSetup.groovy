@@ -207,8 +207,8 @@ public class SamlSetup extends BaseSystoolAction {
                         |grails.plugin.springsecurity.saml.keyManager.storePass = '<PASSWORD>'
                         |grails.plugin.springsecurity.saml.keyManager.passwords = [ '$serviceProviderEntityID': '<PASSWORD>' ]
                         |grails.plugin.springsecurity.saml.keyManager.defaultKey = '$serviceProviderEntityID'
-                        |grails.plugin.springsecurity.saml.metadata.sp.file = 'classpath:security/$appName-SamlMeta_SP.xml'    // for unix file based Example:-'/home/u02/sp-local.xml'
-                        |grails.plugin.springsecurity.saml.metadata.providers = [adfs: 'classpath:security/$appName-SamlMeta_IDP.xml'] // for unix file based Ex:- '/home/u02/idp-local.xml'
+                        |grails.plugin.springsecurity.saml.metadata.sp.file = 'classpath:security/$appName-saml_sp.xml'    // for unix file based Example:-'/home/u02/sp-local.xml'
+                        |grails.plugin.springsecurity.saml.metadata.providers = [adfs: 'classpath:security/$appName-saml_idp.xml'] // for unix file based Ex:- '/home/u02/idp-local.xml'
                         |grails.plugin.springsecurity.saml.metadata.defaultIdp = 'adfs'
                         |grails.plugin.springsecurity.saml.metadata.sp.defaults = [
                         |       local: true,

@@ -229,7 +229,7 @@ target(genSAMLProperties: "Creates saml_configuration.properties file holding SA
                      |# this is important property do not change it. unless required
                      |appId=$appId
                      |appName=$appName
-                     |#DB Details to be entered here in order to connect to db and fetc hth
+                     |#DB Details to be entered here in order to connect to db and fetch
                      |dbconnectionURL=jdbc:oracle:thin:@hostname:portnumber:serviceName/SID
                      |appName=$appName
                      |#*******************************************************
