@@ -31,8 +31,6 @@ public class SamlSetup extends BaseSystoolAction {
     private static final String IDENTITY_PROVIDER_ENTITY_ID = 'identityProviderEntityID'
     private static final String SERVICE_PROVIDER_CERTIFICATE_PATH = 'serviceProviderCertificatePath'
     private static final String IDENTITY_PROVIDER_CERTIFICATE_PATH = 'identityProviderCertificatePath'
-    private static final String SERVICE_PROVIDER_XML_PATH= 'serviceProviderXmlPath'
-    private static final String IDENTITY_PROVIDER_XML_PATH = 'identityProviderXmlPath'
     private static final String GUROCFG_VALUE = 'GUROCFG_VALUE'
     private static final String GUROCFG_NAME = 'GUROCFG_NAME'
 
