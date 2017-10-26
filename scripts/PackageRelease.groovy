@@ -1,5 +1,5 @@
 /* *****************************************************************************
- Copyright 2009-2012 Ellucian Company L.P. and its affiliates.
+ Copyright 2009-2017 Ellucian Company L.P. and its affiliates.
 *******************************************************************************/
 
 import org.apache.ivy.core.report.ArtifactDownloadReport
@@ -231,7 +231,6 @@ target(genSAMLProperties: "Creates saml_configuration.properties file holding SA
                      |appName=$appName
                      |#DB Details to be entered here in order to connect to db and fetch
                      |dbconnectionURL=jdbc:oracle:thin:@hostname:portnumber:serviceName/SID
-                     |appName=$appName
                      |#*******************************************************
                      |""".stripMargin()
     def samlConfigurationFile = new File("$basedir/target/classes/saml_configuration.properties")
