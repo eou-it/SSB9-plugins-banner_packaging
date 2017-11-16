@@ -140,7 +140,7 @@ public class SamlSetup extends BaseSystoolAction {
             def ant = new AntBuilder()
             ant.copy(file: "$identityProviderCertificatePath", todir: "${FileStructure?.INSTANCE_CONFIG_DIR}")
             ant.copy(file: "$serviceProviderCertificatePath", todir: "${FileStructure?.INSTANCE_CONFIG_DIR}")
-            println "----------- Successfully created configurations ----------------"
+            println "----------- Successfully created SAML configurations ----------------"
         }
     }
 
