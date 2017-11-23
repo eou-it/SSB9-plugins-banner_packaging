@@ -16,7 +16,7 @@
  **/
 class BannerPackagingGrailsPlugin {
 	
-    def version = "9.23"
+    def version = "9.26"
 
     def scopes = [ excludes:'war' ]
 
