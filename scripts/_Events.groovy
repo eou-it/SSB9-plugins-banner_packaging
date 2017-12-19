@@ -49,9 +49,6 @@ eventCompileStart = {
 
 eventCreateWarStart = { warName, stagingDir ->
     copyResources "$stagingDir/WEB-INF/classes"
-    ant.delete(file:"$stagingDir/WEB-INF/classes/security/idp-local.xml")
-    ant.delete(file:"$stagingDir/WEB-INF/classes/security/sp.xml")
-    ant.delete(file:"$stagingDir/WEB-INF/classes/security/keystore.jks")
 }
 
 private copyResources(destination) {
