@@ -1,5 +1,5 @@
 /* *******************************************************************************
- Copyright 2009-2012 SunGard Higher Education. All Rights Reserved.
+ Copyright 2017 SunGard Higher Education. All Rights Reserved.
  This copyrighted software contains confidential and proprietary information of 
  SunGard Higher Education and its subsidiaries. Any use of this software is limited 
  solely to SunGard Higher Education licensees, and is further subject to the terms 
@@ -16,7 +16,7 @@
  **/
 class BannerPackagingGrailsPlugin {
 	
-    def version = "9.23"
+    def version = "9.26"
 
     def scopes = [ excludes:'war' ]
 
