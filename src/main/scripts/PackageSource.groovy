@@ -2,7 +2,7 @@
  Copyright 2009-2012 Ellucian Company L.P. and its affiliates.
 ******************************************************************************/
 
-import org.codehaus.groovy.grails.plugins.GrailsPluginUtils
+//import org.codehaus.groovy.grails.plugins.GrailsPluginUtils
 
 
 /**

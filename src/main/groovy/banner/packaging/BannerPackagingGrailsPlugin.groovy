@@ -56,4 +56,4 @@ class BannerPackagingGrailsPlugin extends Plugin {
     void onShutdown(Map<String, Object> event) {
         // no-op
     }
-}
+}**/
