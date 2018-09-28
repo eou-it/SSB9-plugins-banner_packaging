@@ -1,0 +1,34 @@
+
+The 'systool' used to create the war file may also be used to deploy the war file to a Tomcat container.  
+
+Since environments vary significantly from each other (with respect to user privileges, clustering approach, web container version, operating system, etc.), this target may or may not be suitable for your use.  Regardless, this target provides support for deploying the 'dist/' war file via the Tomcat 'manager' application.  Since war deployment to Tomcat may also be accomplished simply by copying the war file to the Tomcat 'webapps/' directory, use of this target is not critical. 
+
+To use this target, you will need three pieces of information, for which you will be prompted:
+1) the URL to the manager application in tomcat (e.g., 'http://localhost:8080/manager' or 'http://localhost:8080/manager.html')
+2) a Tomcat user who has deploy privileges (e.g., 'tomcat').  Please refer to your Tomcat documentation. 
+3) the password for that user
+
+
+Use of this target is shown below:
+{code}
+t/current/installer $ bin/systool deploy-tomcat
+
+Enter the URL to the Tomcat Manager. 
+   This URL will be accessed in order to deploy the war into the container. 
+
+ ==> []: http://localhost:8080/manager
+
+Enter the Tomcat username needed to deploy a war. 
+   This user must have the 'manager' role. 
+
+ ==> []: tomcat
+
+Enter the Tomcat password for the user. 
+   This password will not be persisted. 
+
+ ==> []: tomcat
+DeployTomcat ...      [echo] /Users/bart/working/horizon/product_homes/catalog_schedule_deployment/current/dist/banner_on_grails-0.2.0.war
+   [deploy] OK - Deployed application at context path /banner_on_grails
+OK
+{code}
+
