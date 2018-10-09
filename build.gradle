@@ -93,7 +93,7 @@ task startpackaging {
         println  "startpackaging Pre Processing"
 
         String appRoot = System.getProperty("user.dir")
-        System.setProperty("user.dir","$appRoot\\plugins\\banner_packaging.git")
+        System.setProperty("user.dir","$appRoot/plugins/banner_packaging.git")
         def pathToFolderOfScript = 'src/main/scripts/Package-Release.groovy'
         new GroovyShell().run(file(pathToFolderOfScript))
         //gse.run('Package-Release.groovy', new Binding())
