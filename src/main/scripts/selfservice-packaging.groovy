@@ -15,14 +15,14 @@ String pluginDirectory = System.getProperty("user.dir");
 
 
 println(">>>>>>>>>>>>>>>>>>>>>>>    pluginDirectory   " + pluginDirectory)
-int endIndex = pluginDirectory.lastIndexOf("\\");
+int endIndex = pluginDirectory.lastIndexOf("/");
 println(">>>>>>>>>>>>>>>>>>>>>>>" + endIndex)
 String applicationRoot;
 
 //change directory to top level up
 if (endIndex != -1) {
     applicationRoot = pluginDirectory.substring(0, endIndex); // not forgot to put check if(endIndex != -1)
-    endIndex = applicationRoot.lastIndexOf("\\");
+    endIndex = applicationRoot.lastIndexOf("/");
     applicationRoot = pluginDirectory.substring(0, endIndex);
     println '  >>>>>>>>> rootDir  is ' + applicationRoot
 }
