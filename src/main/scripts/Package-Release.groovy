@@ -158,7 +158,12 @@ for (File file : files) {
     if (file.isDirectory()) {
         def fullPath =file.getCanonicalPath()
         System.out.println("directory:" + file.getCanonicalPath());
-        String pluginName= getPluginName(applicationRoot + "\\plugins\\", fullPath)
+		String pluginName
+		if(System.properties.'os.name'.startsWith('Windows')){
+			pluginName= getPluginName(applicationRoot + "\\plugins\\", fullPath)
+		}else{
+			pluginName= getPluginName(applicationRoot + "/plugins/", fullPath)
+		}
         def treeish = resolvePluginSha1(applicationRoot,pluginName)
         def branch = getWorkingBranch(fullPath,shellCommandPrefix)
         def status = getStatus( fullPath,shellCommandPrefix )

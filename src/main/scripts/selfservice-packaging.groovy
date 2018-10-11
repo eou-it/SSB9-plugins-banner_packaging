@@ -35,15 +35,15 @@ File[] files = pluginRoot.listFiles();
 for (File file : files) {
     if (file.isDirectory()) {
         System.out.println("directory:" + file.getCanonicalPath());
-        println "    ......... Deleting contents of ::" + file.getCanonicalPath() + "\\build"
+        println "    ......... Deleting contents of ::" + file.getCanonicalPath() + "/build"
 
-        if( new File(file.getCanonicalPath() + "\\build").exists()){
-            ant.delete(dir: file.getCanonicalPath() + "\\build")
+        if( new File(file.getCanonicalPath() + "/build").exists()){
+            ant.delete(dir: file.getCanonicalPath() + "/build")
         }
     }
 }
-if((new File(applicationRoot+"\\build")).exists()){
-    ant.delete(dir: applicationRoot+"\\build", failonerror: false)
+if((new File(applicationRoot+"/build")).exists()){
+    ant.delete(dir: applicationRoot+"/build", failonerror: false)
 }
 
 println "**************************************************************************************"
@@ -184,7 +184,12 @@ for (File file : files) {
     if (file.isDirectory()) {
         def fullPath =file.getCanonicalPath()
         System.out.println("directory:" + file.getCanonicalPath());
-        String pluginName= getPluginName(applicationRoot + "\\plugins\\", fullPath)
+        String pluginName
+		if(System.properties.'os.name'.startsWith('Windows')){
+			pluginName= getPluginName(applicationRoot + "\\plugins\\", fullPath)
+		}else{
+			pluginName= getPluginName(applicationRoot + "/plugins/", fullPath)
+		}
         def treeish = resolvePluginSha1(applicationRoot,pluginName)
         def branch = getWorkingBranch(fullPath,shellCommandPrefix)
         def status = getStatus( fullPath,shellCommandPrefix )
