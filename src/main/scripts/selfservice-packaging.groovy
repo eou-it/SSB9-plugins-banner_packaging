@@ -368,10 +368,15 @@ private String getPluginName(applicationRoot, fullPath){
 
 private String resolvePluginSha1( dir, pluginName ) {
     def gitDir = new File( "${dir}/.git" )
-    if ( gitDir.isDirectory() ) {
-        new File("${dir}/.git/modules/plugins/${pluginName}/refs/heads/master").text
-    } else {
-        ""
+    try{
+        if ( gitDir.isDirectory() ) {
+            new File("${dir}/.git/modules/plugins/${pluginName}/refs/heads/master").text
+        } else {
+            ""
+        }
+    }catch(FileNotFoundException fne){
+        println " Directory ::"+"${dir}/.git/modules/plugins/${pluginName}/refs/heads/master" +"::  Missing"
+        return ""
     }
 }
 
