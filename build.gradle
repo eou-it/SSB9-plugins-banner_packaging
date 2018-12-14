@@ -86,78 +86,19 @@ assets {
     minifyCss = true
 }
 
-
-task startpackaging {
-    doFirst {
-
-        println  "startpackaging Pre Processing"
-
-        String appRoot = System.getProperty("user.dir")
-        System.setProperty("user.dir","$appRoot/plugins/banner_packaging.git")
-        def pathToFolderOfScript = 'src/main/scripts/Package-Release.groovy'
-        new GroovyShell().run(file(pathToFolderOfScript))
-        //gse.run('Package-Release.groovy', new Binding())
-
-    }
-
-
-    doLast {
-
-        println "startpackaging Post Processing"
-    }
-}
-
-// example on how to invoke Groovy Script from Gradle task
-/*task selfservicepackaging {
+task selfservicepackaging {
     assets.minifyJs = false
     assets.minifyCss = false
     String appRoot;
 
     doFirst {
-        appRoot = System.getProperty("user.dir");
-        println(">>>>>>>>>>>>>>>>>>>>>>>  pluginDirectory is " + appRoot)
-        println "selfservicepackaging Pre Processing"
-
-        println " App root is >>>>>>>>> " + appRoot
-
-        println(">>>>>>>>>>>>>>>>>>>>>>>  pluginDirectory is " + appRoot)
-        def pathToFolderOfScript = 'src\\main\\scripts\\selfservice-packaging.groovy'
+        appRoot = System.getProperty("user.dir")
+        appRoot = appRoot+"\\plugins\\banner_packaging.git\\"
+        def pathToFolderOfScript = appRoot+'src\\main\\scripts\\selfservice-packaging.groovy'
         new GroovyShell().run(file(pathToFolderOfScript))
 
     }
 }
-*/
-
-//uncomment this while running Package-Release  target
-
-task clearbuildfolders{
-    def ant = new groovy.util.AntBuilder()
-    String appRoot = System.getProperty("user.dir")
-    System.setProperty("appRoot",appRoot)
-    //below condition won't allow to run from banner_packaging.git plugin
-    if(!appRoot.endsWith("banner_packaging.git")){
-        File pluginRoot = new File(appRoot + "/plugins")
-        File[] files = pluginRoot.listFiles()
-        for (File file : files) {
-            if (file.isDirectory()) {
-                System.out.println("directory:" + file.getCanonicalPath())
-                println "    ......... Deleting contents of ::" + file.getCanonicalPath() + "\\build"
-                if( (new File(file.getCanonicalPath() + "\\build")).exists()){
-                    ant.delete(dir: file.getCanonicalPath() + "\\build")
-                }
-
-
-            }
-        }
-
-        if((new File(appRoot+"\\build")).exists()){
-            ant.delete(dir: appRoot+"\\build", failonerror: false)
-        }
-    }
-
-
-}
-
 
 
 assets {
