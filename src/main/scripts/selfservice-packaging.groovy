@@ -1,5 +1,5 @@
 String pluginDirs = System.getProperty("user.dir")
-pluginDirs = pluginDirs+"\\plugins\\banner_packaging.git"
+pluginDirs = pluginDirs+"/plugins/banner_packaging.git"
 GroovyClassLoader cLoader = new GroovyClassLoader(this.class.getClassLoader())
 
 def shellCommandPref = this.class.classLoader.parseClass(new File("$pluginDirs/src/main/groovy/net/hedtech/banner/utility/ShellCommandPrefix.groovy"))
@@ -7,22 +7,25 @@ String shellCommandPrefix = cLoader.loadClass("net.hedtech.banner.utility.ShellC
 
 String pluginDirectory = System.getProperty("user.dir")
 System.setProperty('Dfile.encoding','UTF-8')
-pluginDirectory = pluginDirectory+"\\plugins\\banner_packaging.git"
-int endIndex = pluginDirectory.lastIndexOf("\\");
+pluginDirectory = pluginDirectory+"/plugins/banner_packaging.git"
+int endIndex = pluginDirectory.lastIndexOf("/");
 String applicationRoot
 
 //change directory to to level up
 if (endIndex != -1) {
     applicationRoot = pluginDirectory.substring(0, endIndex)     // not forgot to put check if(endIndex != -1)
-    endIndex = applicationRoot.lastIndexOf("\\");
+    endIndex = applicationRoot.lastIndexOf("/");
     applicationRoot = pluginDirectory.substring(0, endIndex)
 }
 def ant = new groovy.util.AntBuilder()
+println ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+println "applicationRoot +"+applicationRoot
 
 File pluginRoot = new File(applicationRoot + "/plugins")
 File[] files = pluginRoot.listFiles();
 for (File file : files) {
     if (file.isDirectory()) {
+        println "    ......... Deleting contents of ::" + file.getCanonicalPath() + "/build"
         if( new File(file.getCanonicalPath() + "\\build").exists()){
             ant.delete(dir: file.getCanonicalPath() + "\\build")
         }
@@ -289,7 +292,11 @@ private String getPluginName(applicationRoot, fullPath){
 private String resolvePluginSha1( dir, pluginName ) {
     def gitDir = new File( "${dir}/.git" )
     if ( gitDir.isDirectory() ) {
-        new File("${dir}/.git/modules/plugins/${pluginName}/refs/heads/master").text
+        try{
+            new File("${dir}/.git/modules/plugins/${pluginName}/refs/heads/master").text
+        }catch (FileNotFoundException ex){
+            println "File not found for plugin ${pluginName}"
+        }
     } else {
         ""
     }
