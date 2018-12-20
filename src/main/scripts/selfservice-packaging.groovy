@@ -18,14 +18,11 @@ if (endIndex != -1) {
     applicationRoot = pluginDirectory.substring(0, endIndex)
 }
 def ant = new groovy.util.AntBuilder()
-println ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
-println "applicationRoot +"+applicationRoot
 
 File pluginRoot = new File(applicationRoot + "/plugins")
 File[] files = pluginRoot.listFiles();
 for (File file : files) {
     if (file.isDirectory()) {
-        println "    ......... Deleting contents of ::" + file.getCanonicalPath() + "/build"
         if( new File(file.getCanonicalPath() + "\\build").exists()){
             ant.delete(dir: file.getCanonicalPath() + "\\build")
         }
@@ -295,7 +292,7 @@ private String resolvePluginSha1( dir, pluginName ) {
         try{
             new File("${dir}/.git/modules/plugins/${pluginName}/refs/heads/master").text
         }catch (FileNotFoundException ex){
-            println "File not found for plugin ${pluginName}"
+            println "/.git/modules/plugins/${pluginName}/refs/heads/master"
         }
     } else {
         ""
