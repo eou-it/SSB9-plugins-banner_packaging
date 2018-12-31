@@ -73,16 +73,10 @@ assets {
 }
 
 task selfservicepackaging {
-    assets.minifyJs = false
-    assets.minifyCss = false
-    String appRoot;
-
     doFirst {
-        appRoot = System.getProperty("user.dir")
-        println appRoot
-        appRoot = appRoot+"/plugins/banner_packaging.git/"
-        println "app Root now "+appRoot
-        def pathToFolderOfScript = appRoot+'src/main/scripts/selfservice-packaging.groovy'
+        String pluginDirectory = project.projectDir.toString()
+        System.setProperty('packagingDirectory', ${pluginDirectory})
+        def pathToFolderOfScript = "${pluginDirectory}/src/main/scripts/selfservice-packaging.groovy"
         println "pathToFolderOfScript "+pathToFolderOfScript
         new GroovyShell().run(file(pathToFolderOfScript))
 
@@ -91,8 +85,6 @@ task selfservicepackaging {
 
 task selfservicepackagesource{
     doFirst {
-        System.setProperty('rootProject.name', project.getRootProject().name)
-        System.setProperty('rootProject.version', project.getRootProject().version.toString())
         String pluginDirectory = project.projectDir.toString()
         def pathToFolderOfScript = "${pluginDirectory}/src/main/scripts/PackageSource.groovy"
         println "pathToFolderOfScript "+pathToFolderOfScript
