@@ -89,6 +89,17 @@ task selfservicepackaging {
     }
 }
 
+task selfservicepackagesource{
+    doFirst {
+        System.setProperty('rootProject.name', project.getRootProject().name)
+        System.setProperty('rootProject.version', project.getRootProject().version.toString())
+        String pluginDirectory = project.projectDir.toString()
+        def pathToFolderOfScript = "${pluginDirectory}/src/main/scripts/PackageSource.groovy"
+        println "pathToFolderOfScript "+pathToFolderOfScript
+        new GroovyShell().run(file(pathToFolderOfScript))
+    }
+}
+
 
 assets {
     packagePlugin = true

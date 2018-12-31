@@ -1,60 +1,63 @@
 /* *****************************************************************************
- Copyright 2009-2012 Ellucian Company L.P. and its affiliates.
+ Copyright 2009-2018 Ellucian Company L.P. and its affiliates.
 ******************************************************************************/
 
-//import org.codehaus.groovy.grails.plugins.GrailsPluginUtils
-
-
 /**
- * Gant script for creating a release package for a banner module.
- * The release package contains an 'installer/systool' that is used
- * to manage product homes and to re-generate the war file with
- * environment specific configuration and overrides (localization message bundles, CSS, JavaScript).
- **/
-scriptEnv = "production"
-includeTargets << grailsScript( "_GrailsPackage" )
-includeTargets << grailsScript( "_GrailsEvents" )
-shellCommandPrefix = classLoader.loadClass("net.hedtech.banner.utility.ShellCommandPrefix").getShellCommandPrefix();
+ *  This script generates zip file src-release-appName-version.zip which has all plugins .git folder.
+ */
 
-target( default: "Packages the source code into a zip file under target directory" ) {
+String applicationRoot = System.getProperty("user.dir")
+String pluginDirs = applicationRoot + "/plugins/banner_packaging.git"
+GroovyClassLoader cLoader = new GroovyClassLoader(this.class.getClassLoader())
+this.class.classLoader.parseClass(new File("$pluginDirs/src/main/groovy/net/hedtech/banner/utility/ShellCommandPrefix.groovy"))
+String shellCommandPrefix = cLoader.loadClass("net.hedtech.banner.utility.ShellCommandPrefix").getShellCommandPrefix()
 
-    File sourcePackageZip = new File( "${basedir}/target/src-${metadata.'app.name'}-${metadata.'app.version'}.zip" )
-    ant.delete( file:sourcePackageZip )
+def ant = new groovy.util.AntBuilder()
+def ln = File.separator
+def appDirectoryName = new File(applicationRoot)
+def allPluginDetailsList = findPlugins(appDirectoryName, ln)
+String applicationName = System.getProperty("rootProject.name")
+String appVersion = System.getProperty("rootProject.version")
 
-    def sourceStagingDir = new File( "${projectWorkDir}/source-staging" )
-    ant.delete( dir:sourceStagingDir )
-    ant.mkdir( dir:sourceStagingDir )
+File sourcePackageZip = new File("${applicationRoot}/build/src-${applicationName}-${appVersion}.zip")
+if (sourcePackageZip.exists()) {
+    ant.delete(file: sourcePackageZip)
+}
+def sourceStagingDir = new File("${applicationRoot}/build/source-staging")
+ant.delete(dir: sourceStagingDir)
+ant.mkdir(dir: sourceStagingDir)
 
-    includeSource( sourceStagingDir )
+includeSource(sourceStagingDir, shellCommandPrefix, allPluginDetailsList)
 
-    ant.zip( destfile: sourcePackageZip ) {
-        fileset( dir:sourceStagingDir, excludes:"*.lock" )
-    }
+ant.zip(destfile: sourcePackageZip) {
+    fileset(dir: sourceStagingDir, excludes: "*.lock")
 }
 
+ant.delete(dir:"${applicationRoot}/build/source-staging")
 
-/**
- * Includes source code within the staging directory.
- * The 'package-release' target delegates to this method to include
- * source code. The source code for the application and plugins are
- * packaged up as bare git repositories cloned from internal
- * development repositories (albeit with individual developer commits
- * squashed).
- **/
-private void includeSource( sourceStagingDir ) {
 
-    cloneRepository( sourceStagingDir, "${metadata.'app.name'}",
-                     "$shellCommandPrefix git config --get remote.origin.url".execute().text )
+private void cloneRepository(sourceStagingDir, originUrl, shellCommandPrefix) {
+
+    // We'll clone the repository as a 'bare' repository, since we do NOT
+    // want any possibility that a client might attempt to use this repository
+    // as a 'working copy' clone.
+    //
+    process = "$shellCommandPrefix git clone --bare ${originUrl}".execute(null, new File("${sourceStagingDir}"))
+    process.waitFor()
+}
+
+private void includeSource(sourceStagingDir, shellCommandPrefix, pluginsDetailsList) {
+
+    cloneRepository(sourceStagingDir, "$shellCommandPrefix git config --get remote.origin.url".execute().text, shellCommandPrefix)
 
     // Next, we'll clone repositories for all in-house plugins
-    def inlinePluginDirs = pluginSettings.inlinePluginDirectories*.file
-    inlinePluginDirs.each {
-        cloneRepository( sourceStagingDir, "${it.name}",
-                         "$shellCommandPrefix git config --get remote.origin.url".execute( null, new File( it.path ) ).text )
+
+    pluginsDetailsList.each {
+        cloneRepository(sourceStagingDir, "$shellCommandPrefix git config --get remote.origin.url".execute(null, new File(it.path)).text, shellCommandPrefix)
     }
 
     println "Staging of source: "
-    process = "$shellCommandPrefix ls -laF".execute(null, new File( "${sourceStagingDir}" ) )
+    process = "$shellCommandPrefix ls -laF".execute(null, new File("${sourceStagingDir}"))
     process.in.eachLine { line -> println line }
 
     // Lastly, we'll update the project so that in-place plugins (git submodules)
@@ -63,14 +66,13 @@ private void includeSource( sourceStagingDir ) {
 }
 
 
-private void cloneRepository( sourceStagingDir, repoName, originUrl ) {
-
-    // We'll clone the repository as a 'bare' repository, since we do NOT
-    // want any possibility that a client might attempt to use this repository
-    // as a 'working copy' clone.
-    //
-    process = "$shellCommandPrefix git clone --bare ${originUrl}".execute( null, new File( "${sourceStagingDir}" ) )
-    process.waitFor()
+private findPlugins(def applicationDir, def pathSep) {
+    def plugins = new File(applicationDir.toString() + pathSep + "plugins")
+    def pluginPaths = []
+    plugins.eachDir { plugin ->
+        if (plugin.isDirectory()) {
+            pluginPaths.add(plugin)
+        }
+    }
+    return pluginPaths
 }
-
-
