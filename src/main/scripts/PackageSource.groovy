@@ -6,7 +6,7 @@
  *  This script generates zip file src-release-appName-version.zip which has all plugins .git folder.
  */
 
-String applicationRoot = System.getProperty("user.dir")
+String applicationRoot = System.getProperty("rootProject.path")
 String pluginDirs = applicationRoot + "/plugins/banner_packaging.git"
 GroovyClassLoader cLoader = new GroovyClassLoader(this.class.getClassLoader())
 this.class.classLoader.parseClass(new File("$pluginDirs/src/main/groovy/net/hedtech/banner/utility/ShellCommandPrefix.groovy"))
@@ -17,6 +17,7 @@ def ln = File.separator
 def appDirectoryName = new File(applicationRoot)
 def allPluginDetailsList = findPlugins(appDirectoryName, ln)
 String applicationName = System.getProperty("rootProject.name")
+
 String appVersion = System.getProperty("rootProject.version")
 
 File sourcePackageZip = new File("${applicationRoot}/build/src-${applicationName}-${appVersion}.zip")
