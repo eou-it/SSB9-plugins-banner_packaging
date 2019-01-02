@@ -75,7 +75,7 @@ assets {
 task selfservicepackaging {
     doFirst {
         String pluginDirectory = project.projectDir.toString()
-        System.setProperty('packagingDirectory', ${pluginDirectory})
+        System.setProperty('packagingDirectory', pluginDirectory)
         def pathToFolderOfScript = "${pluginDirectory}/src/main/scripts/selfservice-packaging.groovy"
         println "pathToFolderOfScript "+pathToFolderOfScript
         new GroovyShell().run(file(pathToFolderOfScript))
