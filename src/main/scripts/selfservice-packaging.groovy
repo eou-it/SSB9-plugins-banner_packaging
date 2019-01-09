@@ -154,7 +154,22 @@ ant.delete(file: propertiesPath)
 def projectWorkDir = warLocation + "/" + appName
 File releasePackageZip = new File(warLocation + "/" + appName + "-" + appVersion + ".zip")
 
+def warName ="${appName}-${appVersion}.war"
+def warnamePath = "${warLocation}/${warName}"
 ant.delete(file: releasePackageZip)
+
+ant.unzip(src: "$warnamePath", dest: "$applicationRoot/build/libs/Release/rePackage", overwrite: "true")
+
+ant.copy (todir: "$applicationRoot/build/libs/Release/rePackage/WEB-INF/classes"){
+    fileset( dir:"$applicationRoot/build/libs", includes:"release.properties")
+}
+
+ant.delete( file: warLocation+"/"+warName )
+
+ant.zip(destfile: warLocation+"/"+warName, basedir: "${applicationRoot}/build/libs/Release/rePackage", encoding: "UTF-8")
+
+ant.delete(dir: "${applicationRoot}/build/libs/Release/rePackage")
+
 def configDir = projectWorkDir+"/config"
 def i18nDir = projectWorkDir+"/i18n"
 def installerDir = projectWorkDir+"/installer"
