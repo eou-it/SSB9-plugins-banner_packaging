@@ -1,5 +1,5 @@
 /* *****************************************************************************
- Copyright 2009-2018 Ellucian Company L.P. and its affiliates.
+ Copyright 2009-2019 Ellucian Company L.P. and its affiliates.
 *******************************************************************************/
 
 String applicationRoot = System.getProperty("rootProject.path")
@@ -58,31 +58,22 @@ ant.exec(executable: command, dir: "$applicationRoot", failonerror: true) {
 String propertiesPath= "${applicationRoot}/${releaseWarPath}/application.properties"
 ant.copy (file: "${applicationRoot}/grails-app/conf/application.groovy", tofile: propertiesPath )
 
-Properties prop = new Properties();
+Map appPropertiesList = [:]
 
-InputStream input
 try{
-    input = new FileInputStream(propertiesPath)
-    prop.load(input)
+    def filePath = new File(propertiesPath)
+    def fileText = filePath.text
+    appPropertiesList = fileText ? new ConfigSlurper().parse(fileText)?.flatten() : [:]
 } catch (IOException ex) {
     ex.printStackTrace()
-} finally {
-    if (input != null) {
-        try {
-            input.close()
-        } catch (IOException e) {
-            e.printStackTrace()
-        }
-    }
 }
 
 
-
 //Generate Release Configuration file
-generateReleaseConfig(applicationRoot,prop,shellCommandPrefix ,pluginsList,releasePropertyPath)
+generateReleaseConfig(applicationRoot,appPropertiesList,shellCommandPrefix ,pluginsList,releasePropertyPath)
 
 //Generate SAML Configuration file
-generateSAMLConfig(applicationRoot,prop)
+generateSAMLConfig(applicationRoot,appPropertiesList)
 
 ant.delete(file: propertiesPath)
 
@@ -251,8 +242,8 @@ private String generateSAMLConfig(applicationRoot,prop){
     samlConfigurationFile.write samlConfigContent
 }
 private String generateReleaseConfig(applicationRoot,prop,shellCommandPrefix ,pluginsList,releasePropertyPath){
-
-    def buildNumber= prop.getProperty("build.number.uuid")
+    def buildNumber
+    buildNumber = assignBuildNumber(prop)
     def scmRevision         = "$shellCommandPrefix git rev-parse HEAD".execute(null, new File(applicationRoot)).text
     def scmRepository       = "$shellCommandPrefix git config --get remote.origin.url".execute(null, new File(applicationRoot)).text
     def workingBranchStatus =  getStatus( applicationRoot, shellCommandPrefix )
@@ -312,4 +303,22 @@ private String generateReleaseConfig(applicationRoot,prop,shellCommandPrefix ,pl
     def releasePropertiesFile = new File(releasePropertyPath);
     releasePropertiesFile.write content
 
+}
+
+private String assignBuildNumber(prop){
+    def buildNumber
+    def uuid = prop.getProperty("build.number.uuid")
+    def baseurl = prop.getProperty("build.number.base.url")
+    def url = "${baseurl}${uuid}"
+    if (uuid instanceof String &&  baseurl instanceof String && null != url) {
+        try {
+            def buildNumberProperty = url.toURL().getText()
+            buildNumber = (buildNumberProperty =~ /[\d]+/).collect { it }[0]
+        } catch (e) {
+            def msg = "**** WARNING: Build number could not be attained **** "
+            buildNumber = msg
+            // we'll bury the excepton and let the packaging proceed...
+        }
+        return buildNumber
+    }
 }
