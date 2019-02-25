@@ -158,6 +158,7 @@ ant.copy( todir: "$installerDir/lib", overwrite:true, preservelastmodified:true 
     fileset( dir:"${warLocation}", includes:"xdb*.jar" )
 }
 
+ant.move( file: releasePropertyPath, toFile: "${warLocation}/release.properties" )
 ant.delete(file: releasePropertyPath)
 ant.delete(file: "${applicationRoot}/build/libs/saml_configuration.properties")
 
@@ -178,10 +179,7 @@ ant.zip( destFile: pluginDirectory+"/build/libs/template.zip") {
 ant.delete( dir: projectWorkDir )
 
 private boolean isDirty(dir, shellCommandPrefix) {
-    if (getStatus(dir, shellCommandPrefix) != 'clean')
-        return true
-    else
-        return false
+    return getStatus(dir, shellCommandPrefix) != 'clean'
 }
 
 private String getStatus(dir, shellCommandPrefix) {
