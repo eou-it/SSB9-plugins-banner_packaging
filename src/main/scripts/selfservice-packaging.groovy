@@ -58,22 +58,22 @@ ant.exec(executable: command, dir: "$applicationRoot", failonerror: true) {
 String propertiesPath= "${applicationRoot}/${releaseWarPath}/application.properties"
 ant.copy (file: "${applicationRoot}/grails-app/conf/application.groovy", tofile: propertiesPath )
 
-Map appPropertiesList = [:]
+Map appProperties = [:]
 
 try{
     def filePath = new File(propertiesPath)
     def fileText = filePath.text
-    appPropertiesList = fileText ? new ConfigSlurper().parse(fileText)?.flatten() : [:]
+    appProperties = fileText ? new ConfigSlurper().parse(fileText)?.flatten() : [:]
 } catch (IOException ex) {
     ex.printStackTrace()
 }
 
 
 //Generate Release Configuration file
-generateReleaseConfig(applicationRoot,appPropertiesList,shellCommandPrefix ,pluginsList,releasePropertyPath)
+generateReleaseConfig(applicationRoot,appProperties,shellCommandPrefix ,pluginsList,releasePropertyPath)
 
 //Generate SAML Configuration file
-generateSAMLConfig(applicationRoot,appPropertiesList)
+generateSAMLConfig(applicationRoot,appProperties)
 
 ant.delete(file: propertiesPath)
 
@@ -242,8 +242,7 @@ private String generateSAMLConfig(applicationRoot,prop){
     samlConfigurationFile.write samlConfigContent
 }
 private String generateReleaseConfig(applicationRoot,prop,shellCommandPrefix ,pluginsList,releasePropertyPath){
-    def buildNumber
-    buildNumber = assignBuildNumber(prop)
+    String buildNumber = assignBuildNumber(prop)
     def scmRevision         = "$shellCommandPrefix git rev-parse HEAD".execute(null, new File(applicationRoot)).text
     def scmRepository       = "$shellCommandPrefix git config --get remote.origin.url".execute(null, new File(applicationRoot)).text
     def workingBranchStatus =  getStatus( applicationRoot, shellCommandPrefix )
@@ -306,10 +305,10 @@ private String generateReleaseConfig(applicationRoot,prop,shellCommandPrefix ,pl
 }
 
 private String assignBuildNumber(prop){
-    def buildNumber
-    def uuid = prop.getProperty("build.number.uuid")
-    def baseurl = prop.getProperty("build.number.base.url")
-    def url = "${baseurl}${uuid}"
+    String buildNumber
+    String uuid = prop.getProperty("build.number.uuid")
+    String baseurl = prop.getProperty("build.number.base.url")
+    String url = "${baseurl}${uuid}"
     if (uuid instanceof String &&  baseurl instanceof String && null != url) {
         try {
             def buildNumberProperty = url.toURL().getText()
