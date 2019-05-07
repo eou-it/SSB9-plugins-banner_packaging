@@ -1,0 +1,1 @@
+Simple marker file controlling which set of scripts (installer or systool) the default target in build.xml produces.
