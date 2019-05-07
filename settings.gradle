@@ -1,0 +1,2 @@
+include ':banner-codenarc'
+project(':banner-codenarc').projectDir = new File('../banner_codenarc.git')
