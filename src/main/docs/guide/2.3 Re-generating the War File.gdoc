@@ -1,0 +1,83 @@
+
+
+The following steps illustrate re-generation of the war file so that it contains environment-specific configuration files and CSS/JavaScript/message bundle overrides. 
+
+
+h4. Prepare the 'systool' installation tool. This tool will be used to create a war file. 
+Navigate to the product home in which you installed the release, and: 
+{code}
+schedule_deployment $ cd current/
+_deployment/current $ ls
+config                             installer                          release-banner_on_grails-0.2.0.zip
+i18n                               instance                           webapp
+_deployment/current $ cd installer
+t/current/installer $ ant
+Buildfile: /Users/bart/working/horizon/product_homes/catalog_schedule_deployment/current/installer/build.xml
+
+_checkInstallerMarker:
+
+jar:
+    [mkdir] Created dir: /Users/bart/working/horizon/product_homes/catalog_schedule_deployment/current/installer/staging.dir
+     [copy] Copying 16 files to /Users/bart/working/horizon/product_homes/catalog_schedule_deployment/current/installer/staging.dir/i18n
+     [copy] Copying 1 file to /Users/bart/working/horizon/product_homes/catalog_schedule_deployment/current/installer/staging.dir/i18n
+     [copy] Copying 4 files to /Users/bart/working/horizon/product_homes/catalog_schedule_deployment/current/installer/staging.dir
+      [jar] Building jar: /Users/bart/working/horizon/product_homes/catalog_schedule_deployment/current/installer/systool.jar
+   [delete] Deleting directory /Users/bart/working/horizon/product_homes/catalog_schedule_deployment/current/installer/staging.dir
+
+create.installer.script:
+
+create.systool.script:
+    [touch] Creating /Users/bart/working/horizon/product_homes/catalog_schedule_deployment/current/installer/logs/systool.log
+
+create.scripts:
+
+create-spring-properties:
+[propertyfile] Updating property file: /Users/bart/working/horizon/product_homes/catalog_schedule_deployment/current/installer/spring/context.properties
+
+all:
+
+BUILD SUCCESSFUL
+Total time: 5 seconds
+
+{code}
+
+h4. Update Configuration and Refine War File
+Specifically, you will need to update both module-specific and shared configuration to reflect your environment.  You may also make modifications to CSS, JavaScript, and or message bundles.  Modifications made within the 'instance' directory will not be overwritten when installing subsequent releases of the module. Note that the config directory includes the module-specific configuration to be changed, and also has an instance.properties file that references the shared configuration location. 
+{code}
+_deployment/current $ cd instance
+nt/current/instance $ ls
+config css    i18n   js
+nt/current/instance $ ls config/
+banner_on_grails_configuration.groovy instance.properties
+nt/current/instance $ cat config/instance.properties 
+#
+#Mon Aug 22 10:30:09 EDT 2011
+shared.config.dir=/Users/bart/working/horizon/product_homes/shared_configuration
+nt/current/instance $ 
+{code}
+
+h4. Generate the War File 
+_Note: Please make sure you have prepared the systool (the first step above)._
+{code}
+t/current/installer $ bin/systool war
+CreateWar ... OK
+t/current/installer $ cd ..
+_deployment/current $ cd dist
+oyment/current/dist $ la
+total 131384
+drwxr-xr-x   3 bart  staff       102 Aug 22 11:48 .
+drwxr-xr-x  10 bart  staff       340 Aug 22 11:38 ..
+-rw-r--r--   1 bart  staff  67265892 Aug 22 11:49 banner_on_grails-0.2.0.war
+oyment/current/dist $ pwd
+/Users/bart/working/horizon/product_homes/catalog_schedule_deployment/current/dist
+{code}
+
+Note that although the configuration files have been included within the war file (making the war files 'self sufficient', you may still use externalized configuration files by setting appropriate system properties.  For example, the following will ensure deployed applications use an external banner_configuration.groovy file: 
+{code}
+export JAVA_OPTS="-DBANNER_APP_CONFIG=/Users/bart/working/horizon/banner_configuration.groovy"
+bin/startup.sh
+{code}
+
+\\
+\\
+\\

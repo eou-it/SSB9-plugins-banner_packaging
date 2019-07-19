@@ -1,0 +1,32 @@
+
+_Note: Those who build this plugin from source may generate this documentation by using the 'grails doc' target from the root directory of the plugin._ 
+\\
+\\
+
+
+The banner-packaging plugin provides a common approach for creating release packages and subsequent installation of Banner 9 web applications. Specifically, this plugin:
+
+* Adds a Grails 'package-release' target that may be used to create the release package
+* Incorporates an installer into the release package, in order to provide a common installation approach across Banner 9 solutions
+* Supports installing into an existing product 'home' (directory), with archiving of the previous release
+* Copies configuration files ready for editing 
+** A shared 'banner_configuration.groovy file is copied to the 'shared_configuration' directory if it does not already exist
+** An \{app-name\}_configuration.groovy file is copied to the 'current/instance/config' directory within the home, if it does not already exist  
+* Supports replacement or addition of CSS, JavaScript, and message properties (localization bundles) 
+* Supports war file generation (that includes environment-specific configuration and CSS/JavaScript/i18n overrides)
+* Supports deployment to a Tomcat web container
+
+
+This documentation consists of two parts. Part I addresses the creation of the 'release package' by development.  Part II addresses installation (into a 'home' directory) and deployment of the solution.  
+
+\\
+*Part I:*
+* [Creating a Release Package|guide:release]
+
+*Part II:*
+* [Installing into a 'Home'|guide:install]  
+* [Re-generating the War File|guide:war]
+* [Deploying the War to Tomcat|guide:deploytomcat]
+
+\\
+\\

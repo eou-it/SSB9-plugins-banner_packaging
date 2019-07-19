@@ -1,0 +1,111 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        maven { url "https://repo.grails.org/grails/core" }
+    }
+    dependencies {
+        classpath "org.grails:grails-gradle-plugin:$grailsVersion"
+        classpath "com.bertramlabs.plugins:asset-pipeline-gradle:2.14.2"
+        classpath "net.saliman:gradle-cobertura-plugin:2.6.0"
+    }
+}
+
+version "9.32"
+group "banner.packaging"
+
+apply plugin:"eclipse"
+apply plugin:"idea"
+
+apply plugin:"org.grails.grails-plugin"
+apply plugin:"org.grails.grails-plugin-publish"
+apply plugin:"asset-pipeline"
+apply plugin:"org.grails.grails-gsp"
+apply plugin: 'net.saliman.cobertura'
+
+repositories {
+    mavenLocal()
+    maven { url "https://repo.grails.org/grails/core" }
+}
+
+dependencies {
+    compile "org.springframework.boot:spring-boot-starter-logging"
+    compile "org.springframework.boot:spring-boot-autoconfigure"
+    compile "org.grails:grails-core"
+    compile "org.springframework.boot:spring-boot-starter-actuator"
+    provided  "org.springframework.boot:spring-boot-starter-tomcat"
+    compile "org.grails:grails-web-boot"
+    compile "org.grails:grails-logging"
+    compile "org.grails:grails-plugin-rest"
+    compile "org.grails:grails-plugin-databinding"
+    compile "org.grails:grails-plugin-i18n"
+    compile "org.grails:grails-plugin-services"
+    compile "org.grails:grails-plugin-url-mappings"
+    compile "org.grails:grails-plugin-interceptors"
+    compile "org.grails.plugins:cache"
+    compile "org.grails.plugins:async"
+    compile "org.grails.plugins:scaffolding"
+    compile "org.grails.plugins:gsp"
+    console "org.grails:grails-console"
+    profile "org.grails.profiles:web-plugin"
+    provided "org.grails:grails-plugin-services"
+    provided "org.grails:grails-plugin-domain-class"
+    runtime "com.bertramlabs.plugins:asset-pipeline-grails:2.14.6"
+    testCompile "org.grails:grails-gorm-testing-support"
+    testCompile "org.grails:grails-plugin-testing"
+    testCompile "org.grails:grails-web-testing-support"
+}
+
+bootRun {
+    jvmArgs('-Dspring.output.ansi.enabled=always')
+    systemProperties(System.properties)
+    addResources = true
+}
+
+grails
+        {
+            native2asciiAnt = true
+            native2ascii = false
+        }
+
+bootRepackage.enabled = false
+
+assets {
+    minifyJs = true
+    minifyCss = true
+}
+
+task selfservicepackaging {
+    doFirst {
+        String pluginDirectory = project.projectDir.toString()
+        System.setProperty('packagingDirectory', pluginDirectory)
+        def pathToFolderOfScript = "${pluginDirectory}/src/main/scripts/selfservice-packaging.groovy"
+        new GroovyShell().run(file(pathToFolderOfScript))
+
+    }
+}
+
+task selfservicepackagesource{
+    doFirst {
+        String pluginDirectory = project.projectDir.toString()
+        def pathToFolderOfScript = "${pluginDirectory}/src/main/scripts/PackageSource.groovy"
+        new GroovyShell().run(file(pathToFolderOfScript))
+    }
+}
+
+
+assets {
+    packagePlugin = true
+}
+
+apply plugin: 'codenarc'
+dependencies {
+    //testRuntime "org.slf4j:slf4j-log4j12:1.7.5"
+    //testRuntime "log4j:log4j:1.2.17"
+}
+codenarc {
+    def codenarcRulePath = project(":banner-codenarc").projectDir.absolutePath + "/config/codenarc/rules.groovy"
+    configFile = file(codenarcRulePath)
+    maxPriority1Violations = Integer.MAX_VALUE
+    maxPriority2Violations = Integer.MAX_VALUE
+    maxPriority3Violations = Integer.MAX_VALUE
+}
