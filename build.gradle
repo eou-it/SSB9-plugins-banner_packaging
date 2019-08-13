@@ -121,7 +121,6 @@ sourceSets {
             runtimeClasspath += main.output + test.output
             srcDir file('src/main/installer/groovy/net/hedtech/banner/installer')
         }
-        resources.srcDir file('src/main/installer/groovy/net/hedtech/banner/installer')
     }
 }
 
