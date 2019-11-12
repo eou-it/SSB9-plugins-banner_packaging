@@ -53,6 +53,10 @@ dependencies {
     testCompile "org.grails:grails-gorm-testing-support"
     testCompile "org.grails:grails-plugin-testing"
     testCompile "org.grails:grails-web-testing-support"
+    compile files("lib/installerframework-1.1.0.jar")
+    compile files("lib/SGHECommonUtil-1.0.1.jar")
+    compile files("lib/ant-1.6.5.jar")
+    compile files("lib/groovy-all-2.4.12.jar")
 }
 
 bootRun {
@@ -108,4 +112,18 @@ codenarc {
     maxPriority1Violations = Integer.MAX_VALUE
     maxPriority2Violations = Integer.MAX_VALUE
     maxPriority3Violations = Integer.MAX_VALUE
+}
+
+sourceSets {
+    integrationTest {
+        groovy {
+            compileClasspath += main.output + test.output
+            runtimeClasspath += main.output + test.output
+            srcDir file('src/main/installer/groovy/net/hedtech/banner/installer')
+        }
+    }
+}
+
+integrationTest {
+    ignoreFailures = true
 }
