@@ -107,9 +107,15 @@ eventTemplateZip = { pluginName, pluginVersion ->
                 grailsPlugins()
                 grailsHome()
                 grailsCentral()
-                mavenCentral()
-                mavenRepo "http://repository.jboss.org/maven2/"
-                mavenRepo "http://repository.codehaus.org"
+                //mavenCentral()
+                /*Comment starts
+                With initiative to formally decommission the use of HTTP on January 15th, 2020 by maven
+                where url http://repo1.maven.org/maven2/ need to be changed to new https URL for packaging
+                the jar dependencies
+c               Commnent ends*/
+                //mavenRepo "https://repo1.maven.org/maven2/"
+                mavenRepo "https://repository.jboss.org/maven2/"
+                mavenRepo "https://repository.codehaus.org"
             }
 
             log "error"
