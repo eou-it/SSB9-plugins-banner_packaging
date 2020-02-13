@@ -113,7 +113,7 @@ eventTemplateZip = { pluginName, pluginVersion ->
                 where url http://repo1.maven.org/maven2/ need to be changed to new https URL for packaging
                 the jar dependencies
 c               Commnent ends*/
-                //mavenRepo "https://repo1.maven.org/maven2/"
+                mavenRepo "https://repo1.maven.org/maven2/"
                 mavenRepo "https://repository.jboss.org/maven2/"
                 mavenRepo "https://repository.codehaus.org"
             }
