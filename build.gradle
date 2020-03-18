@@ -5,7 +5,7 @@ buildscript {
     }
     dependencies {
         classpath "org.grails:grails-gradle-plugin:$grailsVersion"
-        classpath "com.bertramlabs.plugins:asset-pipeline-gradle:2.14.2"
+        classpath "com.bertramlabs.plugins:asset-pipeline-gradle:2.15.1"
         classpath "net.saliman:gradle-cobertura-plugin:2.6.0"
     }
 }
@@ -56,7 +56,7 @@ dependencies {
     compile files("lib/installerframework-1.1.0.jar")
     compile files("lib/SGHECommonUtil-1.0.1.jar")
     compile files("lib/ant-1.6.5.jar")
-    compile files("lib/groovy-all-2.4.12.jar")
+    compile files("lib/groovy-all-2.4.17.jar")
 }
 
 bootRun {
