@@ -59,6 +59,11 @@ dependencies {
     compile files("lib/groovy-all-2.4.17.jar")
 }
 
+configurations {
+    runtime.exclude group: "org.springframework.boot", module: "spring-boot-starter-actuator"
+    runtime.exclude group: "org.grails", module: "grails-gorm-testing-support"
+}
+
 bootRun {
     jvmArgs('-Dspring.output.ansi.enabled=always')
     systemProperties(System.properties)
