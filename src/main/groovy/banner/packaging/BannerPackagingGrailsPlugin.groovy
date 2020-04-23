@@ -19,7 +19,7 @@ import grails.plugins.*
 class BannerPackagingGrailsPlugin extends Plugin {
     def version = "9.18.1"
     // the version or versions of Grails the plugin is designed for
-    def grailsVersion = "3.3.2 > *"
+    def grailsVersion = "3.3.11 > *"
     // resources that are excluded from plugin packaging
     def pluginExcludes = [
         "grails-app/views/error.gsp"
