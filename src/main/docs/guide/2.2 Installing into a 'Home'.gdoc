@@ -119,7 +119,7 @@ banner_TEST_homes/                      (optional and recommended top-level dire
            |--> config/
               |--> {app-name}_config.groovy (module-specific configuration for CAS, logging, etc.)
            |--> lib
-              |--> ojdbc6.jar  (the Oracle database driver that must be placed manually into the tomcat/lib directory)
+              |--> ojdbc8.jar  (the Oracle database driver that must be placed manually into the tomcat/lib directory)
                     ----- Update on above  THIS IS NOT REQUIRED WITH TOMCAT-8 since the
                         --- --jar could be supplied through app-specific web-inf lib folder     -----
               |--> logging.properties   (logging configuration that may be copied to the WEB-INF/classes directory that is 
